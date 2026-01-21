@@ -63,7 +63,7 @@ jobs:
           
           if [ -f options.json ]; then
               echo "options.json exists and is a regular file."
-              echo "matrix=$(jq -c . < options.json)" >> $GITHUB_OUTPUT
+              echo "matrix=$(jq -c . < options.json)" >> $GITHUB_ENV
               # echo "PACKAGE_JSON=$(jq -c . < package.json)" >> $GITHUB_ENV
           else
               echo "$FILE does not exist or is not a regular file."
