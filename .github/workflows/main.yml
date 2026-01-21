@@ -60,7 +60,7 @@ jobs:
           test_json=$(jq -c . < options.json)
           echo "$test_json"
           # Set the output variable
-          echo "matrix_json=$JSON_OUTPUT" >> $GITHUB_OUTPUT
+          echo "matrix_json=$test_json" >> $GITHUB_OUTPUT
           if [ -f options.json ]; then
               echo "options.json exists and is a regular file."
           else
