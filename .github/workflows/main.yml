@@ -69,7 +69,7 @@ jobs:
   run_matrix_jobs:
     needs: generate_matrix
     runs-on: ubuntu-latest
-    strategy:
+    # strategy:
       # Use fromJson() to convert the output string into a matrix
       # matrix:
       #   base: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.essentials.base) }}
