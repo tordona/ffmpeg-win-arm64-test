@@ -31,11 +31,6 @@ on:
         options:
         - clang64
         - clangarm64
-      build-env:
-        description: 'Build Environment'
-        required: true
-        default: 'base'
-        type: environment
   push:
     paths-ignore:
       - '**.md'
