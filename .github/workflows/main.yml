@@ -72,13 +72,12 @@ jobs:
     strategy:
       # Use fromJson() to convert the output string into a matrix
       matrix:
-        base: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.base) }}
-        essentials: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.essentials) }}
-        full:  ${{ fromJson(needs.generate_matrix.outputs.matrix_json.full) }}
+        base: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.essentials.base) }}
+        external:  ${{ fromJson(needs.generate_matrix.outputs.matrix_json.essentials.external) }}
     steps:
       - name: Use Matrix Values
         run: |
-          # echo "Running job for project: ${{ matrix.project }} and config: ${{ matrix.config }}"
+          # echo "Running job for project: ${{ matrix.essentials }} and config: ${{ matrix.full }}"
 
 # jobs:
 #   # msys2:
