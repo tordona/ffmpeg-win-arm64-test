@@ -70,16 +70,17 @@ jobs:
           fi
           echo $matrix
           echo $(jq -c . < options.json)
-  # run_matrix_jobs:
-  #   needs: generate_matrix
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     # Use fromJson() to convert the output string into a matrix
-  #     matrix: ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
-  #   steps:
-  #     - name: Use Matrix Values
-  #       run: |
-  #         echo "Running job for project: ${{ matrix.base }} and config: ${{ matrix.config }}"
+  run_matrix_jobs:
+    needs: generate_matrix
+    runs-on: ubuntu-latest
+    # strategy:
+    #   Use fromJson() to convert the output string into a matrix
+    #   matrix: ${{ fromJson(needs.generate_matrix.outputs.matrix) }}
+    steps:
+      - name: Use Matrix Values
+        run: |
+          # echo "Running job for project: ${{ matrix.base }} and config: ${{ matrix.config }}"
+          echo ${{ fromJson(needs.generate_matrix.outputs.matrix) }}
 
 
 # jobs:
