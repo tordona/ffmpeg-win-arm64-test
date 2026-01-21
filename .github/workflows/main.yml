@@ -57,7 +57,7 @@ jobs:
           # Define your JSON array. It must be a single line.
           # The structure below is for a matrix that will have two variables: project and config.
           JSON_OUTPUT='{"include":[{"project":"foo","config":"Debug"},{"project":"bar","config":"Release"}]}'
-          test_json=$(jq -c . < options.json)
+          test_json=$(jq -c . < test.json)
           echo "$test_json"
           # Set the output variable
           echo "matrix_json=$test_json" >> $GITHUB_OUTPUT
