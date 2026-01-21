@@ -2,7 +2,25 @@
   "include": [
     {
         "name": "essentials",
-        "config": "test"
+        "config": [
+            {
+              "option": "gnutls",
+              "package": "gnutls",
+              "version": "7"
+            }, {
+              "option": "gmp",
+              "package": "gmp",
+              "version": "7"
+            }, {
+              "option": "amf",
+              "package": "amf-headers",
+              "version": "7"
+            }, {
+              "option": "vaapi",
+              "package": "libva",
+              "version": "7"
+            }
+        ]
     },
     {
         "name": "essentials2",
