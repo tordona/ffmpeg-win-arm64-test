@@ -60,7 +60,7 @@ jobs:
       - id: json-matrix
         working-directory: ./config/
         run: |
-          echo "matrix=$(jq -c . < options.json)" >> $GITHUB_OUTPUT
+          echo "matrix=$(jq -c . < ./options.json)" >> $GITHUB_OUTPUT
           echo $matrix
   test-json:
     needs: ['json']
