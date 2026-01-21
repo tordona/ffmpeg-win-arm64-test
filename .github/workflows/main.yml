@@ -49,6 +49,7 @@ jobs:
     outputs:
       matrix_json: ${{ steps.set-matrix.outputs.matrix_json }}
     steps:
+      - uses: actions/checkout@v5
       - name: Generate Matrix JSON
         id: set-matrix
         working-directory: './config'
@@ -78,7 +79,7 @@ jobs:
     steps:
       - name: Use Matrix Values
         run: |
-          echo "Running job for project: ${{ matrix.project }} and config: ${{ matrix.config }}"
+          echo "Running job for project: ${{ matrix.base }} and config: ${{ matrix.config }}"
 
 
 # jobs:
