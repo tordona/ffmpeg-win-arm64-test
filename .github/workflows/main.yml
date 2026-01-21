@@ -60,8 +60,12 @@ jobs:
       - id: json-matrix
         working-directory: ./config/
         run: |
-          echo "matrix=$(jq -c . < ./options.json)" >> $GITHUB_OUTPUT
-          echo $matrix
+          if [ -f options.json ]; then
+              echo "options.json exists and is a regular file."
+              echo "matrix=$(jq -c . < ./options.json)" >> $GITHUB_OUTPUT
+          else
+              echo "$FILE does not exist or is not a regular file."
+          fi
   test-json:
     needs: ['json']
     strategy:
