@@ -71,11 +71,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       # Use fromJson() to convert the output string into a matrix
-      matrix: ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
+      matrix:
+        base: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.base) }}
+        essentials: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.essentials) }}
+        full:  ${{ fromJson(needs.generate_matrix.outputs.matrix_json.full) }}
     steps:
       - name: Use Matrix Values
         run: |
-          echo "Running job for project: ${{ matrix.project }} and config: ${{ matrix.config }}"
+          # echo "Running job for project: ${{ matrix.project }} and config: ${{ matrix.config }}"
 
 # jobs:
 #   # msys2:
