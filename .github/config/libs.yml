@@ -1,0 +1,86 @@
+libs: # mapping of ffmpeg libs to msys packages
+  essentials: # libraries to package mapping for essentials build
+    base: # packages directly from msys repo 
+      libaom: aom
+      libfribidi: fribidi
+      libgme: libgme
+      libgsm: gsm
+      libmp3lame: lame
+      libopencore-amrnb: opencore-amr
+      libopencore-amrwb: opencore-amr
+      libopenjpeg: openjpeg2
+      libopenmpt: libopenmpt
+      libopus: opus
+      libspeex: speex
+      libsrt: srt
+      libtheora: libtheora
+      amrwbenc: vo-amrwbenc
+      libvorbis: libvorbis
+      libvpx: libvpx
+      libwebp: libwebp
+      libx264: libx264
+      libx265: x265
+      libxvid: xvidcore
+      sdl2: SDL2
+    external: # custom built packages on external repo
+      avisynth: avisynth
+      libharfbuzz: harfbuzz
+      fontconfig: fontconfig
+      libfreetype: freetype
+      libssh: libssh
+      libvidstab: vid.stab
+      libopenh264: openh264
+      libvmaf: vmaf
+      libzimg: zimg
+      libzmq: zeromq
+      librubberband: rubberband
+      openal: openal
+    dependent:  # base packages dependent on external packages 
+      vapoursynth: vapoursynth
+      libass: libass
+      mediafoundation: qt6-multimedia-wmf
+  full: # libraries to package mapping for full build
+    base: # packages directly from msys repo 
+      frei0r: frei0r-plugins
+      ladspa: ladspa-sdk
+      lcms2: lcms2
+      libbs2b: libbs2b
+      libcdio: ibcdio
+      libdav1d: dav1d
+      libdvdnav: libdvdnav
+      libdvdread: libdvdread
+      liblc3: liblc3
+      libmysofa: libmysofa
+      librav1e: rav1e
+      librist: librist
+      libshine: shine
+      libsnappy: snappy
+      libsvtav1: svt-av1
+      libtwolame: twolame
+      libxevd: xevd
+      libxeve: xeve
+      libzvbi: zvbi
+      liboapv: openapv
+    secondary: # libraries that need additional packages
+      ladspa: dlfcn
+      libcdio: libcdio-paranoia
+    external: # custom built packages on external repo
+      libaribb24: aribb24
+      chromaprint: chromaprint
+      libcodec2: codec2
+      libkvazaar: kvazaar
+      libaribcaption: libaribcaption
+      libbluray: libbluray
+      libilbc: libilbc
+      libjxl: libjxl
+      libmodplug: libmodplug
+      libplacebo: libplacebo
+      libsoxr: libsoxr
+      opencl: opencl-icd
+      libqrencode: qrencode
+      libshaderc: shaderc,
+      libvvenc: libvvenc
+      vulkan: vulkan-loader
+      whisper: whisper.cpp
+    dependent:  # base packages dependent on external packages 
+      libcaca: libcaca

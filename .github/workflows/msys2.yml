@@ -1,0 +1,35 @@
+name: MSYS2 Environment
+
+on:
+  workflow_call:
+    inputs:
+      msystem:
+        required: true
+        type: string
+        default: 'CLANGARM64'
+      environment:
+        required: true
+        type: string
+jobs:
+  setup-msys2:
+    name: '⚒️ Setup MSYS2 Environment'
+    runs-on: windows-11-arm
+    environment: ${{ inputs.environment }}
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: hmarr/debug-action@v3
+    - name: '🔧 Setup MSYS2'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ inputs.msystem }}
+        update: true
+        install:
+            git
+            make
+        pacboy:
+            toolchain:p
+            gcc-compat:p
+
+ 

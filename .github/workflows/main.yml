@@ -1,0 +1,82 @@
+name: ffmpeg-win-arm64 automated builds
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version Tag to build'
+        required: true
+        type: string
+      build-type:
+        description: 'Build type of executable'
+        required: true
+        default: 'essentials'
+        type: choice
+        options:
+        - essentials
+        - full
+      link-type:
+        description: 'Link type of libraries'
+        required: true
+        default: 'shared'
+        type: choice
+        options:
+        - shared
+        - static
+      msystem:
+        description: 'MSYS2 System Environment'
+        required: true
+        default: 'clangarm64'
+        type: choice
+        options:
+        - clang64
+        - clangarm64
+      build-env:
+        description: 'Build Environment'
+        required: true
+        default: 'base'
+        type: environment
+  push:
+    paths-ignore:
+      - '**.md'
+      - '.vscode/**'
+      # - '.github/**'
+      - '.devcontainer/**'
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # msys2:
+  #   name: '🧑‍💻 MSYS2 Environment'
+  #   uses: ./.github/workflows/msys2.yml
+  #   secrets: inherit
+  #   with:
+  #     environment: ${{ inputs.build-env }}
+  #     msystem: ${{ inputs.msystem }}
+  json:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.json-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: json-matrix
+        run: echo "matrix=$(jq -c . < ./config/options.json)" >> $GITHUB_OUTPUT
+  test-json:
+    needs: ['json']
+    strategy:
+      matrix: ${{ fromJSON(needs.json.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Running task for ${{ matrix.name }}"
+  # install-packages:
+  #   needs: ['msys2']
+  #   name: 'install packages'
+  #   runs-on: windows-11-arm
+  #   steps:
+  #     - uses: msys2/setup-msys2@v2
+  #     - name: 'test'
+  #       shell: msys2 {0}
+  #       run: |
