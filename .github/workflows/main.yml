@@ -49,6 +49,7 @@ jobs:
     outputs:
       matrix_json: ${{ steps.set-matrix.outputs.matrix_json }}
     steps:
+      - uses: actions/checkout@v5
       - name: Generate Matrix JSON
         working-directory: '/config'
         id: set-matrix
