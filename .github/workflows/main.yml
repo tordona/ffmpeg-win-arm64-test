@@ -43,13 +43,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-name: Dynamic Matrix from JSON
-
-on:
-  push:
-    branches:
-      - main
-
 jobs:
   generate_matrix:
     runs-on: ubuntu-latest
