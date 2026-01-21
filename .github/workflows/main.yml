@@ -61,8 +61,11 @@ jobs:
         working-directory: ./config
         run: |
           if [ -f options.json ]; then
-              echo "options.json exists and is a regular file."
-              echo "matrix=$(jq -c . < options.json)" >> $GITHUB_OUTPUT
+              # echo "options.json exists and is a regular file."
+              # echo "matrix=$(jq -c . < options.json)" >> $GITHUB_OUTPUT
+              # echo "PACKAGE_JSON=$(jq -c . < package.json)" >> $GITHUB_E
+              JSON=$(cat options.json)
+              echo "::set-output name=matrix::${JSON//'%'/'%25'}"
           else
               echo "$FILE does not exist or is not a regular file."
           fi
