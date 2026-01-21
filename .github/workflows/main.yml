@@ -52,13 +52,14 @@ jobs:
   #     environment: ${{ inputs.build-env }}
   #     msystem: ${{ inputs.msystem }}
   json:
+    environment: 'base'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.json-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v5
       - id: json-matrix
-        working-directory: ./config
+        working-directory: './config'
         run: |
           if [ -f options.json ]; then
               # echo "options.json exists and is a regular file."
@@ -70,6 +71,7 @@ jobs:
           echo $matrix
           echo $(jq -c . < options.json)
   test-json:
+    environment: 'base'
     name: 'test json'
     needs: ['json']
     runs-on: ubuntu-latest
