@@ -61,25 +61,34 @@ jobs:
       - id: json-matrix
         working-directory: './config'
         run: |
-          if [ -f options.json ]; then
-              # echo "options.json exists and is a regular file."
-              echo "matrix=$(jq -c . < options.json)" >> $GITHUB_ENV
-              # echo "PACKAGE_JSON=$(jq -c . < package.json)" >> $GITHUB_ENV
-          else
-              echo "$FILE does not exist or is not a regular file."
-          fi
-          echo $matrix
-          echo $(jq -c . < options.json)
+          # Define your JSON array. For a file, use: jq -c . < ./config.json
+          JSON_DATA='[{"name": "Mario", "config": "Debug"}, {"name": "Luigi", "config": "Release"}]'
+          
+          # Use jq to compact the JSON to a single line and set as an output
+          # The quotes around the output value are important for correct parsing
+          echo "matrix=$(echo "$JSON_DATA" | jq -c .)" >> "$GITHUB_OUTPUT"
+          
+          # if [ -f options.json ]; then
+          #     # echo "options.json exists and is a regular file."
+          #     echo "matrix=$(jq -c . < options.json)" >> $GITHUB_ENV
+          #     # echo "PACKAGE_JSON=$(jq -c . < package.json)" >> $GITHUB_ENV
+          # else
+          #     echo "$FILE does not exist or is not a regular file."
+          # fi
+          # echo $matrix
+          # echo $(jq -c . < options.json)
   test-json:
     environment: 'base'
     name: 'test json'
     needs: ['json']
     runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJSON(needs.json.outputs.matrix) }}
     steps:
       - uses: hmarr/debug-action@v3
       - name: 'Test Install Package'
         run: |
-          # echo "Running task for ${{ matrix.name }}"
+          echo "Running task for ${{ matrix.name }}"
           
   # install-packages:
   #   needs: ['msys2']
