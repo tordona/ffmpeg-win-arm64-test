@@ -56,10 +56,11 @@ jobs:
     outputs:
       matrix: ${{ steps.json-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: json-matrix
+        working-directory: ./config/ 
         run: |
-          echo "matrix=$(jq -c . < ./config/options.json)" >> $GITHUB_OUTPUT
+          echo "matrix=$(jq -c . < options.json)" >> $GITHUB_OUTPUT
           echo $matrix
   # test-json:
   #   needs: ['json']
