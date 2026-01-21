@@ -71,7 +71,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       # Use fromJson() to convert the output string into a matrix
-      matrix: ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
+      matrix: 
+        name: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.name) }}
+        config: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.config) }}
     steps:
       - name: Use Matrix Values
         run: |
