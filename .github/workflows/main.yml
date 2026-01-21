@@ -79,6 +79,7 @@ jobs:
         run: |
           # # echo "Running job for project: ${{ matrix.essentials }} and config: ${{ matrix.full }}"
           echo $needs.generate_matrix.outputs.matrix_json
+          echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
 
 # jobs:
 #   # msys2:
