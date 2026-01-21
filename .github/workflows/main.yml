@@ -69,9 +69,8 @@ jobs:
           else
               echo "$FILE does not exist or is not a regular file."
           fi
-          echo $matrix
-          echo $(jq -c . < options.json)
   test-json:
+    name: "test json"
     needs: ['json']
     strategy:
       matrix: ${{ fromJSON(needs.json.outputs.matrix) }}
