@@ -75,7 +75,7 @@ jobs:
     steps:
       - name: Use Matrix Values
         run: |
-          echo "Running job for project: ${{ matrix.name }}
+          echo "Running job for project: ${{ matrix.packages }}
 
 # jobs:
 #   # msys2:
