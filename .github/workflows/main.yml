@@ -75,13 +75,11 @@ jobs:
     name: 'test json'
     needs: ['json']
     runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(needs.json.outputs.matrix) }}
     steps:
       - uses: hmarr/debug-action@v3
       - name: 'Test Install Package'
         run: |
-          echo "Running task for ${{ matrix.name }}"
+          # echo "Running task for ${{ matrix.name }}"
           
   # install-packages:
   #   needs: ['msys2']
