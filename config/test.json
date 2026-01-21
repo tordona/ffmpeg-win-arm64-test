@@ -1,12 +1,12 @@
 {
   "include": [
     {
-        "name": "essentials",
-        "packages": "test"
+        "project": "essentials",
+        "config": "test"
     },
     {
-        "name": "essentials2",
-        "packages": "test2"
+        "project": "essentials2",
+        "config": "test2"
     }
   ]
 }
