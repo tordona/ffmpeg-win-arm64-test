@@ -69,21 +69,13 @@ jobs:
   run_matrix_jobs:
     needs: generate_matrix
     runs-on: ubuntu-latest
-    # strategy:
+    strategy:
       # Use fromJson() to convert the output string into a matrix
-      # matrix:
-      #   base: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.essentials.base) }}
-      #   external:  ${{ fromJson(needs.generate_matrix.outputs.matrix_json.essentials.external) }}
+      matrix: ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
     steps:
-      - uses: hmarr/debug-action@v3
       - name: Use Matrix Values
         run: |
-          # # echo "Running job for project: ${{ matrix.essentials }} and config: ${{ matrix.full }}"
-          echo $needs.generate_matrix.outputs.matrix_json
-          echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
-          echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json.base) }}
-          # echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json.base.extras) }}
-          # echo ${{ needs.generate_matrix.outputs.matrix_json }}
+          echo "Running job for project: ${{ matrix.base }} and config: ${{ matrix.essentials }}"
 
 # jobs:
 #   # msys2:
