@@ -34,41 +34,6 @@
                 ]
             }
         ]
-    },
-    {
-        "name": "essentials",
-        "packages": [
-            {
-                "name": "base",
-                "items": [
-                    {
-                        "option": "libaom1",
-                        "package": "aom1",
-                        "version": "7"
-                    },
-                    {
-                        "option": "libaom2",
-                        "package": "aom2",
-                        "version": "7"
-                    }
-                ]
-            },
-            {
-                "name": "external",
-                "items": [
-                    {
-                        "option": "libaom3",
-                        "package": "aom3",
-                        "version": "7"
-                    },
-                    {
-                        "option": "libaom4",
-                        "package": "aom4",
-                        "version": "7"
-                    }
-                ]
-            }
-        ]
     }
   ]
 }
