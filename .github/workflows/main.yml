@@ -58,14 +58,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: json-matrix
-        run: echo "matrix=$(jq -c . < ./config/options.json)" >> $GITHUB_OUTPUT
-  test-json:
-    needs: ['json']
-    strategy:
-      matrix: ${{ fromJSON(needs.json.outputs.matrix) }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Running task for ${{ matrix.name }}"
+        run: |
+          echo "matrix=$(jq -c . < ./config/options.json)" >> $GITHUB_OUTPUT
+          echo $matrix
+  # test-json:
+  #   needs: ['json']
+  #   strategy:
+  #     matrix: ${{ fromJSON(needs.json.outputs.matrix) }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo "Running task for ${{ matrix.name }}"
   # install-packages:
   #   needs: ['msys2']
   #   name: 'install packages'
