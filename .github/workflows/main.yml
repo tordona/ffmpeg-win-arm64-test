@@ -56,19 +56,19 @@ jobs:
         run: |
           # Define your JSON array. It must be a single line.
           # The structure below is for a matrix that will have two variables: project and config.
-          JSON_OUTPUT='{"include":[{"project":"foo","config":"Debug"},{"project":"bar","config":"Release"}]}'
+          JSON_OUTPUT='{"base":[{"project":"foo","config":"Debug"},{"project":"bar","config":"Release"}]}'
           
           # Set the output variable
-          # echo "matrix_json=$JSON_OUTPUT" >> $GITHUB_OUTPUT
+          echo "matrix_json=$JSON_OUTPUT" >> $GITHUB_OUTPUT
           
           if [ -f options.json ]; then
-              echo "options.json exists and is a regular file."
-              echo "matrix=$(jq -c . < options.json)" >> $GITHUB_ENV
+              # echo "options.json exists and is a regular file."
+              # echo "matrix=$(jq -c . < options.json)" >> $GITHUB_ENV
               # echo "PACKAGE_JSON=$(jq -c . < package.json)" >> $GITHUB_ENV
           else
               echo "$FILE does not exist or is not a regular file."
           fi
-          echo $matrix
+          echo $matrix_json
           echo $(jq -c . < options.json)
   run_matrix_jobs:
     needs: generate_matrix
