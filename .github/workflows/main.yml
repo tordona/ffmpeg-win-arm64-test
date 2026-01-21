@@ -81,6 +81,8 @@ jobs:
           # # echo "Running job for project: ${{ matrix.essentials }} and config: ${{ matrix.full }}"
           echo $needs.generate_matrix.outputs.matrix_json
           echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
+          echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json.base) }}
+          echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json.base.extras) }}
           echo ${{ needs.generate_matrix.outputs.matrix_json }}
 
 # jobs:
