@@ -58,7 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - id: json-matrix
-        working-directory: ./config/
+        working-directory: ./config
         run: |
           if [ -f options.json ]; then
               echo "options.json exists and is a regular file."
@@ -67,7 +67,7 @@ jobs:
               echo "$FILE does not exist or is not a regular file."
           fi
           echo $matrix
-          echo $GITHUB_OUTPUT
+          echo $(jq -c . < options.json)
   test-json:
     needs: ['json']
     strategy:
