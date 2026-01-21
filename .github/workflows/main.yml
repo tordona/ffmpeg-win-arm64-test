@@ -75,7 +75,7 @@ jobs:
     steps:
       - name: Use Matrix Values
         run: |
-          echo "Running job for project: ${{ matrix.project }} and config: ${{ matrix.config }}"
+          echo "Running job for project: ${{ matrix.name }} and config: ${{ matrix.config }}"
 
 # jobs:
 #   # msys2:

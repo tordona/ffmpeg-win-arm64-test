@@ -1,11 +1,11 @@
 {
   "include": [
     {
-        "project": "essentials",
+        "name": "essentials",
         "config": "test"
     },
     {
-        "project": "essentials2",
+        "name": "essentials2",
         "config": "test2"
     }
   ]
