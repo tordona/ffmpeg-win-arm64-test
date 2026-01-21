@@ -47,7 +47,7 @@ jobs:
   generate_matrix:
     runs-on: ubuntu-latest
     outputs:
-      matrix_json: ${{ steps.set-matrix.outputs.matrix_json }}
+      matrix_json: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v5
       - name: Generate Matrix JSON
