@@ -50,6 +50,7 @@ jobs:
       matrix_json: ${{ steps.set-matrix.outputs.matrix_json }}
     steps:
       - name: Generate Matrix JSON
+        working-directory: '/config'
         id: set-matrix
         run: |
           # Define your JSON array. It must be a single line.
@@ -58,7 +59,11 @@ jobs:
           
           # Set the output variable
           echo "matrix_json=$JSON_OUTPUT" >> $GITHUB_OUTPUT
-
+          if [ -f options.json ]; then
+              echo "options.json exists and is a regular file."
+          else
+              echo "$FILE does not exist or is not a regular file."
+          fi
   run_matrix_jobs:
     needs: generate_matrix
     runs-on: ubuntu-latest
