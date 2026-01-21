@@ -77,18 +77,20 @@ jobs:
           # fi
           # echo $matrix
           # echo $(jq -c . < options.json)
-  test-json:
+  jsontest:
     environment: 'base'
-    name: 'test json'
-    needs: ['json']
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJSON(needs.json.outputs.matrix) }}
+      fail-fast: false
+      matrix:
+        project: ${{ fromJSON(needs.json.outputs.matrix) }}
     steps:
-      - uses: hmarr/debug-action@v3
-      - name: 'Test Install Package'
+      - uses: actions/checkout@v5
+      - id: json-test
         run: |
-          echo "Running task for ${{ matrix.name }}"
+          echo "test"
+
+
           
   # install-packages:
   #   needs: ['msys2']
