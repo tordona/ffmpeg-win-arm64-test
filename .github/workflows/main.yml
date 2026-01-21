@@ -82,8 +82,8 @@ jobs:
           echo $needs.generate_matrix.outputs.matrix_json
           echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
           echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json.base) }}
-          echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json.base.extras) }}
-          echo ${{ needs.generate_matrix.outputs.matrix_json }}
+          # echo ${{ fromJson(needs.generate_matrix.outputs.matrix_json.base.extras) }}
+          # echo ${{ needs.generate_matrix.outputs.matrix_json }}
 
 # jobs:
 #   # msys2:
