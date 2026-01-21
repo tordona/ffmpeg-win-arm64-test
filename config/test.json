@@ -24,7 +24,25 @@
     },
     {
         "name": "essentials2",
-        "config": "test2"
+        "config": [
+            {
+              "option": "gnutls",
+              "package": "gnutls",
+              "version": "7"
+            }, {
+              "option": "gmp",
+              "package": "gmp",
+              "version": "7"
+            }, {
+              "option": "amf",
+              "package": "amf-headers",
+              "version": "7"
+            }, {
+              "option": "vaapi",
+              "package": "libva",
+              "version": "7"
+            }
+        ]
     }
   ]
 }
