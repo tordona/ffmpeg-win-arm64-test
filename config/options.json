@@ -1,5 +1,6 @@
 
 {
+  "include":[{"project":"foo1","config":"Debug1"},{"project":"bar1","config":"Release1"}],
   "base": {
     "extras": [
       {
