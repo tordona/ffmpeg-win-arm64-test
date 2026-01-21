@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Generate Matrix JSON
-        working-directory: '/config'
+        working-directory: './config'
         id: set-matrix
         run: |
           # Define your JSON array. It must be a single line.
