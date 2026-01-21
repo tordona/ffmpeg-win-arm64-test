@@ -72,7 +72,7 @@ jobs:
     strategy:
       # Use fromJson() to convert the output string into a matrix
       matrix: 
-        releaseType: ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
+        item: ${{ fromJson(needs.generate_matrix.outputs.matrix_json) }}
     steps:
       - name: Use Matrix Values
         run: |
