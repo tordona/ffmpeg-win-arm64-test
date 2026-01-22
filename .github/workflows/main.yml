@@ -73,19 +73,19 @@ jobs:
         shell: bash
         run: |
           github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
-          echo "inputs_github_tag=$github_tag" >> $GITHUB_ENV
+          echo "inputs_github_tag=${github_tag}" >> $GITHUB_ENV
 
           build_type="${{ inputs.build_type || 'essentials' }}"
-          echo "inputs_build_type=$build_type" >> $GITHUB_ENV
+          echo "inputs_build_type=${build_type}" >> $GITHUB_ENV
 
           link_type="${{ inputs.link_type || 'shared' }}"
-          echo "inputs_link_type=$link_type " >> $GITHUB_ENV
+          echo "inputs_link_type=${link_type} " >> $GITHUB_ENV
 
           msystem="${{ inputs.msystem || 'CLANGARM64' }}"
-          echo "inputs_msystem=$msystem" >> $GITHUB_ENV
+          echo "inputs_msystem=${msystem}" >> $GITHUB_ENV
 
           environment="${{ inputs.environment || 'CLANGARM64' }}"
-          echo "inputs_environment=$environment" >> $GITHUB_ENV
+          echo "inputs_environment=${environment}" >> $GITHUB_ENV
       - name: '🗺️ Map Toolchain Architecture Name'
         shell: bash
         run: |
