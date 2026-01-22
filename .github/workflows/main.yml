@@ -26,7 +26,7 @@ on:
       msystem:
         description: 'MSYS2 System Environment'
         required: true
-        default: 'clangarm64'
+        default: 'CLANGARM64'
         type: choice
         options:
         - CLANG64
