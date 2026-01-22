@@ -112,11 +112,10 @@ jobs:
           # fi
   download-external-packages:
     name: "⬇️ Download External Packages"
-    runs-on: windows-11-arm
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - id: json-matrix
-        shell: bash
         working-directory: ./config/
         run: |
           matrix=$(jq -c . < ./options.json)"
