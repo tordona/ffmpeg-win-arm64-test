@@ -97,7 +97,7 @@ jobs:
       - name: '🗺️ Verify Environment Variables'
         shell: bash
         run: |
-          echo $inputs.environment
+          echo $inputs_environment
   clone-source:
     name: "🌀 Clone Source"
     runs-on: ubuntu-latest
@@ -142,47 +142,47 @@ jobs:
           mkdir utilities
           # gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/mingw-packages
           # cd downloads
-  # msys2:
-  #   name: '⚒️ Setup MSYS2 Environment'
-  #   needs: ['setup-defaults', 'clone-source', 'download-external-packages']
-  #   runs-on: windows-11-arm
-  #   defaults:
-  #     run:
-  #       shell: msys2 {0}
-  #   steps:
-  #   - name: '🔧 Setup MSYS2'
-  #     uses: msys2/setup-msys2@v2
-  #     with:
-  #       msystem: ${{ env.inputs_msystem }}
-  #       update: true
-  #       cache: true
-  #       release: true
-  #       install:
-  #           git
-  #           make
-  #       pacboy:
-  #           toolchain:p
-  #           gcc-compat:p
-  #           jq:p
-  #   - uses: actions/checkout@v5
-  #   - name: "install-base-packages"
-  #     working-directory: ./config
-  #     run: |
-  #       echo "Install base level packages for Generic build"
-  #       packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
-  #       echo $package_prefix-{$packages}
-  #   - name: "install-essentials-packages"
-  #     working-directory: ./config
-  #     run: |
-  #       echo "Install base level packages for Essentials Release build"
-  #       packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
-  #       echo $package_prefix-{$packages}
-  #   - name: "install-full-packages"
-  #     working-directory: ./config
-  #     run: |
-  #       echo "Install base level packages for Full Release build"
-  #       packages=$(jq -r '.options.full.base | map(.package) | join(",")' options.json)
-  #       echo $package_prefix-{$packages}
+  msys2:
+    name: '⚒️ Setup MSYS2 Environment'
+    needs: ['setup-defaults', 'clone-source', 'download-external-packages']
+    runs-on: windows-11-arm
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: '🔧 Setup MSYS2'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ env.inputs_msystem }}
+        update: true
+        cache: true
+        release: true
+        install:
+            git
+            make
+        pacboy:
+            toolchain:p
+            gcc-compat:p
+            jq:p
+    - uses: actions/checkout@v5
+    - name: "install-base-packages"
+      working-directory: ./config
+      run: |
+        echo "Install base level packages for Generic build"
+        packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
+        echo $package_prefix-{$packages}
+    - name: "install-essentials-packages"
+      working-directory: ./config
+      run: |
+        echo "Install base level packages for Essentials Release build"
+        packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
+        echo $package_prefix-{$packages}
+    - name: "install-full-packages"
+      working-directory: ./config
+      run: |
+        echo "Install base level packages for Full Release build"
+        packages=$(jq -r '.options.full.base | map(.package) | join(",")' options.json)
+        echo $package_prefix-{$packages}
   # # setup-toolchain-info:
   #   needs: ['msys2', 'clone-source']
   #   name: 'Setup Environment Toolchain'
