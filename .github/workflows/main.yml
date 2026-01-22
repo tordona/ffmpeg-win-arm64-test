@@ -71,14 +71,23 @@ jobs:
           echo "inputs_link_type=$github_tag" >> $GITHUB_ENV
           msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "inputs_msystem=$github_tag" >> $GITHUB_ENV
-  msys2:
-    name: '🧑‍💻 MSYS2 Environment'
-    uses: ./.github/workflows/msys2.yml
-    needs: ['map-inputs-to-env-vars']
-    secrets: inherit
-    with:
-      environment: 'base'
-      msystem: $env.inputs_msystem
+  test_env:
+    name: '🛒 Map Workflow Inputs to Environment Variable'
+    runs-on: ubuntu-latest
+    environment: 'base'
+    steps:
+      - name: '🛒 Map Input Defaults'
+        run: |
+          echo "$inputs_msystem"
+          echo "{$inputs_msystem}"
+  # msys2:
+  #   name: '🧑‍💻 MSYS2 Environment'
+  #   uses: ./.github/workflows/msys2.yml
+  #   needs: ['map-inputs-to-env-vars']
+  #   secrets: inherit
+  #   with:
+  #     environment: 'base'
+  #     msystem: $env.inputs_msystem
   # setup-toolchain-info:
   #   needs: ['msys2']
   #   name: 'Setup Environment Toolchain Basics'
