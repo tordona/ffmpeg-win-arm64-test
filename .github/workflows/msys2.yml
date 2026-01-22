@@ -6,6 +6,12 @@ on:
       environment:
         required: true
         type: string
+      my_variable1:
+        type: string
+        required: true
+      my_variable2:
+        type: string
+        required: true
 
 jobs:
   setup-msys2:

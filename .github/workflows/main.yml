@@ -52,6 +52,8 @@ env:
   msys_prefix: 'mingw-w64'
   toolchain_arch: 'clang-aarch64'
   package_prefix: 'mingw-w64-clang-aarch64'
+  MY_ENV_VAR: "some-value"
+  my_lower_var: "some-value2"
 
 jobs:
   map-inputs-to-env-vars:
@@ -89,6 +91,8 @@ jobs:
     secrets: inherit
     with:
       environment: 'base'
+      my_variable2: "${env.MY_ENV_VAR}" 
+      my_variable: ${env.MY_ENV_VAR} 
   # setup-toolchain-info:
   #   needs: ['msys2']
   #   name: 'Setup Environment Toolchain Basics'
