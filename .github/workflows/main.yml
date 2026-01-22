@@ -74,25 +74,26 @@ jobs:
           echo "inputs_link_type=$link_type " >> $GITHUB_ENV
           msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "inputs_msystem=$msystem" >> $GITHUB_ENV
-          echo $msystem
           echo "msystem=$msystem" >> "$GITHUB_OUTPUT"
-  test:
-    runs-on: ubuntu-latest
-    environment: 'base'
+  # msys2:
+  #   name: '🧑‍💻 MSYS2 Environment'
+  #   uses: ./.github/workflows/msys2.yml
+  #   needs: ['map-inputs-to-env-vars']
+  #   secrets: inherit
+  #   with:
+  #     environment: 'base'
+  #     msystem: ${{ needs.map-inputs-to-env-vars.outputs.msystem }}
+  msys2test:
+    name: '🧑‍💻 MSYS2 Environment'
+    runs-on: windows-11-arm
     needs: ['map-inputs-to-env-vars']
     steps:
-      - name: '🛒 Map Input Defaults'
-        id: 'map-defaults'
-        run: |
-          echo ${{ needs.map-inputs-to-env-vars.outputs.msystem }}
-  msys2:
-    name: '🧑‍💻 MSYS2 Environment'
-    uses: ./.github/workflows/msys2.yml
-    needs: ['map-inputs-to-env-vars']
-    secrets: inherit
-    with:
-      environment: 'base'
-      msystem: ${{ needs.map-inputs-to-env-vars.outputs.msystem }}
+      - uses: hmarr/debug-action@v3
+      - name: '🔧 Setup MSYS2'
+        uses: ./.github/workflows/msys2.yml
+        with:
+          environment: 'base'
+          msystem: ${{ env.inputs_msystem }}
   # setup-toolchain-info:
   #   needs: ['msys2']
   #   name: 'Setup Environment Toolchain Basics'
