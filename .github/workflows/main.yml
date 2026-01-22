@@ -66,8 +66,6 @@ jobs:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
     environment: 'base'
-    permissions:
-      contents: write
     steps:
       - name: '🗺️ Map Workflow Inputs to Environment Variables'
         shell: bash
@@ -99,7 +97,7 @@ jobs:
       - name: '🗺️ Verify Environment Variables'
         shell: bash
         run: |
-          echo ${env}
+          echo $inputs.environment
   clone-source:
     name: "🌀 Clone Source"
     runs-on: ubuntu-latest
