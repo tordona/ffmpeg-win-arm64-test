@@ -61,6 +61,8 @@ jobs:
     steps:
       - name: '🛒 Map Input Defaults'
         run: |
+          echo "$inputs_msystem"
+          echo "{$inputs_msystem}"
           github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
           echo "inputs_github_tag=$github_tag" >> $GITHUB_ENV
           build_type="${{ inputs.build_type || 'essentials' }}"
@@ -76,7 +78,7 @@ jobs:
     secrets: inherit
     with:
       environment: 'base'
-      msystem: $inputs_msystem
+      msystem: "$inputs_msystem"
   setup-toolchain-info:
     needs: ['msys2']
     name: 'Setup Environment Toolchain Basics'
