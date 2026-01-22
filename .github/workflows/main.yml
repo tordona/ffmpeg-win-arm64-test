@@ -101,7 +101,7 @@ jobs:
         run: |
           ls -F
           echo $GITHUB_WORKSPACE
-          echo $source_path
+          echo "${GITHUB_WORKSPACE}/source"
           # git clone https://github.com/username/repository.git $source_path
           echo "Repository cloned to: $source_path"
           echo $repo
