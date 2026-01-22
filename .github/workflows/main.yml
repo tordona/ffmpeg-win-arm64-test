@@ -125,7 +125,7 @@ jobs:
           # full_pkgs=$(jq -r '.options.essentials.external | map(.package) | join(",")' options.json)
           # cd ..
           cd $GITHUB_WORKSPACE
-          gh release download " mingw-w64-zimg" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
+          gh release download "mingw-w64-zimg" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
           cd downloads
           ls -laR
   # msys2:
