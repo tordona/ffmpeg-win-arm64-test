@@ -91,13 +91,15 @@ jobs:
         run: |
           if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
               echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
+              echo "package_prefix=${msys_prefix}-clang-aarch64" >> $GITHUB_ENV
           elif [[ ${inputs_msystem} == "CLANG64" ]]; then
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
+              echo "package_prefix=${msys_prefix}-clang-x86_64" >> $GITHUB_ENV
           fi
-      - name: '🗺️ Map Toolchain Architecture Name2'
+      - name: '🗺️ Verify Environment Variables'
         shell: bash
         run: |
-          echo $inputs_environment
+          echo ${env}
   clone-source:
     name: "🌀 Clone Source"
     runs-on: ubuntu-latest
