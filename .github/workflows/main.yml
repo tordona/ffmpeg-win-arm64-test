@@ -64,11 +64,11 @@ env:
 
 jobs:
   setup-defaults:
-    name: '🛒 Map Workflow Inputs to Environment Variable'
+    name: '🌐 Setup Environment Variables'
     runs-on: windows-11-arm
     environment: 'base'
     steps:
-      - name: '🛒 Map Input Defaults'
+      - name: '🗺️ Map Workflow Inputs to Environment Variables'
         shell: bash
         run: |
           github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
@@ -85,7 +85,7 @@ jobs:
 
           environment="${{ inputs.environment || 'CLANGARM64' }}"
           echo "inputs_environment=$environment" >> $GITHUB_ENV
-      - name: '🛒 Map Toolchain Naming'
+      - name: '🗺️ Map Toolchain Architecture Name'
         shell: bash
         run: |
           if [[ {$inputs_msystem} == "CLANGARM64" ]]; then
@@ -143,6 +143,7 @@ jobs:
         pacboy:
             toolchain:p
             gcc-compat:p
+            jq:p
     - uses: actions/checkout@v5
     - name: "install-base-packages"
       working-directory: ./config
