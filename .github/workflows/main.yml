@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 'base'
     outputs:
-      msystem: ${{ steps.map-defaults.outputs.inputs_msystem }}
+      msystem: ${{ steps.map-defaults.outputs.msystem }}
     steps:
       - name: '🛒 Map Input Defaults'
         id: 'map-defaults'
