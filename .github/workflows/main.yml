@@ -65,7 +65,7 @@ env:
 jobs:
   setup-defaults:
     name: '🌐 Setup Environment Variables'
-    runs-on: windows-11-arm
+    runs-on: ubuntu-latest
     environment: 'base'
     steps:
       - name: '🗺️ Map Workflow Inputs to Environment Variables'
@@ -95,7 +95,7 @@ jobs:
           fi
   clone-source:
     name: "🌀 Clone Source"
-    runs-on: windows-11-arm
+    runs-on: ubuntu-latest
     steps:
       - name: "🌪️ Clone FFmpeg source repository"
         shell: bash
@@ -120,7 +120,21 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd $GITHUB_WORKSPACE
+          mkdir downloads
           # gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
+          # cd downloads
+  download-external-utilities:
+    name: "⬇️ Download External Helpers"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - id: json-matrix
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd $GITHUB_WORKSPACE
+          mkdir utilities
+          # gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/mingw-packages
           # cd downloads
   msys2:
     name: '⚒️ Setup MSYS2 Environment'
@@ -161,7 +175,7 @@ jobs:
       working-directory: ./config
       run: |
         echo "Install base level packages for Full Release build"
-        packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
+        packages=$(jq -r '.options.full.base | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
   # setup-toolchain-info:
   #   needs: ['msys2', 'clone-source']
