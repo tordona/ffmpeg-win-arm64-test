@@ -91,8 +91,8 @@ jobs:
     secrets: inherit
     with:
       environment: 'base'
-      my_variable2: "${env.MY_ENV_VAR}" 
-      my_variable1: ${env.MY_ENV_VAR} 
+      my_variable2: "$env.MY_ENV_VAR"
+      my_variable1: $env.MY_ENV_VAR
   # setup-toolchain-info:
   #   needs: ['msys2']
   #   name: 'Setup Environment Toolchain Basics'
