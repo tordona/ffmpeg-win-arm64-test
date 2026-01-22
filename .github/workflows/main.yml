@@ -55,6 +55,7 @@ env:
   inputs_build_type: "essentials"
   inputs_link_type: "shared"
   inputs_msystem: 'CLANGARM64'
+  inputs_environment: 'base'
   msys_prefix: 'mingw-w64'
   toolchain_arch: 'clang-aarch64'
   package_prefix: 'mingw-w64-clang-aarch64'
@@ -78,6 +79,9 @@ jobs:
 
           msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "inputs_msystem=$msystem" >> $GITHUB_ENV
+
+          environment="${{ inputs.environment || 'CLANGARM64' }}"
+          echo "inputs_environment=$environment" >> $GITHUB_ENV
       - name: '🛒 Map Toolchain Naming'
         run: |
           if [[ {$inputs_msystem} == "CLANGARM64" ]]; then
@@ -89,7 +93,6 @@ jobs:
     name: '⚒️ Setup MSYS2 Environment'
     needs: ['map-inputs']
     runs-on: windows-11-arm
-    environment: ${{ inputs.environment }}
     defaults:
       run:
         shell: msys2 {0}
@@ -97,7 +100,7 @@ jobs:
     - name: '🔧 Setup MSYS2'
       uses: msys2/setup-msys2@v2
       with:
-        msystem: ${{ inputs.msystem }}
+        msystem: ${{ env.inputs_msystem }}
         update: true
         install:
             git
