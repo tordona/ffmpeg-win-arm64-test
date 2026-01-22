@@ -118,6 +118,7 @@ jobs:
       - id: json-matrix
         working-directory: ./config/
         run: |
+          ls -laR
           matrix=$(jq -c . < ./options.json)"
           echo $matrix
   # msys2:
