@@ -72,6 +72,7 @@ jobs:
   msys2:
     name: '🧑‍💻 MSYS2 Environment'
     uses: ./.github/workflows/msys2.yml
+    needs: ['map-inputs-to-env-vars']
     secrets: inherit
     with:
       environment: 'base'
