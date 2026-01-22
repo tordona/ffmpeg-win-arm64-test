@@ -111,16 +111,16 @@ jobs:
           #   exit 1
           # fi
   download-external-packages:
-    name: "⬇️ Clone Source"
+    name: "⬇️ Download External Packages"
     runs-on: windows-11-arm
     steps:
       - uses: actions/checkout@v5
-      - name: "🎞️ Dowload packages"
+      - id: json-matrix
         shell: bash
-        working-directory: /config
+        working-directory: ./config/
         run: |
-          ls -laR
-          echo ""
+          matrix=$(jq -c . < ./options.json)"
+          echo $matrix
   msys2:
     name: '⚒️ Setup MSYS2 Environment'
     needs: ['setup-defaults']
@@ -129,7 +129,6 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-    - uses: actions/checkout@v5
     - name: '🔧 Setup MSYS2'
       uses: msys2/setup-msys2@v2
       with:
@@ -143,8 +142,9 @@ jobs:
         pacboy:
             toolchain:p
             gcc-compat:p
+    - uses: actions/checkout@v5
     - name: "install-base-packages"
-      working-directory: /config
+      working-directory: ./config
       run: |
         packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
