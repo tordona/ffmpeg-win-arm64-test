@@ -116,12 +116,16 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - id: json-matrix
-        working-directory: ./config/
         run: |
+          # ls -laR
+          # matrix=$(jq -c . < ./options.json)
+          # essential_pkgs=$(jq -r '.options.essentials.external | map(.package) | join(",")' options.json)
+          # full_pkgs=$(jq -r '.options.essentials.external | map(.package) | join(",")' options.json)
+          # cd ..
           ls -laR
-          matrix=$(jq -c . < ./options.json)
-          echo $matrix
-          cd ..
+          cd $GITHUB_WORKSPACE
+          gh release download " mingw-w64-zimg" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
+          cd downloads
           ls -laR
   # msys2:
   #   name: '⚒️ Setup MSYS2 Environment'
