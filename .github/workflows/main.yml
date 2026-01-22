@@ -74,7 +74,7 @@ jobs:
           echo "inputs_link_type=$link_type " >> $GITHUB_ENV
           msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "inputs_msystem=$msystem" >> $GITHUB_ENV$
-          echo msystem
+          echo $msystem
   test:
     runs-on: ubuntu-latest
     environment: 'base'
@@ -83,7 +83,7 @@ jobs:
       - name: '🛒 Map Input Defaults'
         id: 'map-defaults'
         run: |
-          echo $needs.map-inputs-to-env-vars.outputs.msystem
+          echo "$needs.map-inputs-to-env-vars.outputs.msystem"
   msys2:
     name: '🧑‍💻 MSYS2 Environment'
     uses: ./.github/workflows/msys2.yml
