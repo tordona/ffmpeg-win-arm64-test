@@ -81,14 +81,18 @@ jobs:
 
           environment="${{ inputs.environment || 'CLANGARM64' }}"
           echo "inputs_environment=${environment}" >> $GITHUB_ENV
+
+          echo $inputs_msystem
       - name: '🗺️ Map Toolchain Architecture Name'
         shell: bash
         run: |
+          echo $inputs_msystem
           if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
               echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
           elif [[ ${inputs_msystem} == "CLANG64" ]]; then
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
           fi
+
   clone-source:
     name: "🌀 Clone Source"
     runs-on: ubuntu-latest
