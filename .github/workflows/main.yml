@@ -43,96 +43,36 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  msys_prefix: 'mingw-w64'
+  toolchain_arch: 'clang-aarch64'
+  package_prefix: 'mingw-w64-clang-aarch64'
+
 jobs:
-  generate_matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix_json: ${{ steps.set-matrix.outputs.matrix_json }}
+  msys2:
+    name: '🧑‍💻 MSYS2 Environment'
+    uses: ./.github/workflows/msys2.yml
+    secrets: inherit
+    with:
+      environment: ${{ inputs.build-env }}
+      msystem: ${{ inputs.msystem }}
+  setup-toolchain-info:
+    needs: ['msys2']
+    name: 'Setup Environment Toolchain Basics'
+    runs-on: windows-11-arm
     steps:
-      - uses: actions/checkout@v5
-      - name: Generate Matrix JSON
-        working-directory: './config'
-        id: set-matrix
+      - uses: msys2/setup-msys2@v2
+      - name: 'test'
+        shell: msys2 {0}
         run: |
-          # Define your JSON array. It must be a single line.
-          # The structure below is for a matrix that will have two variables: project and config.
-          JSON_OUTPUT='{"include":[{"project":"foo","config":"Debug"},{"project":"bar","config":"Release"}]}'
-          test_json=$(jq -c . < test.json)
-          echo "$test_json"
-          # Set the output variable
-          echo "matrix_json=$test_json" >> $GITHUB_OUTPUT
-          if [ -f options.json ]; then
-              echo "options.json exists and is a regular file."
-          else
-              echo "$FILE does not exist or is not a regular file."
+          echo ${${{ inputs.msystem }},,}
+          echo $msys_prefix
+          echo $toolchain_arch
+          if [[ ${${{ inputs.msystem }},,} == "clangarm64" ]]; then
+              echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
+
+          elif [[ ${${{ inputs.msystem }},,} == "clang64" ]]; then
+              echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
           fi
-  run_matrix_jobs:
-    needs: generate_matrix
-    runs-on: ubuntu-latest
-    strategy:
-      # Use fromJson() to convert the output string into a matrix
-      matrix: 
-        config: ${{ fromJson(needs.generate_matrix.outputs.matrix_json.config) }}
-    steps:
-      - name: Use Matrix Values
-        run: |
-          echo "Running job for project: and config: ${{ matrix.config }}"
-
-# jobs:
-#   # msys2:
-#   #   name: '🧑‍💻 MSYS2 Environment'
-#   #   uses: ./.github/workflows/msys2.yml
-#   #   secrets: inherit
-#   #   with:
-#   #     environment: ${{ inputs.build-env }}
-#   #     msystem: ${{ inputs.msystem }}
-#   json:
-#     environment: 'base'
-#     runs-on: ubuntu-latest
-#     outputs:
-#       matrix: ${{ steps.json-matrix.outputs.matrix }}
-#     steps:
-#       - uses: actions/checkout@v5
-#       - id: json-matrix
-#         working-directory: './config'
-#         run: |
-#           # Define your JSON array. For a file, use: jq -c . < ./config.json
-#           JSON_DATA='[{"name": "Mario", "config": "Debug"}, {"name": "Luigi", "config": "Release"}]'
-          
-#           # Use jq to compact the JSON to a single line and set as an output
-#           # The quotes around the output value are important for correct parsing
-#           echo "matrix=$(echo "$JSON_DATA" | jq -c .)" >> "$GITHUB_OUTPUT"
-          
-#           # if [ -f options.json ]; then
-#           #     # echo "options.json exists and is a regular file."
-#           #     echo "matrix=$(jq -c . < options.json)" >> $GITHUB_ENV
-#           #     # echo "PACKAGE_JSON=$(jq -c . < package.json)" >> $GITHUB_ENV
-#           # else
-#           #     echo "$FILE does not exist or is not a regular file."
-#           # fi
-#           # echo $matrix
-#           # echo $(jq -c . < options.json)
-#   jsontest:
-#     environment: 'base'
-#     runs-on: ubuntu-latest
-#     strategy:
-#       fail-fast: false
-#       matrix:
-#         project: ${{ fromJSON(needs.json.outputs.matrix) }}
-#     steps:
-#       - uses: actions/checkout@v5
-#       - id: json-test
-#         run: |
-#           echo "test"
-
-
-          
-  # install-packages:
-  #   needs: ['msys2']
-  #   name: 'install packages'
-  #   runs-on: windows-11-arm
-  #   steps:
-  #     - uses: msys2/setup-msys2@v2
-  #     - name: 'test'
-  #       shell: msys2 {0}
-  #       run: |
+          echo "package_prefix=$msys_prefix-$toolchain_arch" >> $GITHUB_ENV
+          echo $package_prefix
