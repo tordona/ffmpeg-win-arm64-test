@@ -185,6 +185,11 @@ jobs:
         echo "Install base level packages for Full Release build"
         packages=$(jq -r '.options.full.base | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
+    - name: "Prebuild: Configure FFmpeg"
+      run: |
+          cd $GITHUB_WORKSPACE
+          cd source
+          ls -la
   # # setup-toolchain-info:
   #   needs: ['msys2', 'clone-source']
   #   name: 'Setup Environment Toolchain'
