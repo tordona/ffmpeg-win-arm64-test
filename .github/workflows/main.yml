@@ -78,10 +78,11 @@ jobs:
 
           msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "inputs_msystem=$msystem" >> $GITHUB_ENV
-
-          if [[ {${{ inputs.msystem }} == "CLANGARM64" ]]; then
+      - name: '🛒 Map Toolchain Naming'
+        run: |
+          if [[ {$inputs_msystem} == "CLANGARM64" ]]; then
               echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
-          elif [[ ${${{ inputs.msystem }},,} == "CLANG64" ]]; then
+          elif [[ {$inputs_msystem} == "CLANG64" ]]; then
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
           fi          
   msys2:
