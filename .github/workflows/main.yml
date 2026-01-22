@@ -45,7 +45,6 @@ on:
       # - '.github/**'
       - '.devcontainer/**'
   pull_request:
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -67,6 +66,8 @@ jobs:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
     environment: 'base'
+    permissions:
+      contents: write
     steps:
       - name: '🗺️ Map Workflow Inputs to Environment Variables'
         shell: bash
@@ -88,9 +89,9 @@ jobs:
       - name: '🗺️ Map Toolchain Architecture Name'
         shell: bash
         run: |
-          if [[ {$inputs_msystem} == "CLANGARM64" ]]; then
+          if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
               echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
-          elif [[ {$inputs_msystem} == "CLANG64" ]]; then
+          elif [[ ${inputs_msystem} == "CLANG64" ]]; then
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
           fi
   clone-source:
