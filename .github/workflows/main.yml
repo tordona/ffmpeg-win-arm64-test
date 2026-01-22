@@ -60,6 +60,7 @@ env:
   toolchain_arch: 'clang-aarch64'
   package_prefix: 'mingw-w64-clang-aarch64'
   source_repo: "https://github.com/FFmpeg/FFmpeg"
+  source_version: "0"
 
 jobs:
   setup-defaults:
@@ -93,53 +94,50 @@ jobs:
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
           fi
   clone-source:
-    name: "Clone Source"
+    name: "⬇️ Clone Source"
     runs-on: windows-11-arm
     steps:
-      - name: "test"
+      - name: "🎞️ Clone FFmpeg source repository"
         shell: bash
         run: |
           mkdir source
-
           git clone --branch $inputs_github_tag $source_repo ./source
-
           cd source
-
           if test -f "release"; then
             version=$(<release)
+            echo "source_version=$version" >> $GITHUB_ENV
           else
             echo "release version not found"
             exit 1
           fi
-          echo $version
-  # msys2:
-  #   name: '⚒️ Setup MSYS2 Environment'
-  #   needs: ['setup-defaults']
-  #   runs-on: windows-11-arm
-  #   defaults:
-  #     run:
-  #       shell: msys2 {0}
-  #   steps:
-  #   - name: '🔧 Setup MSYS2'
-  #     uses: msys2/setup-msys2@v2
-  #     with:
-  #       msystem: ${{ env.inputs_msystem }}
-  #       update: true
-  #       install:
-  #           git
-  #           make
-  #       pacboy:
-  #           toolchain:p
-  #           gcc-compat:p
-  # setup-toolchain-info:
-    # needs: ['msys2']
-    # name: 'Setup Environment Toolchain'
-    # runs-on: windows-11-arm
-    # steps:
-    #   - uses: actions/checkout@v5
-    #   - name: 'install-base-packages'
-    #     shell: msys2 {0}
-    #     working-directory: ./config
-    #     run: |
-    #       packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
-    #       echo $prefix-$toolchain_arch-{$packages}
+  msys2:
+    name: '⚒️ Setup MSYS2 Environment'
+    needs: ['setup-defaults']
+    runs-on: windows-11-arm
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: '🔧 Setup MSYS2'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ env.inputs_msystem }}
+        update: true
+        install:
+            git
+            make
+        pacboy:
+            toolchain:p
+            gcc-compat:p
+  setup-toolchain-info:
+    needs: ['msys2', 'clone-source']
+    name: 'Setup Environment Toolchain'
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v5
+      - name: 'install-base-packages'
+        shell: msys2 {0}
+        working-directory: ./config
+        run: |
+          packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
+          echo $prefix-$toolchain_arch-{$packages}
