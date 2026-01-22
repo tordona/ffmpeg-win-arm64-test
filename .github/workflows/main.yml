@@ -32,6 +32,11 @@ on:
         options:
         - CLANG64
         - CLANGARM64
+      environment:
+        description: 'Deploy Environment'
+        required: true
+        default: 'base'
+        type: environment
   push:
     paths-ignore:
       - '**.md'
@@ -56,7 +61,7 @@ env:
   my_lower_var: "some-value2"
 
 jobs:
-  map-inputs-to-env-vars:
+  map-inputs:
     name: '🛒 Map Workflow Inputs to Environment Variable'
     runs-on: ubuntu-latest
     environment: 'base'
@@ -75,25 +80,34 @@ jobs:
           msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "inputs_msystem=$msystem" >> $GITHUB_ENV
           echo "msystem=$msystem" >> "$GITHUB_OUTPUT"
-  # msys2:
-  #   name: '🧑‍💻 MSYS2 Environment'
-  #   uses: ./.github/workflows/msys2.yml
-  #   needs: ['map-inputs-to-env-vars']
-  #   secrets: inherit
-  #   with:
-  #     environment: 'base'
-  #     msystem: ${{ needs.map-inputs-to-env-vars.outputs.msystem }}
-  msys2test:
-    name: '🧑‍💻 MSYS2 Environment'
+  setup-msys2:
+    name: '⚒️ Setup MSYS2 Environment'
     runs-on: windows-11-arm
-    needs: ['map-inputs-to-env-vars']
+    environment: ${{ inputs.environment }}
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v5
-      - name: '🔧 Setup MSYS2'
-        uses: ./.github/workflows/msys2.yml
-        with:
-          environment: 'base'
-          msystem: ${{ env.inputs_msystem }}
+    - name: '🔧 Setup MSYS2'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ inputs.msystem }}
+        update: true
+        install:
+            git
+            make
+        pacboy:
+            toolchain:p
+            gcc-compat:p
+  msys2:
+    name: '🧑‍💻 MSYS2 Environment'
+    uses: ./.github/workflows/msys2.yml
+    needs: ['map-inputs']
+    secrets: inherit
+    with:
+      environment: 'base'
+      msystem: ${{ needs.map-inputs.outputs.msystem }}
+
   # setup-toolchain-info:
   #   needs: ['msys2']
   #   name: 'Setup Environment Toolchain Basics'
