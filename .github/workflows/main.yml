@@ -119,7 +119,7 @@ jobs:
         working-directory: ./config/
         run: |
           ls -laR
-          matrix=$(jq -c . < ./options.json)"
+          matrix=$(jq -c . < ./options.json)
           echo $matrix
   # msys2:
   #   name: '⚒️ Setup MSYS2 Environment'
