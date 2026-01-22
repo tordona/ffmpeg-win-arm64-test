@@ -29,8 +29,8 @@ on:
         default: 'clangarm64'
         type: choice
         options:
-        - clang64
-        - clangarm64
+        - CLANG64
+        - CLANGARM64
   push:
     paths-ignore:
       - '**.md'
