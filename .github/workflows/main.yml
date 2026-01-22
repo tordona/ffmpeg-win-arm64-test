@@ -87,6 +87,8 @@ jobs:
     uses: ./.github/workflows/msys2.yml
     needs: ['map-inputs-to-env-vars']
     secrets: inherit
+    with:
+      environment: 'base'
   # setup-toolchain-info:
   #   needs: ['msys2']
   #   name: 'Setup Environment Toolchain Basics'

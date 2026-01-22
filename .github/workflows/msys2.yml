@@ -2,12 +2,16 @@ name: MSYS2 Environment
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   setup-msys2:
     name: '⚒️ Setup MSYS2 Environment'
     runs-on: windows-11-arm
-    environment: 'base'
+    environment: ${{ inputs.environment }}
     defaults:
       run:
         shell: msys2 {0}
@@ -16,7 +20,7 @@ jobs:
     - name: '🔧 Setup MSYS2'
       uses: msys2/setup-msys2@v2
       with:
-        msystem: $inputs_msystem
+        msystem: ${{ inputs.msystem }}
         update: true
         install:
             git
