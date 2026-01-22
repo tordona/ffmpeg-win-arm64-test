@@ -64,10 +64,11 @@ env:
 jobs:
   setup-defaults:
     name: '🛒 Map Workflow Inputs to Environment Variable'
-    runs-on: ubuntu-latest
+    runs-on: windows-11-arm
     environment: 'base'
     steps:
       - name: '🛒 Map Input Defaults'
+        shell: bash
         run: |
           github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
           echo "inputs_github_tag=$github_tag" >> $GITHUB_ENV
@@ -84,6 +85,7 @@ jobs:
           environment="${{ inputs.environment || 'CLANGARM64' }}"
           echo "inputs_environment=$environment" >> $GITHUB_ENV
       - name: '🛒 Map Toolchain Naming'
+        shell: bash
         run: |
           if [[ {$inputs_msystem} == "CLANGARM64" ]]; then
               echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
@@ -95,12 +97,12 @@ jobs:
     runs-on: windows-11-arm
     steps:
       - name: "test"
-        shell: powershell
+        shell: bash
         run: |
-          $source_path = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "src"
+          echo $env:GITHUB_WORKSPACE
           echo $source_path
           # git clone https://github.com/username/repository.git $source_path
-          Write-Host "Repository cloned to: $source_path"
+          echo "Repository cloned to: $source_path"
           echo $repo
           # git clone --branch <tag_name> ${env.repo}
   # msys2:
