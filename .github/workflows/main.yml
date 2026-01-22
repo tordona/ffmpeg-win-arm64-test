@@ -3,11 +3,12 @@ name: ffmpeg-win-arm64 automated builds
 on:
   workflow_dispatch:
     inputs:
-      tag:
+      github_tag:
         description: 'Version Tag to build'
         required: true
+        default: "n8.0.1"
         type: string
-      build-type:
+      build_type:
         description: 'Build type of executable'
         required: true
         default: 'essentials'
@@ -15,7 +16,7 @@ on:
         options:
         - essentials
         - full
-      link-type:
+      link_type:
         description: 'Link type of libraries'
         required: true
         default: 'shared'
@@ -44,17 +45,40 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  inputs_tag: "n8.0.1"
+  inputs_build_type: "essentials"
+  inputs_link_type: "shared"
+  inputs_msystem: 'CLANGARM64'
   msys_prefix: 'mingw-w64'
   toolchain_arch: 'clang-aarch64'
   package_prefix: 'mingw-w64-clang-aarch64'
 
 jobs:
+  map-inputs-to-env-vars:
+    name: '🛒 Map Workflow Inputs to Environment Variable'
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: '🛒 Map Inputs'
+        run: |
+          if [[ -n ${{ inputs.github_tag }} ]]; then
+            echo "inputs_github_tag=${{ inputs.github_tag }}" >> $GITHUB_ENV
+          fi
+          if [[ -n ${{ inputs.build_type }} ]]; then
+            echo "inputs_build_type=${{ inputs.build_type }}" >> $GITHUB_ENV
+          fi
+          if [[ -n ${{ inputs.link_type }} ]]; then
+            echo "inputs_link_type=${{ inputs.link_type }}" >> $GITHUB_ENV
+          fi
+          if [[ -n ${{ inputs.msystem }} ]]; then
+            echo "inputs_msystem=${{ inputs.msystem }}" >> $GITHUB_ENV
+          fi
   msys2:
     name: '🧑‍💻 MSYS2 Environment'
     uses: ./.github/workflows/msys2.yml
     secrets: inherit
     with:
-      environment: ${{ inputs.build-env }}
+      environment: 'base'
       msystem: ${{ inputs.msystem }}
   setup-toolchain-info:
     needs: ['msys2']
