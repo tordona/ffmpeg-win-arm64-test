@@ -121,6 +121,8 @@ jobs:
           ls -laR
           matrix=$(jq -c . < ./options.json)
           echo $matrix
+          cd ..
+          ls -laR
   # msys2:
   #   name: '⚒️ Setup MSYS2 Environment'
   #   needs: ['setup-defaults']
