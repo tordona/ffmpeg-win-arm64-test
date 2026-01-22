@@ -88,7 +88,6 @@ jobs:
     runs-on: windows-11-arm
     needs: ['map-inputs-to-env-vars']
     steps:
-      - uses: hmarr/debug-action@v3
       - name: '🔧 Setup MSYS2'
         uses: ./.github/workflows/msys2.yml
         with:
