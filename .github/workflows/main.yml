@@ -59,9 +59,10 @@ env:
   msys_prefix: 'mingw-w64'
   toolchain_arch: 'clang-aarch64'
   package_prefix: 'mingw-w64-clang-aarch64'
+  repo: "https://github.com/FFmpeg/FFmpeg"
 
 jobs:
-  map-inputs:
+  setup-defaults:
     name: '🛒 Map Workflow Inputs to Environment Variable'
     runs-on: ubuntu-latest
     environment: 'base'
@@ -91,7 +92,7 @@ jobs:
           fi
   msys2:
     name: '⚒️ Setup MSYS2 Environment'
-    needs: ['map-inputs']
+    needs: ['setup-defaults']
     runs-on: windows-11-arm
     defaults:
       run:
@@ -108,15 +109,29 @@ jobs:
         pacboy:
             toolchain:p
             gcc-compat:p
+  clone-source:
+    name: "Clone Source"
+    runs-on: windows-11-arm
+    steps:
+      - name: "test"
+        shell: powershell
+        run: |
+          $source_path = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "ffmpeg"
+          echo $$source_path
+          # git clone https://github.com/username/repository.git $source_path
+          Write-Host "Repository cloned to: $source_path"
+          echo $repo
+          # git clone --branch <tag_name> ${env.repo}
   setup-toolchain-info:
     needs: ['msys2']
     name: 'Setup Environment Toolchain'
     runs-on: windows-11-arm
     steps:
+      - uses: actions/checkout@v5
       - uses: msys2/setup-msys2@v2
       - name: 'install-base-packages'
         shell: msys2 {0}
-        working-directory: /config
+        working-directory: ./config
         run: |
           packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
           echo $prefix-$toolchain_arch-{$packages}
