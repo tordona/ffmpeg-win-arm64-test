@@ -57,7 +57,7 @@ jobs:
   map-inputs-to-env-vars:
     name: '🛒 Map Workflow Inputs to Environment Variable'
     runs-on: ubuntu-latest
-    permissions: write-all
+    environment: 'base'
     steps:
       - name: '🛒 Map Input Defaults'
         run: |
@@ -78,24 +78,24 @@ jobs:
     secrets: inherit
     with:
       environment: 'base'
-      msystem: ${{ env.inputs_msystem }}
-  setup-toolchain-info:
-    needs: ['msys2']
-    name: 'Setup Environment Toolchain Basics'
-    runs-on: windows-11-arm
-    steps:
-      - uses: msys2/setup-msys2@v2
-      - name: 'test'
-        shell: msys2 {0}
-        run: |
-          echo ${${{ inputs.msystem }},,}
-          echo $msys_prefix
-          echo $toolchain_arch
-          if [[ ${${{ inputs.msystem }},,} == "clangarm64" ]]; then
-              echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
+      msystem: ${ inputs_msystem }
+  # setup-toolchain-info:
+  #   needs: ['msys2']
+  #   name: 'Setup Environment Toolchain Basics'
+  #   runs-on: windows-11-arm
+  #   steps:
+  #     - uses: msys2/setup-msys2@v2
+  #     - name: 'test'
+  #       shell: msys2 {0}
+  #       run: |
+  #         echo ${${{ inputs.msystem }},,}
+  #         echo $msys_prefix
+  #         echo $toolchain_arch
+  #         if [[ ${${{ inputs.msystem }},,} == "clangarm64" ]]; then
+  #             echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
 
-          elif [[ ${${{ inputs.msystem }},,} == "clang64" ]]; then
-              echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
-          fi
-          echo "package_prefix=$msys_prefix-$toolchain_arch" >> $GITHUB_ENV
-          echo $package_prefix
+  #         elif [[ ${${{ inputs.msystem }},,} == "clang64" ]]; then
+  #             echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
+  #         fi
+  #         echo "package_prefix=$msys_prefix-$toolchain_arch" >> $GITHUB_ENV
+  #         echo $package_prefix

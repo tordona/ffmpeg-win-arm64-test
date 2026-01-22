@@ -10,6 +10,7 @@ on:
       environment:
         required: true
         type: string
+
 jobs:
   setup-msys2:
     name: '⚒️ Setup MSYS2 Environment'
