@@ -124,7 +124,7 @@ jobs:
           # cd downloads
   msys2:
     name: '⚒️ Setup MSYS2 Environment'
-    needs: ['setup-defaults']
+    needs: ['setup-defaults', 'clone-source', 'download-external-packages']
     runs-on: windows-11-arm
     defaults:
       run:
@@ -148,12 +148,19 @@ jobs:
     - name: "install-base-packages"
       working-directory: ./config
       run: |
+        echo "Install base level packages for Generic build"
         packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
     - name: "install-essentials-packages"
-      working-directory: /config
+      working-directory: ./config
       run: |
-        ls -laR
+        echo "Install base level packages for Essentials Release build"
+        packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
+        echo $package_prefix-{$packages}
+    - name: "install-full-packages"
+      working-directory: ./config
+      run: |
+        echo "Install base level packages for Full Release build"
         packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
   # setup-toolchain-info:
