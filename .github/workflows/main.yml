@@ -99,7 +99,8 @@ jobs:
       - name: "test"
         shell: bash
         run: |
-          echo $env:GITHUB_WORKSPACE
+          ls -F
+          echo $GITHUB_WORKSPACE
           echo $source_path
           # git clone https://github.com/username/repository.git $source_path
           echo "Repository cloned to: $source_path"
