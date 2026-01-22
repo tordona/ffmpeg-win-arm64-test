@@ -50,11 +50,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  inputs_github_tag: "n8.0.1"
-  inputs_build_type: "essentials"
-  inputs_link_type: "shared"
-  inputs_msystem: 'CLANGARM64'
-  inputs_environment: 'base'
   msys_prefix: 'mingw-w64'
   toolchain_arch: 'clang-aarch64'
   package_prefix: 'mingw-w64-clang-aarch64'
