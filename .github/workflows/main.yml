@@ -102,18 +102,21 @@ jobs:
           ls -F
           echo $GITHUB_WORKSPACE
           echo "${GITHUB_WORKSPACE}\source"
+          source_path="${GITHUB_WORKSPACE}\source"
           # git clone https://github.com/username/repository.git $source_path
           echo "Repository cloned to: $source_path"
           echo $repo
-          # git clone --branch $inputs_github_tag $source_repo "${GITHUB_WORKSPACE}\source"
-          cd source
-          if test -f "release"; then
-            version=$(<release)
-          else
-            echo "release version not found"
-            exit 1
-          fi
-          echo $version
+          # git clone --branch $inputs_github_tag $source_repo $source_path
+          pwd
+          cd $source_path
+          # cd source
+          # if test -f "release"; then
+          #   version=$(<release)
+          # else
+          #   echo "release version not found"
+          #   exit 1
+          # fi
+          # echo $version
   # msys2:
   #   name: '⚒️ Setup MSYS2 Environment'
   #   needs: ['setup-defaults']
