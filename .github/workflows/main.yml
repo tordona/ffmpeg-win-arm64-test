@@ -132,14 +132,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - id: download-external-utilities
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd $GITHUB_WORKSPACE
           mkdir utilities
           # gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/mingw-packages
           # cd downloads
-  msys2:
+  # msys2:
     name: '⚒️ Setup MSYS2 Environment'
     needs: ['setup-defaults', 'clone-source', 'download-external-packages']
     runs-on: windows-11-arm
