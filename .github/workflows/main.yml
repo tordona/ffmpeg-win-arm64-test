@@ -110,6 +110,14 @@ jobs:
             echo "release version not found"
             exit 1
           fi
+  download-external-packages:
+    name: "⬇️ Clone Source"
+    runs-on: windows-11-arm
+    steps:
+      - name: "🎞️ Dowload packages"
+        shell: bash
+        run: |
+          echo ""
   msys2:
     name: '⚒️ Setup MSYS2 Environment'
     needs: ['setup-defaults']
@@ -129,15 +137,25 @@ jobs:
         pacboy:
             toolchain:p
             gcc-compat:p
-  setup-toolchain-info:
-    needs: ['msys2', 'clone-source']
-    name: 'Setup Environment Toolchain'
-    runs-on: windows-11-arm
-    steps:
-      - uses: actions/checkout@v5
-      - name: 'install-base-packages'
-        shell: msys2 {0}
-        working-directory: ./config
-        run: |
-          packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
-          echo $prefix-$toolchain_arch-{$packages}
+    - name: "install-base-packages"
+      working-directory: ./config
+      run: |
+        packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
+        echo $package_prefix-{$packages}
+    - name: "install-essentials-packages"
+      working-directory: ./config
+      run: |
+        packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
+        echo $package_prefix-{$packages}
+  # setup-toolchain-info:
+  #   needs: ['msys2', 'clone-source']
+  #   name: 'Setup Environment Toolchain'
+  #   runs-on: windows-11-arm
+  #   steps:
+  #     - uses: actions/checkout@v5
+  #     - name: 'install-base-packages'
+  #       shell: msys2 {0}
+  #       working-directory: ./config
+  #       run: |
+  #         packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
+  #         echo $prefix-$toolchain_arch-{$packages}
