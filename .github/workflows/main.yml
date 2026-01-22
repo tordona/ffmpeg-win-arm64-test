@@ -60,8 +60,11 @@ jobs:
     name: '🛒 Map Workflow Inputs to Environment Variable'
     runs-on: ubuntu-latest
     environment: 'base'
+    outputs:
+      msystem: ${{ steps.map-defaults.outputs.inputs_msystem }}
     steps:
       - name: '🛒 Map Input Defaults'
+        id: 'map-defaults'
         run: |
           echo "$inputs_msystem"
           echo "{$inputs_msystem}"
@@ -73,17 +76,6 @@ jobs:
           echo "inputs_link_type=$github_tag" >> $GITHUB_ENV
           msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "inputs_msystem=$github_tag" >> $GITHUB_ENV
-  test_env:
-    name: '🛒 1Map Workflow Inputs to Environment Variable'
-    runs-on: ubuntu-latest
-    environment: 'base'
-    needs: ['map-inputs-to-env-vars']
-    steps:
-      - uses: hmarr/debug-action@v3
-      - name: '🛒 1Map Input Defaults'
-        run: |
-          echo "$inputs_msystem"
-          echo "{$inputs_msystem}"
   msys2:
     name: '🧑‍💻 MSYS2 Environment'
     uses: ./.github/workflows/msys2.yml
@@ -91,8 +83,7 @@ jobs:
     secrets: inherit
     with:
       environment: 'base'
-      my_variable2: "$env.MY_ENV_VAR"
-      my_variable1: $env.MY_ENV_VAR
+      msystem: ${{needs.map-inputs-to-env-vars.outputs.msystem}}
   # setup-toolchain-info:
   #   needs: ['msys2']
   #   name: 'Setup Environment Toolchain Basics'

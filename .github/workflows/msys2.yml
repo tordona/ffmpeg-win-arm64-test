@@ -5,11 +5,9 @@ on:
     inputs:
       environment:
         required: true
+        default: 'base'
         type: string
-      my_variable1:
-        type: string
-        required: true
-      my_variable2:
+      msystem:
         type: string
         required: true
 
