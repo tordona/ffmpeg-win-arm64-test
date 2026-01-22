@@ -82,14 +82,13 @@ jobs:
         run: |
           echo "$inputs_msystem"
           echo "{$inputs_msystem}"
-  # msys2:
-  #   name: '🧑‍💻 MSYS2 Environment'
-  #   uses: ./.github/workflows/msys2.yml
-  #   needs: ['map-inputs-to-env-vars']
-  #   secrets: inherit
-  #   with:
-  #     environment: 'base'
-  #     msystem: $env.inputs_msystem
+  msys2:
+    name: '🧑‍💻 MSYS2 Environment'
+    uses: ./.github/workflows/msys2.yml
+    needs: ['map-inputs-to-env-vars']
+    secrets: inherit
+    with:
+      environment: 'base'
   # setup-toolchain-info:
   #   needs: ['msys2']
   #   name: 'Setup Environment Toolchain Basics'
