@@ -128,8 +128,9 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           mkdir downloads
-          # gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
-          # cd downloads
+          gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
+          cd downloads
+          ls -la
   download-external-utilities:
     name: "⬇️ Download External Helpers"
     runs-on: ubuntu-latest
@@ -140,8 +141,9 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           mkdir utilities
-          # gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/mingw-packages
-          # cd downloads
+          # gh release download "rcedit" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/win-arm64-binaries
+          cd utilities
+          ls -la
   msys2:
     name: '⚒️ Setup MSYS2 Environment'
     needs: ['setup-defaults', 'clone-source', 'download-external-packages']
