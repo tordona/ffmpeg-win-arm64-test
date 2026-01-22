@@ -94,29 +94,32 @@ jobs:
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
           fi
   clone-source:
-    name: "⬇️ Clone Source"
+    name: "🌀 Clone Source"
     runs-on: windows-11-arm
     steps:
-      - name: "🎞️ Clone FFmpeg source repository"
+      - name: "🌪️ Clone FFmpeg source repository"
         shell: bash
         run: |
           mkdir source
-          git clone --branch $inputs_github_tag $source_repo ./source
-          cd source
-          if test -f "release"; then
-            version=$(<release)
-            echo "source_version=$version" >> $GITHUB_ENV
-          else
-            echo "release version not found"
-            exit 1
-          fi
+          # git clone --branch $inputs_github_tag $source_repo ./source
+          # cd source
+          # if test -f "release"; then
+          #   version=$(<release)
+          #   echo "source_version=$version" >> $GITHUB_ENV
+          # else
+          #   echo "release version not found"
+          #   exit 1
+          # fi
   download-external-packages:
     name: "⬇️ Clone Source"
     runs-on: windows-11-arm
     steps:
+      - uses: actions/checkout@v5
       - name: "🎞️ Dowload packages"
         shell: bash
+        working-directory: /config
         run: |
+          ls -laR
           echo ""
   msys2:
     name: '⚒️ Setup MSYS2 Environment'
@@ -126,6 +129,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
+    - uses: actions/checkout@v5
     - name: '🔧 Setup MSYS2'
       uses: msys2/setup-msys2@v2
       with:
@@ -139,26 +143,27 @@ jobs:
         pacboy:
             toolchain:p
             gcc-compat:p
-    # - name: "install-base-packages"
-    #   working-directory: ./config
-    #   run: |
-    #     packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
-    #     echo $package_prefix-{$packages}
-    # - name: "install-essentials-packages"
-    #   working-directory: ./config
-    #   run: |
-    #     packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
-    #     echo $package_prefix-{$packages}
-  setup-toolchain-info:
-    needs: ['msys2', 'clone-source']
-    name: 'Setup Environment Toolchain'
-    runs-on: windows-11-arm
-    steps:
-      - uses: actions/checkout@v5
-      - uses: msys2/setup-msys2@v2
-        with:
-          msystem: ${{ env.inputs_msystem }}
-          release: false
-          run: |
-            packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
-            echo $prefix-$toolchain_arch-{$packages}
+    - name: "install-base-packages"
+      working-directory: /config
+      run: |
+        packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
+        echo $package_prefix-{$packages}
+    - name: "install-essentials-packages"
+      working-directory: /config
+      run: |
+        ls -laR
+        packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
+        echo $package_prefix-{$packages}
+  # setup-toolchain-info:
+  #   needs: ['msys2', 'clone-source']
+  #   name: 'Setup Environment Toolchain'
+  #   runs-on: windows-11-arm
+  #   steps:
+  #     - uses: actions/checkout@v5
+  #     - uses: msys2/setup-msys2@v2
+  #       with:
+  #         msystem: ${{ env.inputs_msystem }}
+  #         release: false
+  #         run: |
+  #           packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
+  #           echo $prefix-$toolchain_arch-{$packages}
