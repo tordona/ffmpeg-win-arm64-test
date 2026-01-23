@@ -111,6 +111,8 @@ jobs:
     steps:
     - name: '🔧 Setup MSYS2'
       uses: msys2/setup-msys2@v2
+      env:
+        MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
       with:
         msystem: ${{ env.inputs_msystem }}
         update: true
@@ -126,6 +128,7 @@ jobs:
             jq:p
             github-cli:p
             python-lxml:p
+        run: echo "$env:MSYS2_LOCATION"
     - name: 'test'
       run: |
         echo $MSYS2_LOCATION
@@ -204,7 +207,7 @@ jobs:
         extra="--extra-libs='-static -lpthread -lm -liconv'"
         arch="--arch=${toolchain_arch##clang\-}"
         generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
-        command="./configure $extra $arch $generic_options"
+        command="./configure $extra $arch $generic_options -extra-cflags=--DLIBXML_STATIC"
         echo $command
         eval $command
     - name: "🔨 Test: Configure FFmpeg"
