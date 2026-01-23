@@ -149,11 +149,6 @@ jobs:
       run: |
         mkdir packages
         gh release download "${toolchain_arch}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
-    - name: "➡️ Install External Packages"
-      run: |
-        echo "Install Custom Packages from External Repo"
-        cd packages
-        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: "📦 Install external dependent packages - Essentials Build"
       working-directory: ./config
       run: |
@@ -166,6 +161,11 @@ jobs:
         echo "Install external dependent packages - Full Release build"
         packages=$(jq -r --arg prefix "$package_prefix" '.options.full.dependent | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
         pacman -S --noconfirm --overwrite '*' $packages
+    - name: "➡️ Install External Packages"
+      run: |
+        echo "Install Custom Packages from External Repo"
+        cd packages
+        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: "⬇️ Download External Utlities"
       run: |
         mkdir utilities
