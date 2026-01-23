@@ -213,6 +213,10 @@ jobs:
         gh release download "${toolchain_arch}" -D "./packages" -R tordona/mingw-packages
         cd packages
         ls -la
+    - name: "➡️ Insall External Packages"
+      run: |
+        cd packages
+        pacman -U --overwrite * --noconfirm *.zst
     - name: "⬇️ Download External Utlities"
       run: |
         mkdir utilities
