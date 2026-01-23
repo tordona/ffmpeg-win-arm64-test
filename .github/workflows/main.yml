@@ -174,10 +174,10 @@ jobs:
             jq:p
             github-cli:p
     - uses: actions/checkout@v5
-    - name: "📦 Install Base Packages - Generic Build"
+    - name: "📦 Install base packages - Generic Build"
       working-directory: ./config
       run: |
-        echo "Install base Packages - Generic Build"
+        echo "Install base packages - Generic Build"
         packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
     - name: "📦 Install base level packages - Essentials Build"
@@ -216,7 +216,8 @@ jobs:
     - name: "➡️ Insall External Packages"
       run: |
         cd packages
-        pacman -U --overwrite * --noconfirm *.zst
+        rm *.sig
+        pacman -U --overwrite * --noconfirm mingw*.pkg.zst
     - name: "⬇️ Download External Utlities"
       run: |
         mkdir utilities
