@@ -1,6 +1,80 @@
 
 {
   "options": {
+    "standard": [
+        {
+          "option": "debug",
+          "status": "disable"
+        },
+        {
+          "option": "w32threads",
+          "status": "disable"
+        },
+        {
+          "option": "autodetect",
+          "status": "disable"
+        },
+        {
+          "option": "manpages",
+          "status": "disable"
+        },
+        {
+          "option": "podpages",
+          "status": "disable"
+        },
+        {
+          "option": "txtpages",
+          "status": "disable"
+        },
+        {
+          "option": "gpl",
+          "status": "enable"
+        },
+        {
+          "option": "version3",
+          "status": "enable"
+        },
+        {
+          "option": "pic",
+          "status": "enable"
+        },
+        {
+          "option": "pthreads",
+          "status": "enable"
+        },
+        {
+          "option": "iconv",
+          "status": "enable"
+        },
+        {
+          "option": "libxml2",
+          "status": "enable"
+        },
+        {
+          "option": "bzlib",
+          "status": "enable"
+        },
+        {
+          "option": "lzma",
+          "status": "enable"
+        },
+        {
+          "option": "zlib",
+          "status": "enable"
+        },
+        {
+          "option": "dxva2",
+          "status": "enable"
+        },
+        {
+          "option": "d3d11va",
+          "status": "enable"
+        },
+        {
+          "option": "d3d12va",
+          "status": "enable"
+        }
+    ],
     "base": {
       "extras": [
         {
