@@ -109,12 +109,8 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-    - name: Setup MSYS2
-      uses: msys2/setup-msys2@v2
-      id: msys2-step
-    - name: Use the path
-      run: echo "MSYS2 is installed at ${{ steps.msys2-step.outputs.msys2-location }}"
     - name: '🔧 Setup MSYS2'
+      id: msys2-setup
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ env.inputs_msystem }}
@@ -133,12 +129,20 @@ jobs:
             github-cli:p
             python-lxml:p
     - name: 'test'
-      env:
-        MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
       run: |
-        echo ${{ steps.msys2.outputs.msys2-location }}
+        echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
         echo $MSYS2_LOCATION
         echo "$MSYS2_LOCATION"
+    - name: Get MSYS2 root location
+      shell: pwsh # Use PowerShell
+      run: |
+        # Execute 'cygpath -m /' using the msys2 command and store in environment variable
+        $Env:MSYS2_ROOT = msys2 -c 'cygpath -m /'
+        Write-Output "MSYS2 root is: $Env:MSYS2_ROOT"
+    - name: Access the location in a bash step
+      shell: msys2 {0} # Use an msys2 shell for subsequent steps
+      run: |
+        echo "MSYS2 root in bash: $MSYS2_ROOT"
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
     - name: "📦 Install support packages - Generic Build"
