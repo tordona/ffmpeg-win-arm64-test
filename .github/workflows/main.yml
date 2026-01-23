@@ -234,7 +234,6 @@ jobs:
         ls -la
     - name: "🌪️ Clone FFmpeg source repository"
       run: |
-        pwd
         mkdir source
         git clone --branch $inputs_github_tag $source_repo ./source
         cd source
@@ -245,9 +244,8 @@ jobs:
           echo "release version not found"
           exit 1
         fi
-        ls -la
     - name: "🔨 Test: Configure FFmpeg"
       run: |
-        echo "Test tooling + libraries are available to compile a default autodetected FFmpeg"
+        echo "Test tooling and library availability"
         cd source
         ./configure
