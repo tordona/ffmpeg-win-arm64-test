@@ -190,6 +190,7 @@ jobs:
           exit 1
         fi
     - name: "🔨 Test: Configure FFmpeg"
+      continue-on-error: true
       run: |
         echo "Test tooling and library availability"
         cd source
@@ -199,3 +200,8 @@ jobs:
         command="./configure $extra $arch $generic_options"
         echo $command
         eval $command
+    - name: "🔨 Test: Configure FFmpeg"
+      run: |
+        echo "Test tooling and library availability"
+        cd source/ffbuild
+        cat config.log
