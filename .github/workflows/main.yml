@@ -172,23 +172,24 @@ jobs:
             toolchain:p
             gcc-compat:p
             jq:p
+            github-cli:p
     - uses: actions/checkout@v5
-    - name: "install-base-packages"
+    - name: "📦 Install Base Packages - Generic Build"
       working-directory: ./config
       run: |
-        echo "Install base level packages for Generic build"
+        echo "Install base Packages - Generic Build"
         packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
-    - name: "install-essentials-packages"
+    - name: "📦 Install base level packages - Essentials Build"
       working-directory: ./config
       run: |
-        echo "Install base level packages for Essentials Release build"
+        echo "Install base packages - Essentials Build"
         packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
-    - name: "install-full-packages"
+    - name: "📦 Install base level packages - Full Build"
       working-directory: ./config
       run: |
-        echo "Install base level packages for Full Release build"
+        echo "Install base packages - Full Release build"
         packages=$(jq -r '.options.full.base | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
     - name: "🌪️ Clone FFmpeg source repository"
@@ -209,13 +210,13 @@ jobs:
     - name: "⬇️ Download External Packages"
       run: |
         mkdir downloads
-        gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
+        gh release download "${toolchain_arch}" -D "./packages" -R tordona/mingw-packages
         cd downloads
         ls -la
     - name: "⬇️ Download External Utlities"
       run: |
         mkdir utilities
-        gh release download "rcedit" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/win-arm64-binaries
+        gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
         cd utilities
         ls -la
     - name: "Prebuild: Configure FFmpeg"
