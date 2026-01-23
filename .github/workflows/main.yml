@@ -128,7 +128,8 @@ jobs:
             python-lxml:p
     - name: 'test'
       run: |
-        echo "$env:MSYS2_LOCATION"
+        echo $MSYS2_LOCATION
+        echo "$MSYS2_LOCATION"
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
     - name: "📦 Install support packages - Generic Build"
