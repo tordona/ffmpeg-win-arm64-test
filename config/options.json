@@ -1,31 +1,7 @@
 
 {
   "options": {
-    "standard": [
-        {
-          "option": "debug",
-          "status": "disable"
-        },
-        {
-          "option": "w32threads",
-          "status": "disable"
-        },
-        {
-          "option": "autodetect",
-          "status": "disable"
-        },
-        {
-          "option": "manpages",
-          "status": "disable"
-        },
-        {
-          "option": "podpages",
-          "status": "disable"
-        },
-        {
-          "option": "txtpages",
-          "status": "disable"
-        },
+    "generic": [
         {
           "option": "gpl",
           "status": "enable"
@@ -73,6 +49,30 @@
         {
           "option": "d3d12va",
           "status": "enable"
+        },
+        {
+          "option": "debug",
+          "status": "disable"
+        },
+        {
+          "option": "w32threads",
+          "status": "disable"
+        },
+        {
+          "option": "autodetect",
+          "status": "disable"
+        },
+        {
+          "option": "manpages",
+          "status": "disable"
+        },
+        {
+          "option": "podpages",
+          "status": "disable"
+        },
+        {
+          "option": "txtpages",
+          "status": "disable"
         }
     ],
     "base": {
