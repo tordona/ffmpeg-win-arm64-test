@@ -110,8 +110,8 @@ jobs:
           mkdir source
           git clone --branch $inputs_github_tag $source_repo ./source
           cd source
-          # if test -f "release"; then
-          #   version=$(<release)
+          # if test -f "RELEASE"; then
+          #   version=$(<RELEASE)
           #   echo "source_version=$version" >> $GITHUB_ENV
           # else
           #   echo "release version not found"
@@ -189,20 +189,20 @@ jobs:
         echo "Install base level packages for Full Release build"
         packages=$(jq -r '.options.full.base | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
-    # - name: "🌪️ Clone FFmpeg source repository"
-    #   run: |
-    #     pwd
-    #     mkdir source
-    #     git clone --branch $inputs_github_tag $source_repo ./source
-    #     cd source
-    #     # if test -f "release"; then
-    #     #   version=$(<release)
-    #     #   echo "source_version=$version" >> $GITHUB_ENV
-    #     # else
-    #     #   echo "release version not found"
-    #     #   exit 1
-    #     # fi
-    #     ls -la
+    - name: "🌪️ Clone FFmpeg source repository"
+      run: |
+        pwd
+        mkdir source
+        git clone --branch $inputs_github_tag $source_repo ./source
+        cd source
+        if test -f "RELEASE"; then
+          version=$(<RELEASE)
+          echo "source_version=$version" >> $GITHUB_ENV
+        else
+          echo "release version not found"
+          exit 1
+        fi
+        ls -la
     - uses: hmarr/debug-action@v3
     - name: "Prebuild: Configure FFmpeg"
       run: |
