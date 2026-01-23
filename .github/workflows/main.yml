@@ -123,7 +123,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: 'base'
     steps:
-      - uses: actions/checkout@v5
+      - name: '🛒 Checkout'
+        uses: actions/checkout@v5
       - id: download-external-packages
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -138,7 +139,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: 'base'
     steps:
-      - uses: actions/checkout@v5
+      - name: '🛒 Checkout'
+        uses: actions/checkout@v5
       - id: download-external-utilities
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -173,7 +175,8 @@ jobs:
             gcc-compat:p
             jq:p
             github-cli:p
-    - uses: actions/checkout@v5
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
     - name: "📦 Install base packages - Generic Build"
       working-directory: ./config
       run: |
@@ -213,18 +216,18 @@ jobs:
         gh release download "${toolchain_arch}" -D "./packages" -R tordona/mingw-packages
         cd packages
         ls -la
-    - name: "➡️ Insall External Packages"
+    - name: "➡️ Install External Packages"
       run: |
         cd packages
         rm *.sig
-        pacman -U --overwrite * --noconfirm mingw*.pkg.zst
+        pacman -U --overwrite * --noconfirm mingw*.zst
     - name: "⬇️ Download External Utlities"
       run: |
         mkdir utilities
         gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
         cd utilities
         ls -la
-    - name: "Prebuild: Configure FFmpeg"
+    - name: "🔨 Prebuild: Configure FFmpeg"
       run: |
           pwd
           ls -la
