@@ -111,8 +111,6 @@ jobs:
     steps:
     - name: '🔧 Setup MSYS2'
       uses: msys2/setup-msys2@v2
-      env:
-        MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
       with:
         msystem: ${{ env.inputs_msystem }}
         update: true
@@ -130,6 +128,8 @@ jobs:
             python-lxml:p
         run: echo "$env:MSYS2_LOCATION"
     - name: 'test'
+      env:
+        MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
       run: |
         echo ${{ steps.msys2.outputs.msys2-location }}
         echo $MSYS2_LOCATION
@@ -200,7 +200,6 @@ jobs:
           exit 1
         fi
     - name: "🔨 Test: Configure FFmpeg"
-      continue-on-error: true
       run: |
         echo "Test tooling and library availability"
         cd source
@@ -212,6 +211,11 @@ jobs:
         command="./configure $extra $arch $generic_options"
         echo $command
         eval $command
+    - name: "🔨 Test: Configure FFmpeg"
+      run: |
+        echo "Test tooling and library availability"
+        cd source
+        make -j2
     - name: "🔨 Test: Configure FFmpeg"
       run: |
         echo "Test tooling and library availability"
