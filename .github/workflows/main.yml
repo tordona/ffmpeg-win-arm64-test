@@ -62,97 +62,8 @@ env:
   source_version: "0"
 
 jobs:
-  setup-defaults:
-    name: '🌐 Setup Environment Variables'
-    runs-on: ubuntu-latest
-    environment: 'base'
-    steps:
-      - name: '🗺️ Map Workflow Inputs to Environment Variables'
-        shell: bash
-        run: |
-          github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
-          echo "inputs_github_tag=${github_tag}" >> $GITHUB_ENV
-
-          build_type="${{ inputs.build_type || 'essentials' }}"
-          echo "inputs_build_type=${build_type}" >> $GITHUB_ENV
-
-          link_type="${{ inputs.link_type || 'shared' }}"
-          echo "inputs_link_type=${link_type} " >> $GITHUB_ENV
-
-          msystem="${{ inputs.msystem || 'CLANGARM64' }}"
-          echo "inputs_msystem=${msystem}" >> $GITHUB_ENV
-
-          environment="${{ inputs.environment || 'CLANGARM64' }}"
-          echo "inputs_environment=${environment}" >> $GITHUB_ENV
-      - name: '🗺️ Map Toolchain Architecture Name'
-        shell: bash
-        run: |
-          if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
-              echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
-              echo "package_prefix=${msys_prefix}-clang-aarch64" >> $GITHUB_ENV
-          elif [[ ${inputs_msystem} == "CLANG64" ]]; then
-              echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
-              echo "package_prefix=${msys_prefix}-clang-x86_64" >> $GITHUB_ENV
-          fi
-      - name: '🗺️ Verify Environment Variables'
-        shell: bash
-        run: |
-          echo $inputs_environment
-  clone-source:
-    name: "🌀 Clone Source"
-    runs-on: ubuntu-latest
-    environment: 'base'
-    steps:
-      - name: "🌪️ Clone FFmpeg source repository"
-        shell: bash
-        run: |
-          pwd
-          # mkdir source
-          # git clone --branch $inputs_github_tag $source_repo ./source
-          # cd source
-          # if test -f "RELEASE"; then
-          #   version=$(<RELEASE)
-          #   echo "source_version=$version" >> $GITHUB_ENV
-          # else
-          #   echo "release version not found"
-          #   exit 1
-          # fi
-          ls -la
-  download-external-packages:
-    name: "⬇️ Download External Packages"
-    runs-on: ubuntu-latest
-    environment: 'base'
-    steps:
-      - name: '🛒 Checkout'
-        uses: actions/checkout@v5
-      - id: download-external-packages
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd $GITHUB_WORKSPACE
-          # mkdir downloads
-          # gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
-          # cd downloads
-          # ls -la
-  download-external-utilities:
-    name: "⬇️ Download External Helpers"
-    runs-on: ubuntu-latest
-    environment: 'base'
-    steps:
-      - name: '🛒 Checkout'
-        uses: actions/checkout@v5
-      - id: download-external-utilities
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # cd $GITHUB_WORKSPACE
-          # mkdir utilities
-          # gh release download "rcedit" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/win-arm64-binaries
-          # cd utilities
-          ls -la
   msys2:
     name: '💻 MSYS2 Environment'
-    needs: ['setup-defaults', 'clone-source', 'download-external-packages']
     runs-on: windows-11-arm
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -200,19 +111,10 @@ jobs:
       run: |
         mkdir packages
         gh release download "${toolchain_arch}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
-    - name: "➡️ Preinstall External Packages"
-      run: |
-        echo "Install Custom Packages from External Repo"
-        cd packages
-
-        # preinstall(s) to protect against dependency cycle
-        pacman -U --overwrite '*' --noconfirm *freetype*.pkg.tar.zst
     - name: "➡️ Install External Packages"
       run: |
         echo "Install Custom Packages from External Repo"
         cd packages
-
-        # batch install locally downloaded packages
         pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: "📦 Install external dependent packages - Essentials Build"
       working-directory: ./config
