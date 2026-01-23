@@ -177,24 +177,54 @@ jobs:
             github-cli:p
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
-    - name: "📦 Install base packages - Generic Build"
+    - name: "📦 Install support packages - Generic Build"
       working-directory: ./config
       run: |
-        echo "Install base packages - Generic Build"
+        echo "Install support packages - Generic Build"
         packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
-        echo $package_prefix-{$packages}
+        pacman -S $package_prefix-{$packages} --noconfirm --overwrite '*'
     - name: "📦 Install base level packages - Essentials Build"
       working-directory: ./config
       run: |
         echo "Install base packages - Essentials Build"
         packages=$(jq -r '.options.essentials.base | map(.package) | join(",")' options.json)
-        echo $package_prefix-{$packages}
+        pacman -S $package_prefix-{$packages} --noconfirm --overwrite '*'
     - name: "📦 Install base level packages - Full Build"
       working-directory: ./config
       run: |
         echo "Install base packages - Full Release build"
         packages=$(jq -r '.options.full.base | map(.package) | join(",")' options.json)
-        echo $package_prefix-{$packages}
+        pacman -S $package_prefix-{$packages} --noconfirm --overwrite '*'
+    - name: "⬇️ Download External Packages"
+      run: |
+        mkdir packages
+        gh release download "${toolchain_arch}" -D "./packages" -R tordona/mingw-packages
+        cd packages
+        ls -la
+    - name: "➡️ Install External Packages"
+      run: |
+        cd packages
+        rm *.sig
+        ls -la
+        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
+    - name: "📦 Install external dependent packages - Essentials Build"
+      working-directory: ./config
+      run: |
+        echo "Install external dependent packages - Essentials Release build"
+        packages=$(jq -r '.options.essentials.dependent | map(.package) | join(",")' options.json)
+        pacman -S $package_prefix-{$packages} --noconfirm --overwrite '*'
+    - name: "📦 Install external dependent packages - Full Build"
+      working-directory: ./config
+      run: |
+        echo "Install external dependent packages - Full Release build"
+        packages=$(jq -r '.options.full.dependent | map(.package) | join(",")' options.json)
+        pacman -S $package_prefix-{$packages} --noconfirm --overwrite '*'
+    - name: "⬇️ Download External Utlities"
+      run: |
+        mkdir utilities
+        gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
+        cd utilities
+        ls -la
     - name: "🌪️ Clone FFmpeg source repository"
       run: |
         pwd
@@ -209,31 +239,12 @@ jobs:
           exit 1
         fi
         ls -la
-    - uses: hmarr/debug-action@v3
-    - name: "⬇️ Download External Packages"
-      run: |
-        mkdir packages
-        gh release download "${toolchain_arch}" -D "./packages" -R tordona/mingw-packages
-        cd packages
-        ls -la
-    - name: "➡️ Install External Packages"
-      run: |
-        cd packages
-        rm *.sig
-        ls -la
-        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
-    - name: "⬇️ Download External Utlities"
-      run: |
-        mkdir utilities
-        gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
-        cd utilities
-        ls -la
     - name: "🔨 Prebuild: Configure FFmpeg"
       run: |
-          pwd
-          ls -la
-          cd source
-          ls -la
+        pwd
+        ls -la
+        cd source
+        ls -la
   # # setup-toolchain-info:
   #   needs: ['msys2', 'clone-source']
   #   name: 'Setup Environment Toolchain'
