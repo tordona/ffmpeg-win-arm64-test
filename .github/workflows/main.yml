@@ -181,19 +181,19 @@ jobs:
       working-directory: ./config
       run: |
         echo "Install support packages - Generic Build"
-        packages=$(jq -r '.options.base.extras | map(.package) | map("${package_prefix}-\(.)") | join(" ")' options.json)
+        packages=$(jq -r --arg prefix "$package_prefix" '.options.base.extras | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
         pacman -S --noconfirm --overwrite '*' $packages
     - name: "📦 Install base level packages - Essentials Build"
       working-directory: ./config
       run: |
         echo "Install base packages - Essentials Build"
-        packages=$(jq -r '.options.essentials.base | map(.package) | map("${package_prefix}-\(.)") | join(" ")' options.json)
+        packages=$(jq -r --arg prefix "$package_prefix" '.options.essentials.base | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
         pacman -S --noconfirm --overwrite '*' $packages
     - name: "📦 Install base level packages - Full Build"
       working-directory: ./config
       run: |
         echo "Install base packages - Full Release build"
-        packages=$(jq -r '.options.full.base | map(.package) | map("${package_prefix}-\(.)") | join(" ")' options.json)
+        packages=$(jq -r --arg prefix "$package_prefix" '.options.full.base | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
         pacman -S --noconfirm --overwrite '*' $packages
     - name: "⬇️ Download External Packages"
       run: |
@@ -211,13 +211,13 @@ jobs:
       working-directory: ./config
       run: |
         echo "Install external dependent packages - Essentials Release build"
-        packages=$(jq -r '.options.essentials.dependent | map(.package) | map("${package_prefix}-\(.)") | join(" ")' options.json)
+        packages=$(jq -r --arg prefix "$package_prefix" '.options.essentials.dependent | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
         pacman -S --noconfirm --overwrite '*' $packages
     - name: "📦 Install external dependent packages - Full Build"
       working-directory: ./config
       run: |
         echo "Install external dependent packages - Full Release build"
-        packages=$(jq -r '.options.full.dependent | map(.package) | map("${package_prefix}-\(.)") | join(" ")' options.json)
+        packages=$(jq -r --arg prefix "$package_prefix" '.options.full.dependent | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
         pacman -S --noconfirm --overwrite '*' $packages
     - name: "⬇️ Download External Utlities"
       run: |
