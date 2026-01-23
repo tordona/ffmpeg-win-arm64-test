@@ -190,4 +190,6 @@ jobs:
         cd source
         
         standard_options=$(jq -r '.options.standard | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
-        ./configure --arch="${toolchain_arch##clang\-}" "$standard_options"
+        echo "$standard_options"
+        echo "${toolchain_arch##clang\-}"
+        echo $(./configure --arch="${toolchain_arch##clang\-}" "$standard_options")
