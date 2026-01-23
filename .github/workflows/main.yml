@@ -173,6 +173,7 @@ jobs:
         pacboy:
             toolchain:p
             gcc-compat:p
+            diffutils:p
             jq:p
             github-cli:p
     - name: '🛒 Checkout'
@@ -199,7 +200,7 @@ jobs:
       run: |
         mkdir packages
         gh release download "${toolchain_arch}" -D "./packages" -R tordona/mingw-packages
-    - name: "➡️ Install External Packages"
+    - name: "➡️ Preinstall External Packages"
       run: |
         echo "Install Custom Packages from External Repo"
         cd packages
@@ -207,6 +208,11 @@ jobs:
 
         # preinstall(s) to protect against dependency cycle
         pacman -U --overwrite '*' --noconfirm *freetype*.pkg.tar.zst
+    - name: "➡️ Install External Packages"
+      run: |
+        echo "Install Custom Packages from External Repo"
+        cd packages
+        rm *.sig
 
         # batch install locally downloaded packages
         pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
