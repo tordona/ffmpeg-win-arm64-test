@@ -138,10 +138,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - id: download-external-utilities
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd $GITHUB_WORKSPACE
           mkdir utilities
-          # gh release download "rcedit" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/win-arm64-binaries
+          gh release download "rcedit" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/win-arm64-binaries
           cd utilities
           ls -la
   msys2:
@@ -185,8 +187,12 @@ jobs:
         echo "Install base level packages for Full Release build"
         packages=$(jq -r '.options.full.base | map(.package) | join(",")' options.json)
         echo $package_prefix-{$packages}
+    - uses: hmarr/debug-action@v3
     - name: "Prebuild: Configure FFmpeg"
       run: |
+          pwd
+          ls -la
+          cd ${GITHUB_WORKSPACE}
           cd $GITHUB_WORKSPACE
           cd source
           ls -la
