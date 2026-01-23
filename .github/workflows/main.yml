@@ -199,12 +199,11 @@ jobs:
     - name: "⬇️ Download External Packages"
       run: |
         mkdir packages
-        gh release download "${toolchain_arch}" -D "./packages" -R tordona/mingw-packages
+        gh release download "${toolchain_arch}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
     - name: "➡️ Preinstall External Packages"
       run: |
         echo "Install Custom Packages from External Repo"
         cd packages
-        rm *.sig
 
         # preinstall(s) to protect against dependency cycle
         pacman -U --overwrite '*' --noconfirm *freetype*.pkg.tar.zst
@@ -212,7 +211,6 @@ jobs:
       run: |
         echo "Install Custom Packages from External Repo"
         cd packages
-        rm *.sig
 
         # batch install locally downloaded packages
         pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
@@ -248,23 +246,8 @@ jobs:
           exit 1
         fi
         ls -la
-    - name: "🔨 Prebuild: Configure FFmpeg"
+    - name: "🔨 Test: Configure FFmpeg"
       run: |
-        pwd
-        ls -la
+        echo "Test tooling + libraries are available to compile a default autodetected FFmpeg"
         cd source
-        ls -la
         ./configure
-  # # setup-toolchain-info:
-  #   needs: ['msys2', 'clone-source']
-  #   name: 'Setup Environment Toolchain'
-  #   runs-on: windows-11-arm
-  #   steps:
-  #     - uses: actions/checkout@v5
-  #     - uses: msys2/setup-msys2@v2
-  #       with:
-  #         msystem: ${{ env.inputs_msystem }}
-  #         release: false
-  #         run: |
-  #           packages=$(jq -r '.options.base.extras | map(.package) | join(",")' options.json)
-  #           echo $prefix-$toolchain_arch-{$packages}
