@@ -107,9 +107,9 @@ jobs:
         shell: bash
         run: |
           pwd
-          mkdir source
-          git clone --branch $inputs_github_tag $source_repo ./source
-          cd source
+          # mkdir source
+          # git clone --branch $inputs_github_tag $source_repo ./source
+          # cd source
           # if test -f "RELEASE"; then
           #   version=$(<RELEASE)
           #   echo "source_version=$version" >> $GITHUB_ENV
@@ -129,10 +129,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd $GITHUB_WORKSPACE
-          mkdir downloads
-          gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
-          cd downloads
-          ls -la
+          # mkdir downloads
+          # gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
+          # cd downloads
+          # ls -la
   download-external-utilities:
     name: "⬇️ Download External Helpers"
     runs-on: ubuntu-latest
@@ -143,15 +143,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd $GITHUB_WORKSPACE
-          mkdir utilities
-          gh release download "rcedit" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/win-arm64-binaries
-          cd utilities
+          # cd $GITHUB_WORKSPACE
+          # mkdir utilities
+          # gh release download "rcedit" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/win-arm64-binaries
+          # cd utilities
           ls -la
   msys2:
     name: '⚒️ Setup MSYS2 Environment'
     needs: ['setup-defaults', 'clone-source', 'download-external-packages']
     runs-on: windows-11-arm
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: msys2 {0}
@@ -204,12 +206,22 @@ jobs:
         fi
         ls -la
     - uses: hmarr/debug-action@v3
+    - name: "⬇️ Download External Packages"
+      run: |
+        mkdir downloads
+        gh release download "${toolchain_arch}" -D "${GITHUB_WORKSPACE}/downloads" -R tordona/mingw-packages
+        cd downloads
+        ls -la
+    - name: "⬇️ Download External Utlities"
+      run: |
+        mkdir utilities
+        gh release download "rcedit" -D "${GITHUB_WORKSPACE}/utilities" -R tordona/win-arm64-binaries
+        cd utilities
+        ls -la
     - name: "Prebuild: Configure FFmpeg"
       run: |
           pwd
           ls -la
-          cd ${GITHUB_WORKSPACE}
-          cd $GITHUB_WORKSPACE
           cd source
           ls -la
   # # setup-toolchain-info:
