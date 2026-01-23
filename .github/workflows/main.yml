@@ -106,16 +106,18 @@ jobs:
       - name: "🌪️ Clone FFmpeg source repository"
         shell: bash
         run: |
+          pwd
           mkdir source
-          # git clone --branch $inputs_github_tag $source_repo ./source
-          # cd source
-          # if test -f "release"; then
-          #   version=$(<release)
-          #   echo "source_version=$version" >> $GITHUB_ENV
-          # else
-          #   echo "release version not found"
-          #   exit 1
-          # fi
+          git clone --branch $inputs_github_tag $source_repo ./source
+          cd source
+          if test -f "release"; then
+            version=$(<release)
+            echo "source_version=$version" >> $GITHUB_ENV
+          else
+            echo "release version not found"
+            exit 1
+          fi
+          ls -la
   download-external-packages:
     name: "⬇️ Download External Packages"
     runs-on: ubuntu-latest
