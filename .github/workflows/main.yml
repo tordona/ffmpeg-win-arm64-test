@@ -109,6 +109,11 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      id: msys2-step
+    - name: Use the path
+      run: echo "MSYS2 is installed at ${{ steps.msys2-step.outputs.msys2-location }}"
     - name: '🔧 Setup MSYS2'
       uses: msys2/setup-msys2@v2
       with:
@@ -127,7 +132,6 @@ jobs:
             jq:p
             github-cli:p
             python-lxml:p
-        run: echo "$env:MSYS2_LOCATION"
     - name: 'test'
       env:
         MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
@@ -191,7 +195,7 @@ jobs:
     - name: "🌪️ Clone FFmpeg source repository"
       run: |
         mkdir source
-        git clone --branch $inputs_github_tag $source_repo ./source
+        git -c advice.detachedHead=false clone --branch $inputs_github_tag $source_repo ./source
         cd source
         if test -f "RELEASE"; then
           version=$(<RELEASE)
@@ -209,7 +213,7 @@ jobs:
         extra="--extra-libs='-static -lpthread -lm -liconv'"
         arch="--arch=${toolchain_arch##clang\-}"
         generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
-        command="./configure $extra $arch $generic_options"
+        command="./configure $extra $arch --enable-shared --disable-static $generic_options"
         echo $command
         eval $command
     - name: "🔨 Test: Configure FFmpeg"
