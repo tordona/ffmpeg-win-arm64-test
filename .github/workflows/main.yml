@@ -220,7 +220,8 @@ jobs:
       run: |
         cd packages
         rm *.sig
-        pacman -U --overwrite * --noconfirm mingw*.zst
+        ls -la
+        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: "⬇️ Download External Utlities"
       run: |
         mkdir utilities
