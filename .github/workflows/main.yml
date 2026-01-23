@@ -189,5 +189,5 @@ jobs:
         echo "Test tooling and library availability"
         cd source
         
-        standard_options=$(jq -r '.options.standard | map("--\(.status)-\(.option)") | join(" ")' options.json)
+        standard_options=$(jq -r '.options.standard | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
         ./configure --arch="${toolchain_arch##clang\-}" "$standard_options"
