@@ -209,9 +209,9 @@ jobs:
     - uses: hmarr/debug-action@v3
     - name: "⬇️ Download External Packages"
       run: |
-        mkdir downloads
+        mkdir packages
         gh release download "${toolchain_arch}" -D "./packages" -R tordona/mingw-packages
-        cd downloads
+        cd packages
         ls -la
     - name: "⬇️ Download External Utlities"
       run: |
