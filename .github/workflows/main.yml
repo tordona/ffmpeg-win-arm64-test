@@ -117,6 +117,7 @@ jobs:
         cache: true
         release: true
         install:
+            gcc
             git
             make
         pacboy:
