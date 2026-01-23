@@ -151,7 +151,7 @@ jobs:
           # cd utilities
           ls -la
   msys2:
-    name: '⚒️ Setup MSYS2 Environment'
+    name: '💻 MSYS2 Environment'
     needs: ['setup-defaults', 'clone-source', 'download-external-packages']
     runs-on: windows-11-arm
     env:
@@ -199,13 +199,16 @@ jobs:
       run: |
         mkdir packages
         gh release download "${toolchain_arch}" -D "./packages" -R tordona/mingw-packages
-        cd packages
-        ls -la
     - name: "➡️ Install External Packages"
       run: |
+        echo "Install Custom Packages from External Repo"
         cd packages
         rm *.sig
-        ls -la
+
+        # preinstall(s) to protect against dependency cycle
+        pacman -U --overwrite '*' --noconfirm *freetype*.pkg.tar.zst
+
+        # batch install locally downloaded packages
         pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: "📦 Install external dependent packages - Essentials Build"
       working-directory: ./config
@@ -245,6 +248,7 @@ jobs:
         ls -la
         cd source
         ls -la
+        ./configure
   # # setup-toolchain-info:
   #   needs: ['msys2', 'clone-source']
   #   name: 'Setup Environment Toolchain'
