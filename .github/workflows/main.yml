@@ -191,6 +191,6 @@ jobs:
         extra="--extra-libs='-static -lpthread -lm -liconv'"
         arch="--arch=${toolchain_arch##clang\-}"
         generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
-        echo "$generic_options"
-        echo "${toolchain_arch##clang\-}"
-        echo $(./configure "$extra" "$arch" "$generic_options")
+        command="./configure $extra $arch $generic_options"
+        echo $command
+        eval $command
