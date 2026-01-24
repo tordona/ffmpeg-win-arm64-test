@@ -63,6 +63,15 @@ env:
   source_version: "0"
 
 jobs:
+  # setup-config-cmd:
+  #   name: '🌐 Setup Environment Variables'
+  #   runs-on: ubuntu-latest
+  #   environment: 'base'
+  #   steps:
+  #     - name: test
+  #       run: |
+  #         echo
+
   setup-defaults:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
@@ -212,16 +221,22 @@ jobs:
         command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
         echo $command
         eval $command
-    - name: '🖥️ Get number of CPU cores'
-      uses: SimenB/github-actions-cpu-cores@v2
-      id: cpu-cores
     - name: "🔨 Test: Configure FFmpeg"
       run: |
         echo "Test tooling and library availability"
         cd source
-        make -j${{ steps.cpu-cores.outputs.count }}
-    - name: "🔨 Test: Configure FFmpeg"
-      run: |
-        echo "Test tooling and library availability"
-        cd source/ffbuild
+        cd ffbuild
         cat config.log
+    # - name: '🖥️ Get number of CPU cores'
+    #   uses: SimenB/github-actions-cpu-cores@v2
+    #   id: cpu-cores
+    # - name: "🔨 Test: Configure FFmpeg"
+    #   run: |
+    #     echo "Test tooling and library availability"
+    #     cd source
+    #     make -j${{ steps.cpu-cores.outputs.count }}
+    # - name: "🔨 Test: Configure FFmpeg"
+    #   run: |
+    #     echo "Test tooling and library availability"
+    #     cd source/ffbuild
+    #     cat config.log
