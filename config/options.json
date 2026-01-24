@@ -152,7 +152,7 @@
           "version": "7"
         }, {
           "option": "libvo-amrwbenc",
-          "package": "vo-libvo",
+          "package": "vo-amrwbenc",
           "version": "7"
         }, {
           "option": "libvorbis",
