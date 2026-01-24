@@ -128,21 +128,9 @@ jobs:
             jq:p
             github-cli:p
             python-lxml:p
-    - name: 'test'
+    - name: 'Verify MSYS2 Install'
       run: |
         echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
-        echo $MSYS2_LOCATION
-        echo "$MSYS2_LOCATION"
-    - name: Get MSYS2 root location
-      shell: pwsh # Use PowerShell
-      run: |
-        # Execute 'cygpath -m /' using the msys2 command and store in environment variable
-        $Env:MSYS2_ROOT = msys2 -c 'cygpath -m /'
-        Write-Output "MSYS2 root is: $Env:MSYS2_ROOT"
-    - name: Access the location in a bash step
-      shell: msys2 {0} # Use an msys2 shell for subsequent steps
-      run: |
-        echo "MSYS2 root in bash: $MSYS2_ROOT"
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
     - name: "📦 Install support packages - Generic Build"
@@ -166,6 +154,15 @@ jobs:
         packages=$(jq -r --arg prefix "$package_prefix" '.options.full.base | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
         echo $packages
         pacman -S --noconfirm --overwrite '*' $packages
+    - name: "⬇️ Download External Packages"
+      run: |
+       mkdir packages
+       gh release download "${toolchain_arch}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
+    - name: "➡️ Install External Packages"
+      run: |
+        echo "Install Custom Packages from External Repo"
+        cd packages
+        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: "📦 Install external dependent packages - Essentials Build"
       working-directory: ./config
       run: |
@@ -180,15 +177,6 @@ jobs:
         packages=$(jq -r --arg prefix "$package_prefix" '.options.full.dependent | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
         echo $packages
         pacman -S --noconfirm --overwrite '*' $packages
-    - name: "⬇️ Download External Packages"
-      run: |
-       mkdir packages
-       gh release download "${toolchain_arch}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
-    - name: "➡️ Install External Packages"
-      run: |
-        echo "Install Custom Packages from External Repo"
-        cd packages
-        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
     # - name: "⬇️ Download External Utlities"
     #   run: |
     #     mkdir utilities
