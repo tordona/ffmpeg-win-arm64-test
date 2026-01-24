@@ -218,14 +218,20 @@ jobs:
         extra="--extra-libs='-static -lpthread -lm -liconv'"
         arch="--arch=${toolchain_arch##clang\-}"
         generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
-        command="./configure $extra $arch --enable-shared --disable-static $generic_options"
+        essential_base_options=$(jq -r '.options.essentials.base | map("--enable-\(.option)") | join(" ")' options.json)
+        essential_external_options=$(jq -r '.options.essentials.external | map("--enable-\(.option)") | join(" ")' options.json)
+        essential_dependent_options=$(jq -r '.options.essentials.dependent | map("--enable-\(.option)") | join(" ")' options.json)
+        command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
         echo $command
         eval $command
+    - name: '🖥️ Get number of CPU cores'
+      uses: SimenB/github-actions-cpu-cores@v2
+      id: cpu-cores
     - name: "🔨 Test: Configure FFmpeg"
       run: |
         echo "Test tooling and library availability"
         cd source
-        make -j2
+        make -j${{ steps.cpu-cores.outputs.count }}
     - name: "🔨 Test: Configure FFmpeg"
       run: |
         echo "Test tooling and library availability"
