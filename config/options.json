@@ -151,8 +151,8 @@
           "package": "libtheora",
           "version": "7"
         }, {
-          "option": "amrwbenc",
-          "package": "vo-amrwbenc",
+          "option": "libvo-amrwbenc",
+          "package": "vo-libvo",
           "version": "7"
         }, {
           "option": "libvorbis",
