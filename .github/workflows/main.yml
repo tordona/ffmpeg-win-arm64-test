@@ -98,9 +98,9 @@ jobs:
     - name: '🏴 Set LDFLAGS'
       working-directory: ./config
       run: |
-        options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= "$version") | .option] | join(" ")' options.json)
+        options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
         echo $options
-        if [[ "$options" == *"enable-librav1e"* && "$options" == *"enable-libplacebo"* ]]; then
+        if [[ "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
           temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
           echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
         fi
@@ -202,7 +202,7 @@ jobs:
   #     working-directory: ./config
   #     run: |
   #       echo "Install required library packages - Essentials Build
-  #       packages=$(jq -r --arg version "$source_version" --arg prefix "$package_prefix"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= "$version") | $prefix + "-" + .package] | join(" ")' options.json)
+  #       packages=$(jq -r --arg version "$source_version" --arg prefix "$package_prefix"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | $prefix + "-" + .package] | join(" ")' options.json)
   #       echo $packages
   #       pacman -S --noconfirm --overwrite '*' $packages
   #   - name: "📦 Install base level packages - Full Build"
@@ -210,7 +210,7 @@ jobs:
   #     working-directory: ./config
   #     run: |
   #       echo "Install required library packages - Full Build
-  #       packages=$(jq -r --arg version "$source_version" --arg prefix "$package_prefix"  '[.options.full[] | .[] | select(.version <= "$version") | $prefix + "-" + .package] | join(" ")' options.json)
+  #       packages=$(jq -r --arg version "$source_version" --arg prefix "$package_prefix"  '[.options.full[] | .[] | select(.version <= $version) | $prefix + "-" + .package] | join(" ")' options.json)
   #       echo $packages
   #       pacman -S --noconfirm --overwrite '*' $packages
   #   - name: "⬇️ Download External Packages"
