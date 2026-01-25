@@ -39,12 +39,14 @@ runs:
     - name: Echo a config settings
       shell: bash
       run: |
+        pwd
+        ls -laR
         echo "test ffmpeg config, ${{ inputs.config }}."
     - name: Echo a config settings
       id: 'version-name'
       shell: bash
       run: |
-        echo "version" ${{ inputs.version }}
+        echo "version" "${{ inputs.version }}"
         echo "build_type" ${{ inputs.build_type }}
         echo "link_type" ${{ inputs.link_type }}
         echo "msys_path" ${{ inputs.msys_path }}

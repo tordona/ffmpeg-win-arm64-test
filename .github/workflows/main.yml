@@ -150,17 +150,17 @@ jobs:
         update: true
         cache: true
         release: true
-        install:
-            gcc
-            git
-            make
-        pacboy:
-            toolchain:p
-            gcc-compat:p
-            diffutils:p
-            libssh2:p
-            jq:p
-            github-cli:p
+        # install:
+        #     gcc
+        #     git
+        #     make
+        # pacboy:
+        #     toolchain:p
+        #     gcc-compat:p
+        #     diffutils:p
+        #     libssh2:p
+        #     jq:p
+        #     github-cli:p
     - name: 'Verify MSYS2 Install'
       run: |
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
@@ -176,7 +176,13 @@ jobs:
         ffmpeg_config: ${{ needs.ffmpeg-baseline.outputs.build_config }}
     - name: Test Composite output
       run: |
-        echo ${{ steps.composite-test.outputs.test }}
+        echo ${{ steps.composite-test.outputs.ffmpeg_config }}
+    - name: "📦 Test"
+      working-directory: ./config
+      run: |
+        cd ..
+        pwd
+        ls -laR
   #   - name: "🌪️ Clone FFmpeg source repository"
   #     run: |
   #       mkdir source
