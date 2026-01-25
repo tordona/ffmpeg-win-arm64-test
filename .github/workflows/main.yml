@@ -158,6 +158,14 @@ jobs:
       id: 'ffmpeg-config'
       run: |
         echo $build_config
+  setup-test:
+    name: '🌐 Setup Environment Variables'
+    runs-on: ubuntu-latest
+    needs: ['setup-ffmpeg-options']
+    steps:
+      - name: test
+        run: |
+          echo ${{ needs.setup-ffmpeg-options.outputs.ffmpeg-config }}
   # msys2:
   #   name: '💻 MSYS2 Environment'
   #   runs-on: windows-11-arm
