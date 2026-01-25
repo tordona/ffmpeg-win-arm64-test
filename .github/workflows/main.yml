@@ -9,7 +9,7 @@ on:
         default: "n8.0.1"
         type: string
       build_type:
-        description: 'Build type of executable'
+        description: 'Build type of included libraries'
         required: true
         default: 'essentials'
         type: choice
@@ -54,51 +54,61 @@ env:
   source_repo: "https://github.com/FFmpeg/FFmpeg"
 
 jobs:
+  # defaults:
+  #   name: '🌐 Setup Environment Variables'
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     github_tag: ${{ steps.input-defaults.outputs.github_tag }}
+  #     build_type: ${{ steps.input-defaults.outputs.build_type }}
+  #     link_type: ${{ steps.input-defaults.outputs.link_type }}
+  #     msystem: ${{ steps.input-defaults.outputs.msystem }}
+  #     environment: ${{ steps.input-defaults.outputs.environment }}
+  #     arch: ${{ steps.msys-defaults.outputs.arch }}
+  #     package_prefix: ${{ steps.msys-defaults.outputs.package_prefix }}
+  #   steps:
+  #     - name: '🛒 Checkout'
+  #       uses: actions/checkout@v5
+  #     - name: '🗺️ Map Workflow Inputs to Output Variables'
+  #       id: input-defaults
+  #       shell: bash
+  #       run: |
+  #         # echo "Sets up default values when triggered from a push"
+  #         temp_github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
+  #         echo "github_tag=${temp_github_tag}" >> $GITHUB_OUTPUT
+
+  #         temp_build_type="${{ inputs.build_type || 'essentials' }}"
+  #         echo "build_type=${temp_build_type}" >> $GITHUB_OUTPUT
+
+  #         temp_link_type="${{ inputs.link_type || 'shared' }}"
+  #         echo "link_type=${temp_link_type} " >> $GITHUB_OUTPUT
+
+  #         temp_msystem="${{ inputs.msystem || 'CLANGARM64' }}"
+  #         echo "msystem=${temp_msystem}" >> $GITHUB_OUTPUT
+
+  #         temp_environment="${{ inputs.environment || 'base' }}"
+  #         echo "environment=${temp_environment}" >> $GITHUB_OUTPUT
+  #     - name: '🗺️ Map Toolchain Architecture Name'
+  #       id: msys-defaults
+  #       shell: bash
+  #       run: |
+  #         prefix="${msys_prefix}-${toolchain}"
+  #         if [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANGARM64" ]]; then
+  #             echo "arch=aarch64" >> $GITHUB_OUTPUT
+  #             echo "package_prefix=${prefix}-aarch64" >> $GITHUB_OUTPUT
+  #         elif [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANG64" ]]; then
+  #             echo "arch=x86_64" >> $GITHUB_OUTPUT
+  #             echo "package_prefix=${prefix}-x86_64" >> $GITHUB_OUTPUT
+  #         fi
+  
   defaults:
-    name: '🌐 Setup Environment Variables'
-    runs-on: ubuntu-latest
-    outputs:
-      github_tag: ${{ steps.input-defaults.outputs.github_tag }}
-      build_type: ${{ steps.input-defaults.outputs.build_type }}
-      link_type: ${{ steps.input-defaults.outputs.link_type }}
-      msystem: ${{ steps.input-defaults.outputs.msystem }}
-      environment: ${{ steps.input-defaults.outputs.environment }}
-      arch: ${{ steps.msys-defaults.outputs.arch }}
-      package_prefix: ${{ steps.msys-defaults.outputs.package_prefix }}
-    steps:
-      - name: '🛒 Checkout'
-        uses: actions/checkout@v5
-      - name: '🗺️ Map Workflow Inputs to Output Variables'
-        id: input-defaults
-        shell: bash
-        run: |
-          # echo "Sets up default values when triggered from a push"
-          temp_github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
-          echo "github_tag=${temp_github_tag}" >> $GITHUB_OUTPUT
-
-          temp_build_type="${{ inputs.build_type || 'essentials' }}"
-          echo "build_type=${temp_build_type}" >> $GITHUB_OUTPUT
-
-          temp_link_type="${{ inputs.link_type || 'shared' }}"
-          echo "link_type=${temp_link_type} " >> $GITHUB_OUTPUT
-
-          temp_msystem="${{ inputs.msystem || 'CLANGARM64' }}"
-          echo "msystem=${temp_msystem}" >> $GITHUB_OUTPUT
-
-          temp_environment="${{ inputs.environment || 'base' }}"
-          echo "environment=${temp_environment}" >> $GITHUB_OUTPUT
-      - name: '🗺️ Map Toolchain Architecture Name'
-        id: msys-defaults
-        shell: bash
-        run: |
-          prefix="${msys_prefix}-${toolchain}"
-          if [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANGARM64" ]]; then
-              echo "arch=aarch64" >> $GITHUB_OUTPUT
-              echo "package_prefix=${prefix}-aarch64" >> $GITHUB_OUTPUT
-          elif [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANG64" ]]; then
-              echo "arch=x86_64" >> $GITHUB_OUTPUT
-              echo "package_prefix=${prefix}-x86_64" >> $GITHUB_OUTPUT
-          fi
+    name: '🎞️ Setup Default Inputs Values'
+    uses: ./.github/workflows/defaults.yml
+    with:
+      github_tag: ${{ inputs.github_tag }}
+      build_type: ${{ inputs.build_type }}
+      link_type: ${{ inputs.link_type }}
+      msystem: ${{ inputs.msystem }}
+      environment: ${{ inputs.environment }}
   ffmpeg-baseline:
     name: '🎞️ FFmpeg Baseline Configuration'
     needs: ['defaults']
@@ -108,126 +118,138 @@ jobs:
       build_type: ${{ needs.defaults.outputs.build_type }}
       link_type: ${{ needs.defaults.outputs.link_type }}
       github_tag: ${{ needs.defaults.outputs.github_tag }}
-  msys2:
-    name: '💻 MSYS2 Environment'
-    runs-on: windows-11-arm
-    needs: ['defaults', 'ffmpeg-baseline']
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    defaults:
-      run:
-        shell: msys2 {0}
+  setup-test:
+    name: '🌐 Setup Environment Variabless'
+    runs-on: ubuntu-latest
+    needs: ['defaults']
     steps:
-    - name: '🛒 Checkout'
-      uses: actions/checkout@v5
-    - name: '🔧 Setup MSYS2'
-      id: msys2-setup
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: ${{ needs.defaults.outputs.msystem }}
-        update: true
-        cache: true
-        release: true
-        install:
-            gcc
-            git
-            make
-        pacboy:
-            toolchain:p
-            gcc-compat:p
-            diffutils:p
-            libssh2:p
-            jq:p
-            github-cli:p
-    - name: 'Verify MSYS2 Install'
-      run: |
-        echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
-    - name: "🌪️ Clone FFmpeg source repository"
-      run: |
-        mkdir source
-        git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
-        cd source
-        if test -f "RELEASE"; then
-          version=$(<RELEASE)
-          echo "source_version=$version" >> $GITHUB_ENV
-        else
-          echo "Release Version Not Found"
-          exit 1
-        fi
-    - name: "📦 Install packages - Essentials Build"
-      working-directory: ./config
-      run: |
-        echo "Install required library packages - Essentials Build"
-        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-        echo "$packages"
-        pacman -S --noconfirm --overwrite '*' $packages
-    - name: "📦 Install base level packages - Full Build"
-      if: ${{ needs.defaults.outputs.build_type == 'full' }}
-      working-directory: ./config
-      run: |
-        echo "Install required library packages - Full Build"
-        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-        echo "$packages"
-        pacman -S --noconfirm --overwrite '*' $packages
-    - name: "⬇️ Download External Packages"
-      run: |
-       mkdir packages
-       gh release download "${{ env.toolchain }}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
-    - name: "➡️ Install External Packages"
-      run: |
-        echo "Install Custom Packages from External Repo"
-        cd packages
-        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
-    - name: "⬇️ Download External Utlities"
-      run: |
-        mkdir utilities
-        gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
-        cd utilities
-        ls -la
-    - uses: hmarr/debug-action@v3
-    # - name: "🔨 Test: Configure FFmpeg"
-    #   continue-on-error: true
-    #   run: |
-    #     echo "Test general tooling and library availability"
-    #     echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
-    #     cd source
-    #     # echo "$env:MSYS2_LOCATION"
-    #     # extra="--extra-libs='-static -lpthread -lm -liconv'"
-    #     # arch="--arch=${toolchain_arch##clang\-}"
-    #     # generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
-    #     # essential_base_options=$(jq -r '.options.essentials.base | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-    #     # essential_external_options=$(jq -r '.options.essentials.external | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-    #     # essential_dependent_options=$(jq -r '.options.essentials.dependent | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-    #     # command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
-    #     echo $command
-    #     eval $command
-    # - name: "🔨 Log: Configure FFmpeg"
-    #   if: failure()
-    #   run: |
-    #     log="./source/ffbuild/config.log"
-    #     if [ -f "$log" ]; then
-    #         cat ./source/ffbuild/config.log
-    #     fi
-    - name: "🔨 Configure FFmpeg Build"
-      continue-on-error: true
-      run: |
-        echo "Configure FFmpeg Build"
-        echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
-        # cd source
-
-        echo ${{ needs.ffmpeg-baseline.outputs.build_config }}
-        # echo $command
-        # eval $command
-  #   # - name: '🖥️ Get number of CPU cores'
-  #   #   uses: SimenB/github-actions-cpu-cores@v2
-  #   #   id: cpu-cores
+      - name: test
+        run: |
+          echo "${{ needs.defaults.outputs.github_tag }}"
+          echo "${{ needs.defaults.outputs.build_type }}"
+          echo "${{ needs.defaults.outputs.link_type }}"
+          echo "${{ needs.defaults.outputs.msystem }}"
+          echo "${{ needs.defaults.outputs.environment }}"
+  # msys2:
+  #   name: '💻 MSYS2 Environment'
+  #   runs-on: windows-11-arm
+  #   needs: ['defaults', 'ffmpeg-baseline']
+  #   env:
+  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   defaults:
+  #     run:
+  #       shell: msys2 {0}
+  #   steps:
+  #   - name: '🛒 Checkout'
+  #     uses: actions/checkout@v5
+  #   - name: '🔧 Setup MSYS2'
+  #     id: msys2-setup
+  #     uses: msys2/setup-msys2@v2
+  #     with:
+  #       msystem: ${{ needs.defaults.outputs.msystem }}
+  #       update: true
+  #       cache: true
+  #       release: true
+  #       install:
+  #           gcc
+  #           git
+  #           make
+  #       pacboy:
+  #           toolchain:p
+  #           gcc-compat:p
+  #           diffutils:p
+  #           libssh2:p
+  #           jq:p
+  #           github-cli:p
+  #   - name: 'Verify MSYS2 Install'
+  #     run: |
+  #       echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
+  #   - name: "🌪️ Clone FFmpeg source repository"
+  #     run: |
+  #       mkdir source
+  #       git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
+  #       cd source
+  #       if test -f "RELEASE"; then
+  #         version=$(<RELEASE)
+  #         echo "source_version=$version" >> $GITHUB_ENV
+  #       else
+  #         echo "Release Version Not Found"
+  #         exit 1
+  #       fi
+  #   - name: "📦 Install packages - Essentials Build"
+  #     working-directory: ./config
+  #     run: |
+  #       echo "Install required library packages - Essentials Build"
+  #       packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+  #       echo "$packages"
+  #       pacman -S --noconfirm --overwrite '*' $packages
+  #   - name: "📦 Install base level packages - Full Build"
+  #     if: ${{ needs.defaults.outputs.build_type == 'full' }}
+  #     working-directory: ./config
+  #     run: |
+  #       echo "Install required library packages - Full Build"
+  #       packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+  #       echo "$packages"
+  #       pacman -S --noconfirm --overwrite '*' $packages
+  #   - name: "⬇️ Download External Packages"
+  #     run: |
+  #      mkdir packages
+  #      gh release download "${{ env.toolchain }}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
+  #   - name: "➡️ Install External Packages"
+  #     run: |
+  #       echo "Install Custom Packages from External Repo"
+  #       cd packages
+  #       pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
+  #   - name: "⬇️ Download External Utlities"
+  #     run: |
+  #       mkdir utilities
+  #       gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
+  #       cd utilities
+  #       ls -la
+  #   - uses: hmarr/debug-action@v3
   #   # - name: "🔨 Test: Configure FFmpeg"
+  #   #   continue-on-error: true
   #   #   run: |
-  #   #     echo "Test tooling and library availability"
+  #   #     echo "Test general tooling and library availability"
+  #   #     echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
   #   #     cd source
-  #   #     make -j${{ steps.cpu-cores.outputs.count }}
-  #   # - name: "🔨 Test: Configure FFmpeg"
+  #   #     # echo "$env:MSYS2_LOCATION"
+  #   #     # extra="--extra-libs='-static -lpthread -lm -liconv'"
+  #   #     # arch="--arch=${toolchain_arch##clang\-}"
+  #   #     # generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
+  #   #     # essential_base_options=$(jq -r '.options.essentials.base | map("--enable-\(.option)") | join(" ")' ../config/options.json)
+  #   #     # essential_external_options=$(jq -r '.options.essentials.external | map("--enable-\(.option)") | join(" ")' ../config/options.json)
+  #   #     # essential_dependent_options=$(jq -r '.options.essentials.dependent | map("--enable-\(.option)") | join(" ")' ../config/options.json)
+  #   #     # command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
+  #   #     echo $command
+  #   #     eval $command
+  #   # - name: "🔨 Log: Configure FFmpeg"
+  #   #   if: failure()
   #   #   run: |
-  #   #     echo "Test tooling and library availability"
-  #   #     cd source/ffbuild
-  #   #     cat config.log
+  #   #     log="./source/ffbuild/config.log"
+  #   #     if [ -f "$log" ]; then
+  #   #         cat ./source/ffbuild/config.log
+  #   #     fi
+  #   - name: "🔨 Configure FFmpeg Build"
+  #     continue-on-error: true
+  #     run: |
+  #       echo "Configure FFmpeg Build"
+  #       echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
+  #       # cd source
+
+  #       echo ${{ needs.ffmpeg-baseline.outputs.build_config }}
+  #       # echo $command
+  #       # eval $command
+  # #   # - name: '🖥️ Get number of CPU cores'
+  # #   #   uses: SimenB/github-actions-cpu-cores@v2
+  # #   #   id: cpu-cores
+  # #   # - name: "🔨 Test: Configure FFmpeg"
+  # #   #   run: |
+  # #   #     echo "Test tooling and library availability"
+  # #   #     cd source
+  # #   #     make -j${{ steps.cpu-cores.outputs.count }}
+  # #   # - name: "🔨 Test: Configure FFmpeg"
+  # #   #   run: |
+  # #   #     echo "Test tooling and library availability"
+  # #   #     cd source/ffbuild
+  # #   #     cat config.log
