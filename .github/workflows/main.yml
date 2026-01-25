@@ -57,6 +57,7 @@ env:
   inputs_build_type: "essentials"
   inputs_link_type: "full"
   inputs_msystem: 'CLANGARM64'
+
 jobs:
   defaults:
     name: '🌐 Setup Environment Variables'
@@ -99,26 +100,14 @@ jobs:
               echo "arch=x86_64" >> $GITHUB_OUTPUT
           fi
   ffmpeg-baseline:
-    name: 'FFmpeg Baseline Configuration'
+    name: '🎞️ FFmpeg Baseline Configuration'
     needs: ['defaults']
     uses: ./.github/workflows/ffmpeg-baseline.yml
     with:
       msystem: ${{ needs.defaults.outputs.msystem }}
+      build_type: ${{ needs.defaults.outputs.build_type }}
       link_type: ${{ needs.defaults.outputs.link_type }}
       github_tag: ${{ needs.defaults.outputs.github_tag }}
-  setup-test:
-    name: '🌐 Setup Environment Variabless'
-    runs-on: ubuntu-latest
-    needs: ['defaults', 'ffmpeg-baseline']
-    steps:
-      - name: test
-        run: |
-          echo "${{ needs.defaults.outputs.github_tag }}"
-          echo "${{ needs.defaults.outputs.build_type }}"
-          echo "${{ needs.defaults.outputs.link_type }}"
-          echo "${{ needs.defaults.outputs.msystem }}"
-          echo "${{ needs.defaults.outputs.environment }}"
-          echo "${{ needs.ffmpeg-baseline.outputs.build_config }}"
   # msys2:
   #   name: '💻 MSYS2 Environment'
   #   runs-on: windows-11-arm

@@ -6,6 +6,9 @@ on:
       msystem:
         required: true
         type: string
+      build_type:
+        required: true
+        type: string
       link_type:
         required: true
         type: string
@@ -18,7 +21,7 @@ on:
 
 jobs:
   setup-ffmpeg-options:
-    name: '🎞️ Setup FFmpeg Configuration'
+    name: '🎞️ Setup FFmpeg Baseline Configuration'
     runs-on: ubuntu-latest
     outputs:
       build_config: ${{ steps.ffmpeg-config.outputs.build_config }}
@@ -57,8 +60,7 @@ jobs:
         if [[ ${{ inputs.github_tag }} =~ ([0-9]+) ]]; then
           major_version="${BASH_REMATCH[1]}"
           options=$(jq -r --arg version $major_version '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
-          echo $options
-          if [[ "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
+          if [[ ${{ inputs.build_type }} == "full" && "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
             temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
             echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
           fi
