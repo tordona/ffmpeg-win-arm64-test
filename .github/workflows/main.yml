@@ -62,10 +62,8 @@ env:
   package_prefix: "mingw-w64-clang-aarch64"
   source_repo: "https://github.com/FFmpeg/FFmpeg"
   source_version: "0"
-  build_config: ""
 
 jobs:
- 
   setup-defaults:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
@@ -108,43 +106,58 @@ jobs:
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
               echo "package_prefix=${{ env.msys_prefix }}-clang-x86_64" >> $GITHUB_ENV
           fi
-      - name: '🛒 Checkout'
-        uses: actions/checkout@v5
-      - name: '🗺️ Setup FFmpeg Baseline Configuration'
-        working-directory: ./config
+      - name: '🗺️ Verify Environment Variables'
+        shell: bash
         run: |
-          base_config=$(jq -r '.config' options.json)
-          echo "build_config=${base_config}" >> $GITHUB_ENV
-      - name: '🏛️ Set Target Architecture'
-        run: |
-          echo "Set Explict Architecture Option Value"
-          if [[ ${{ env.inputs_msystem }} == "CLANGARM64" ]]; then
-            temp_config=" --arch=aarch64"
-          elif [[ ${{ env.inputs_msystem }} == "CLANG64" ]]; then
-            temp_config="--arch=x86_64"
-          fi
-          echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-      - name: '🔗 Set Link Type'
-        run: |
-          if [[ ${{ env.inputs_link_type }} == "shared" ]]; then
-            temp_config=" --enable-shared --disable-static"
-          else
-            temp_config=" --disable-shared --enable-static"
-          fi
-          echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-      - name: '🏴 Set Compile LDFLAGS'
-        working-directory: ./config
-        run: |
-          echo "version: ${{ env.ffmpeg_version }}"
-          options=$(jq -r --arg version "${{ env.ffmpeg_version }}" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
+          echo $inputs_environment
+  setup-ffmpeg-options:
+    name: '🎞️ Setup FFmpeg Configuration'
+    runs-on: ubuntu-latest
+    outputs:
+      ffmpeg-config: ${{ env.build_config }}
+    env:
+      build_config: "./configure "
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - name: '🗺️ Setup FFmpeg Baseline Configuration'
+      working-directory: ./config
+      run: |
+        base_config=$(jq -r '.config' options.json)
+        echo "build_config=${base_config}" >> $GITHUB_ENV
+    - name: '🏛️ Set Target Architecture'
+      run: |
+        echo "Set Explict Architecture Option Value"
+        if [[ ${{ env.inputs_msystem }} == "CLANGARM64" ]]; then
+          temp_config=" --arch=aarch64"
+        elif [[ ${{ env.inputs_msystem }} == "CLANG64" ]]; then
+          temp_config="--arch=x86_64"
+        fi
+        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+    - name: '🔗 Set Link Type'
+      run: |
+        if [[ ${{ env.inputs_link_type }} == "shared" ]]; then
+          temp_config=" --enable-shared --disable-static"
+        else
+          temp_config=" --disable-shared --enable-static"
+        fi
+        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+    - name: '🏴 Set Compile LDFLAGS'
+      working-directory: ./config
+      run: |
+        if [[ ${{ env.inputs_github_tag }} =~ ([0-9]+) ]]; then
+          major_version="${BASH_REMATCH[1]}"
+          options=$(jq -r --arg version $major_version '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
           echo $options
           if [[ "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
             temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
             echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
           fi
-      - name: '🐬 Echo Configuration'
-        run: |
-          echo $build_config
+        fi
+    - name: '🐬 Echo Configuration'
+      id: 'ffmpeg-config'
+      run: |
+        echo $build_config
   # msys2:
   #   name: '💻 MSYS2 Environment'
   #   runs-on: windows-11-arm
