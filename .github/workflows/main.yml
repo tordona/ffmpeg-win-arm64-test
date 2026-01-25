@@ -80,16 +80,16 @@ jobs:
         shell: bash
         run: |
           temp_github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
-          echo "github_tag=${temp_github_tag}" >> $GITHUB_ENV
+          echo "github_tag=${temp_github_tag}" >> $GITHUB_OUTPUT
 
           temp_build_type="${{ inputs.build_type || 'essentials' }}"
-          echo "build_type=${temp_build_type}" >> $GITHUB_ENV
+          echo "build_type=${temp_build_type}" >> $GITHUB_OUTPUT
 
           temp_link_type="${{ inputs.link_type || 'shared' }}"
-          echo "link_type=${temp_link_type} " >> $GITHUB_ENV
+          echo "link_type=${temp_link_type} " >> $GITHUB_OUTPUT
 
           temp_msystem="${{ inputs.msystem || 'CLANGARM64' }}"
-          echo "msystem=${temp_msystem}" >> $GITHUB_ENV
+          echo "msystem=${temp_msystem}" >> $GITHUB_OUTPUT
 
           temp_environment="${{ inputs.environment || 'base' }}"
           echo "environment=${temp_environment}" >> "$GITHUB_OUTPUT"
