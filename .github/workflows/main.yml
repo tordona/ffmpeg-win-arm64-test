@@ -52,7 +52,7 @@ concurrency:
 env:
   inputs_github_tag: "n8.0.1"
   inputs_build_type: "essentials"
-  inputs_link_type: "shared"
+  inputs_link_type: "full"
   inputs_msystem: 'CLANGARM64'
   inputs_environment: "base"
   ffmpeg_version: "0"
@@ -79,10 +79,11 @@ jobs:
         echo "build_config=${base_config}" >> $GITHUB_ENV
     - name: '🏛️ Set Architecture'
       run: |
+        echo "Set Explict Architecture Option Value"
         if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
           temp_config=" --arch=aarch64"
         elif [[ ${inputs_msystem} == "CLANG64" ]]; then
-          temp_config="${build_config} --arch=x86_64"
+          temp_config="--arch=x86_64"
         fi
         echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
     - name: '🔗 Set Link Type'
@@ -93,6 +94,15 @@ jobs:
           temp_config=" --disable-shared --enable-static"
         fi
         echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+    - name: '🏴 Set LDFLAGS'
+      working-directory: ./config
+      run: |
+        options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= "$version") | .option] | join(" ")' options.json)
+        
+        if [[ "$options" == *"enable-librav1e"* && "$options" == *"enable-libplacebo"* ]]; then
+          temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
+          echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+        fi
     - name: '🐬 Echo Configuration'
       run: |
         echo $build_config
