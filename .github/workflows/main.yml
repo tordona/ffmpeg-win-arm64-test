@@ -164,7 +164,11 @@ jobs:
     steps:
       - name: test
         run: |
-          echo "${{ needs.defaults.outputs }}"
+          echo "${{ needs.defaults.outputs.github_tag }}"
+          echo "${{ needs.defaults.outputs.build_type }}"
+          echo "${{ needs.defaults.outputs.link_type }}"
+          echo "${{ needs.defaults.outputs.msystem }}"
+          echo "${{ needs.defaults.outputs.environment }}"
   # msys2:
   #   name: '💻 MSYS2 Environment'
   #   runs-on: windows-11-arm
