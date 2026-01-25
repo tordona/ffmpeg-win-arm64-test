@@ -80,12 +80,11 @@ jobs:
     - name: '🗺️ Set Architecture'
       run: |
         if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
-          temp_config="${build_config}: --arch=arch64"
-          echo "build_config=${temp_config}" >> $GITHUB_ENV
+          temp_config=" --arch=arch64"
         elif [[ ${inputs_msystem} == "CLANG64" ]]; then
-          temp_config="${build_config}: --arch=x86_64"
-          echo "build_config=${temp_config}" >> $GITHUB_ENV
+          temp_config="${build_config} --arch=x86_64"
         fi
+        echo "build_config={$build_config}{${temp_config}" >> $GITHUB_ENV
     - name: '🗺️ Set Architecture'
       run: |
         echo $build_config
