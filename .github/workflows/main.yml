@@ -65,49 +65,7 @@ env:
   build_config: ""
 
 jobs:
-  setup-ffmpeg-options:
-    name: '🎞️ Setup FFmpeg Configuration'
-    needs: 'setup-defaults'
-    runs-on: ubuntu-latest
-    environment: 'base'
-    steps:
-    - name: '🛒 Checkout'
-      uses: actions/checkout@v5
-    - name: '🗺️ Setup Baseline Configuration'
-      working-directory: ./config
-      run: |
-        base_config=$(jq -r '.config' options.json)
-        echo "build_config=${base_config}" >> $GITHUB_ENV
-    - name: '🏛️ Set Architecture'
-      run: |
-        echo "Set Explict Architecture Option Value"
-        if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
-          temp_config=" --arch=aarch64"
-        elif [[ ${inputs_msystem} == "CLANG64" ]]; then
-          temp_config="--arch=x86_64"
-        fi
-        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-    - name: '🔗 Set Link Type'
-      run: |
-        if [[ ${inputs_link_type} == "shared" ]]; then
-          temp_config=" --enable-shared --disable-static"
-        else
-          temp_config=" --disable-shared --enable-static"
-        fi
-        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-    - name: '🏴 Set LDFLAGS'
-      working-directory: ./config
-      run: |
-        echo $ffmpeg_version
-        options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
-        echo $options
-        if [[ "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
-          temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
-          echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-        fi
-    - name: '🐬 Echo Configuration'
-      run: |
-        echo $build_config
+ 
   setup-defaults:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
@@ -153,6 +111,49 @@ jobs:
         shell: bash
         run: |
           echo $inputs_environment
+  setup-ffmpeg-options:
+    name: '🎞️ Setup FFmpeg Configuration'
+    needs: 'setup-defaults'
+    runs-on: ubuntu-latest
+    environment: 'base'
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - name: '🗺️ Setup Baseline Configuration'
+      working-directory: ./config
+      run: |
+        base_config=$(jq -r '.config' options.json)
+        echo "build_config=${base_config}" >> $GITHUB_ENV
+    - name: '🏛️ Set Architecture'
+      run: |
+        echo "Set Explict Architecture Option Value"
+        if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
+          temp_config=" --arch=aarch64"
+        elif [[ ${inputs_msystem} == "CLANG64" ]]; then
+          temp_config="--arch=x86_64"
+        fi
+        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+    - name: '🔗 Set Link Type'
+      run: |
+        if [[ ${inputs_link_type} == "shared" ]]; then
+          temp_config=" --enable-shared --disable-static"
+        else
+          temp_config=" --disable-shared --enable-static"
+        fi
+        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+    - name: '🏴 Set LDFLAGS'
+      working-directory: ./config
+      run: |
+        echo $ffmpeg_version
+        options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
+        echo $options
+        if [[ "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
+          temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
+          echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+        fi
+    - name: '🐬 Echo Configuration'
+      run: |
+        echo $build_config        
   # msys2:
   #   name: '💻 MSYS2 Environment'
   #   runs-on: windows-11-arm
