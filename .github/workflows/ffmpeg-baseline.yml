@@ -1,0 +1,69 @@
+name: Build Packages (PKGBUILD)
+
+on:
+  workflow_call:
+    inputs:
+      msystem:
+        required: true
+        type: string
+      link_type:
+        required: true
+        type: string
+      github_tag:
+        required: true
+        type: string
+    outputs:
+      build_config:
+        value: ${{ jobs.setup-ffmpeg-options.outputs.build_config }}
+
+jobs:
+  setup-ffmpeg-options:
+    name: '🎞️ Setup FFmpeg Configuration'
+    runs-on: ubuntu-latest
+    outputs:
+      build-config: ${{ env.build_config }}
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - name: '🗺️ Setup FFmpeg Baseline Configuration'
+      id: 'baseline'
+      working-directory: ./config
+      run: |
+        base_config=$(jq -r '.config' options.json)
+        echo "build_config=${base_config}" >> $GITHUB_ENV
+    - name: '🏛️ Set Target Architecture'
+      id: 'arch'
+      run: |
+        echo "Set Explict Architecture Option Value"
+        if [[ ${{ inputs.msystem }} == "CLANGARM64" ]]; then
+          temp_config=" --arch=aarch64"
+        elif [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
+          temp_config="--arch=x86_64"
+        fi
+        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+    - name: '🔗 Set Link Type'
+      id: 'link_type'
+      run: |
+        if [[ ${{ inputs.link_type }} == "shared" ]]; then
+          temp_config=" --enable-shared --disable-static"
+        else
+          temp_config=" --disable-shared --enable-static"
+        fi
+        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+    - name: '🏴 Set Compile LDFLAGS'
+      id: 'flags'
+      working-directory: ./config
+      run: |
+        if [[ ${{ inputs.github_tag }} =~ ([0-9]+) ]]; then
+          major_version="${BASH_REMATCH[1]}"
+          options=$(jq -r --arg version $major_version '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
+          echo $options
+          if [[ "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
+            temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
+            echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+          fi
+        fi
+    - name: '🐬 Echo Configuration'
+      id: 'ffmpeg-config'
+      run: |
+        echo $build_config

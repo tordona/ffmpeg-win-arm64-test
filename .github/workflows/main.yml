@@ -49,6 +49,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  toolchain: "clang"
   msys_prefix: "mingw-w64"
   source_repo: "https://github.com/FFmpeg/FFmpeg"
   
@@ -56,27 +57,22 @@ env:
   inputs_build_type: "essentials"
   inputs_link_type: "full"
   inputs_msystem: 'CLANGARM64'
-  
-  arch: "aarch64"
-  toolchain_arch: "clang-aarch64"
-  package_prefix: "mingw-w64-clang-aarch64"
-
-
 jobs:
   defaults:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
     outputs:
-      github_tag: ${{ steps.env-defaults.outputs.github_tag }}
-      build_type: ${{ steps.env-defaults.outputs.build_type }}
-      link_type: ${{ steps.env-defaults.outputs.link_type }}
-      msystem: ${{ steps.env-defaults.outputs.msystem }}
-      environment: ${{ steps.env-defaults.outputs.environment }}
+      github_tag: ${{ steps.input-defaults.outputs.github_tag }}
+      build_type: ${{ steps.input-defaults.outputs.build_type }}
+      link_type: ${{ steps.input-defaults.outputs.link_type }}
+      msystem: ${{ steps.input-defaults.outputs.msystem }}
+      environment: ${{ steps.input-defaults.outputs.environment }}
+      arch: ${{ steps.msys-defaults.outputs.arch }}
     steps:
       - name: '🛒 Checkout'
         uses: actions/checkout@v5
       - name: '🗺️ Map Workflow Inputs to Environment Variables'
-        id: env-defaults
+        id: input-defaults
         shell: bash
         run: |
           temp_github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
@@ -92,73 +88,28 @@ jobs:
           echo "msystem=${temp_msystem}" >> $GITHUB_OUTPUT
 
           temp_environment="${{ inputs.environment || 'base' }}"
-          echo "environment=${temp_environment}" >> "$GITHUB_OUTPUT"
+          echo "environment=${temp_environment}" >> $GITHUB_OUTPUT
       - name: '🗺️ Map Toolchain Architecture Name'
+        id: msys-defaults
         shell: bash
         run: |
-          if [[ ${{ env.inputs_msystem }} == "CLANGARM64" ]]; then
-              echo "arch=aarch64" >> $GITHUB_ENV
-              echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
-              echo "package_prefix=${{ env.msys_prefix }}-clang-aarch64" >> $GITHUB_ENV
-          elif [[ ${{ env.inputs_msystem }} == "CLANG64" ]]; then
-              echo "arch=x86_64" >> $GITHUB_ENV
-              echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
-              echo "package_prefix=${{ env.msys_prefix }}-clang-x86_64" >> $GITHUB_ENV
+          if [[ ${{ steps.input-defaults.outputs.msystem }}== "CLANGARM64" ]]; then
+              echo "arch=aarch64" >> $GITHUB_OUTPUT
+          elif [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANG64" ]]; then
+              echo "arch=x86_64" >> $GITHUB_OUTPUT
           fi
- 
-
-  # setup-ffmpeg-options:
-  #   name: '🎞️ Setup FFmpeg Configuration'
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     ffmpeg-config: ${{ env.build_config }}
-  #   env:
-  #     build_config: "./configure "
-  #   steps:
-  #   - name: '🛒 Checkout'
-  #     uses: actions/checkout@v5
-  #   - name: '🗺️ Setup FFmpeg Baseline Configuration'
-  #     working-directory: ./config
-  #     run: |
-  #       base_config=$(jq -r '.config' options.json)
-  #       echo "build_config=${base_config}" >> $GITHUB_ENV
-  #   - name: '🏛️ Set Target Architecture'
-  #     run: |
-  #       echo "Set Explict Architecture Option Value"
-  #       if [[ ${{ env.inputs_msystem }} == "CLANGARM64" ]]; then
-  #         temp_config=" --arch=aarch64"
-  #       elif [[ ${{ env.inputs_msystem }} == "CLANG64" ]]; then
-  #         temp_config="--arch=x86_64"
-  #       fi
-  #       echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-  #   - name: '🔗 Set Link Type'
-  #     run: |
-  #       if [[ ${{ env.inputs_link_type }} == "shared" ]]; then
-  #         temp_config=" --enable-shared --disable-static"
-  #       else
-  #         temp_config=" --disable-shared --enable-static"
-  #       fi
-  #       echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-  #   - name: '🏴 Set Compile LDFLAGS'
-  #     working-directory: ./config
-  #     run: |
-  #       if [[ ${{ env.inputs_github_tag }} =~ ([0-9]+) ]]; then
-  #         major_version="${BASH_REMATCH[1]}"
-  #         options=$(jq -r --arg version $major_version '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
-  #         echo $options
-  #         if [[ "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
-  #           temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
-  #           echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-  #         fi
-  #       fi
-  #   - name: '🐬 Echo Configuration'
-  #     id: 'ffmpeg-config'
-  #     run: |
-  #       echo $build_config
+  ffmpeg-baseline:
+    name: 'FFmpeg Baseline Configuration'
+    needs: ['defaults']
+    uses: ./.github/workflows/ffmpeg-baseline.yml
+    with:
+      msystem: ${{ needs.defaults.outputs.msystem }}
+      link_type: ${{ needs.defaults.outputs.link_type }}
+      github_tag: ${{ needs.defaults.outputs.github_tag }}
   setup-test:
     name: '🌐 Setup Environment Variabless'
     runs-on: ubuntu-latest
-    needs: ['defaults']
+    needs: ['defaults', 'ffmpeg-baseline']
     steps:
       - name: test
         run: |
@@ -167,6 +118,7 @@ jobs:
           echo "${{ needs.defaults.outputs.link_type }}"
           echo "${{ needs.defaults.outputs.msystem }}"
           echo "${{ needs.defaults.outputs.environment }}"
+          echo "${{ needs.ffmpeg-baseline.outputs.build_config }}"
   # msys2:
   #   name: '💻 MSYS2 Environment'
   #   runs-on: windows-11-arm
