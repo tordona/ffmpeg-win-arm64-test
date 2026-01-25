@@ -91,21 +91,21 @@ jobs:
       - name: '🗺️ Map FFmpeg Version'
         shell: bash
         run: |
-          if [[ "$inputs_github_tag" =~ ([0-9]+) ]]; then
+          if [[ ${{ env.inputs_github_tag }} =~ ([0-9]+) ]]; then
               major_version="${BASH_REMATCH[1]}"
               echo "ffmpeg_version=${major_version}" >> $GITHUB_ENV
           fi
       - name: '🗺️ Map Toolchain Architecture Name'
         shell: bash
         run: |
-          if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
-              echo "arch=arch64" >> $GITHUB_ENV
+          if [[ ${{ env.inputs_msystem }} == "CLANGARM64" ]]; then
+              echo "arch=aarch64" >> $GITHUB_ENV
               echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
-              echo "package_prefix=${msys_prefix}-clang-aarch64" >> $GITHUB_ENV
-          elif [[ ${inputs_msystem} == "CLANG64" ]]; then
+              echo "package_prefix=${{ env.msys_prefix }}-clang-aarch64" >> $GITHUB_ENV
+          elif [[ ${{ env.inputs_msystem }} == "CLANG64" ]]; then
               echo "arch=x86_64" >> $GITHUB_ENV
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
-              echo "package_prefix=${msys_prefix}-clang-x86_64" >> $GITHUB_ENV
+              echo "package_prefix=${{ env.msys_prefix }}-clang-x86_64" >> $GITHUB_ENV
           fi
       - name: '🗺️ Verify Environment Variables'
         shell: bash
@@ -127,15 +127,15 @@ jobs:
     - name: '🏛️ Set Architecture'
       run: |
         echo "Set Explict Architecture Option Value"
-        if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
+        if [[ ${{ env.inputs_msystem }} == "CLANGARM64" ]]; then
           temp_config=" --arch=aarch64"
-        elif [[ ${inputs_msystem} == "CLANG64" ]]; then
+        elif [[ ${{ env.inputs_msystem }} == "CLANG64" ]]; then
           temp_config="--arch=x86_64"
         fi
         echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
     - name: '🔗 Set Link Type'
       run: |
-        if [[ ${inputs_link_type} == "shared" ]]; then
+        if [[ ${{ env.inputs_link_type }} == "shared" ]]; then
           temp_config=" --enable-shared --disable-static"
         else
           temp_config=" --disable-shared --enable-static"
@@ -144,8 +144,7 @@ jobs:
     - name: '🏴 Set LDFLAGS'
       working-directory: ./config
       run: |
-        echo $ffmpeg_version
-        options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
+        options=$(jq -r --arg version "${{ env.ffmpeg_version }}" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
         echo $options
         if [[ "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
           temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
@@ -238,7 +237,6 @@ jobs:
   #       echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
   #       cd source
   #       # echo "$env:MSYS2_LOCATION"
-  #       # full_command="./configure --extra-libs='-static -lpthread -lm -liconv' --arch=aarch64 --enable-gpl --enable-version3 --enable-pic --enable-static --disable-shared --disable-debug --disable-w32threads --enable-pthreads --disable-autodetect --enable-iconv --enable-libxml2 --enable-bzlib --enable-lzma --enable-zlib --enable-dxva2 --enable-d3d11va --enable-d3d12va --enable-avisynth --enable-libaom  --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libspeex --enable-libsrt --enable-libtheora --enable-libvo-amrwbenc --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxvid --enable-mediafoundation --enable-sdl2 --enable-frei0r --enable-ladspa --enable-lcms2 --enable-libbs2b --enable-libcdio --enable-libdav1d --enable-libdvdnav --enable-libdvdread --enable-liblc3 --enable-libmysofa --enable-librav1e --enable-librist --enable-libshine --enable-libsnappy --enable-libsvtav1 --enable-libtwolame --enable-libxevd --enable-libxeve --enable-libzvbi --enable-liboapv --enable-libvvenc --enable-pic --disable-manpages --disable-podpages --disable-txtpages --extra-cflags=-I/d/msys64-dev/clangarm64/include --extra-ldflags='-Wl,--allow-multiple-definition'"
   #       # extra="--extra-libs='-static -lpthread -lm -liconv'"
   #       # arch="--arch=${toolchain_arch##clang\-}"
   #       # generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
