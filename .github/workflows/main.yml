@@ -98,7 +98,7 @@ jobs:
       working-directory: ./config
       run: |
         options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= "$version") | .option] | join(" ")' options.json)
-        
+        echo $options
         if [[ "$options" == *"enable-librav1e"* && "$options" == *"enable-libplacebo"* ]]; then
           temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition"
           echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
