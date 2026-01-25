@@ -111,7 +111,7 @@ jobs:
   msys2:
     name: '💻 MSYS2 Environment'
     runs-on: windows-11-arm
-    needs: ['defaults']
+    needs: ['defaults', 'ffmpeg-baseline']
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     defaults:
