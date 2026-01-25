@@ -135,7 +135,7 @@ jobs:
       - name: '🏴 Set Compile LDFLAGS'
         working-directory: ./config
         run: |
-          echo "version: ${{ env.ffmpeg_version }}
+          echo "version: ${{ env.ffmpeg_version }}"
           options=$(jq -r --arg version "${{ env.ffmpeg_version }}" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
           echo $options
           if [[ "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
