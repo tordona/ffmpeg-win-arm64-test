@@ -171,6 +171,7 @@ jobs:
         version: ${{ needs.defaults.outputs.github_tag }}
         build_type: ${{ needs.defaults.outputs.build_type }}
         link_type: ${{ needs.defaults.outputs.link_type }}
+        msystem: ${{ needs.defaults.outputs.msystem }}
         arch: ${{ needs.msys-defaults.outputs.arch }}
         msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
         ffmpeg_config: ${{ needs.ffmpeg-baseline.outputs.build_config }}
@@ -183,7 +184,6 @@ jobs:
         echo ${GITHUB_WORKSPACE}
         cd ..
         pwd
-        ls -laR
   #   - name: "🌪️ Clone FFmpeg source repository"
   #     run: |
   #       mkdir source

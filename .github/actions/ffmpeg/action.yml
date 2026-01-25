@@ -10,6 +10,9 @@ inputs:
   link_type:
     description: 'Link type of libraries'
     required: true
+  msystem:
+    description: 'MSYS Environment'
+    required: true
   msys_path:
     description: 'Relative path of MSYS Environment'
     required: true
@@ -36,13 +39,15 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Echo a config settings
+    - name: Edit MSYS include path
       shell: bash
       run: |
         echo ${GITHUB_WORKSPACE}
-        pwd
-        ls -laR
-        echo "test ffmpeg config, ${{ inputs.config }}."
+        path=$(pwd)
+
+        msys_path="${${{ inputs.msys_path }}//\\//}"
+        include_path="/${msys_path//:}/${${{ inputs.msystem }},,}"
+        echo $include_path
     - name: Echo a config settings
       id: 'version-name'
       shell: bash
@@ -78,3 +83,12 @@ runs:
 # --libdir=$output_path/dump/libs
 # --incdir=$output_path/dump/include 
 # --extra-cflags=-I/d/msys64/clangarm64/include
+
+
+--prefix=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64
+--datadir=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64/presets
+--docdir=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64/docs
+--libdir=/d/builds/ffmpeg-static/dump/libs
+--incdir=/d/builds/ffmpeg-static/dump/include
+--extra-cflags=-I/d/msys64/clangarm64/include
+--extra-ldflags='-Wl,--allow-multiple-definition'
