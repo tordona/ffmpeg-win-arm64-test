@@ -67,6 +67,7 @@ env:
 jobs:
   setup-ffmpeg-options:
     name: '🎞️ Setup FFmpeg Configuration'
+    needs: 'setup-defaults'
     runs-on: ubuntu-latest
     environment: 'base'
     steps:
