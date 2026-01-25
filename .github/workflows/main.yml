@@ -145,7 +145,7 @@ jobs:
     - name: "🌪️ Clone FFmpeg source repository"
       run: |
         mkdir source
-        git -c advice.detachedHead=false clone --branch $inputs_github_tag $source_repo ./source
+        git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
         cd source
         if test -f "RELEASE"; then
           version=$(<RELEASE)
