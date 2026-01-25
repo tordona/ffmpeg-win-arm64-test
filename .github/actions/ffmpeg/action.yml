@@ -1,10 +1,38 @@
 name: 'FFmpeg Configuration Bits'
 description: 'Add bits to FFmpeg config setup'
 inputs:
-  config:
-    description: 'test'
+  version:
+    description: 'FFmpeg version from checked out source'
     required: true
-    default: 'true'
+  build_type:
+    description: 'Build type of included libraries'
+    required: true
+  link_type:
+    description: 'Link type of libraries'
+    required: true
+  msys_path:
+    description: 'Relative path of MSYS Environment'
+    required: true
+  arch:
+    description: 'CPU Architecture'
+    required: true
+  ffmpeg_config:
+    description: 'FFmpeg Baseline Configuration'
+    required: true
+outputs:
+  output_path:
+    description: 'Add bits to FFmpeg config setup'
+    value: ${{ steps.step2.outputs.random-number }}
+  build_file_ref:
+    description: 'Filename of readme file included with generated build archive'
+    value: ${{ steps.step2.outputs.random-number }}
+  version_name:
+    description: 'Version header string'
+    value: ${{ steps.step2.outputs.random-number }}
+  build_config:
+    description: 'Updated build configuration'
+    value: ${{ steps.build-config.outputs.build_config }}
+
 runs:
   using: "composite"
   steps:
@@ -12,3 +40,33 @@ runs:
       shell: bash
       run: |
         echo "test ffmpeg config, ${{ inputs.config }}."
+    - name: Echo a config settings
+      id: 'version-name'
+      shell: bash
+      run: |
+        echo "version_name=2" >> $GITHUB_OUTPUT
+    - name: Echo a config settings
+      id: 'build-config'
+      shell: bash
+      run: |
+        echo "ffmpeg_config ============"
+        echo "$ffmpeg_config"
+        # --prefix=$output_path/$version_name
+        # --datadir=$output_path/$version_name/presets
+        # --docdir=$output_path/$version_name/docs
+        # --libdir=$output_path/dump/libs
+        # --incdir=$output_path/dump/include 
+        # --extra-cflags=-I/d/msys64/clangarm64/include
+        echo "build_config=${temp_build_config}" >> $GITHUB_OUTPUT
+
+
+# output_path="${path_base}/ffmpeg-${link_type}"
+# build_file_ref="$build_type-${link_type}.txt"
+# version_name="ffmpeg-$version-$build_type-$link_type-win-arm64"
+
+# --prefix=$output_path/$version_name
+# --datadir=$output_path/$version_name/presets
+# --docdir=$output_path/$version_name/docs
+# --libdir=$output_path/dump/libs
+# --incdir=$output_path/dump/include 
+# --extra-cflags=-I/d/msys64/clangarm64/include
