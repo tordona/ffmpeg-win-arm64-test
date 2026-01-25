@@ -39,6 +39,7 @@ runs:
     - name: Echo a config settings
       shell: bash
       run: |
+        echo ${GITHUB_WORKSPACE}
         pwd
         ls -laR
         echo "test ffmpeg config, ${{ inputs.config }}."

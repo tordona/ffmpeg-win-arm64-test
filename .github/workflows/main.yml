@@ -180,6 +180,7 @@ jobs:
     - name: "📦 Test"
       working-directory: ./config
       run: |
+        echo ${GITHUB_WORKSPACE}
         cd ..
         pwd
         ls -laR
