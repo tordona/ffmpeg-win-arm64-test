@@ -158,7 +158,7 @@ jobs:
       working-directory: ./config
       run: |
         echo "Install required library packages - Essentials Build"
-        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | $prefix + "-" + .package] | join(" ")' options.json)
+        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         echo "$packages"
         pacman -S --noconfirm --overwrite '*' "$packages"
     - name: "📦 Install base level packages - Full Build"
@@ -166,7 +166,7 @@ jobs:
       working-directory: ./config
       run: |
         echo "Install required library packages - Full Build"
-        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | $prefix + "-" + .package] | join(" ")' options.json)
+        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         echo "$packages"
         pacman -S --noconfirm --overwrite '*' "$packages"
     - name: "⬇️ Download External Packages"
