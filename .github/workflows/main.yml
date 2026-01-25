@@ -80,19 +80,19 @@ jobs:
         shell: bash
         run: |
           temp_github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
-          echo "github_tag=${temp_github_tag}" >> $GITHUB_OUTPUT
+          echo "github_tag=${temp_github_tag}" >> $GITHUB_ENV
 
           temp_build_type="${{ inputs.build_type || 'essentials' }}"
-          echo "build_type=${temp_build_type}" >> $GITHUB_OUTPUT
+          echo "build_type=${temp_build_type}" >> $GITHUB_ENV
 
           temp_link_type="${{ inputs.link_type || 'shared' }}"
-          echo "link_type=${temp_link_type} " >> $GITHUB_OUTPUT
+          echo "link_type=${temp_link_type} " >> $GITHUB_ENV
 
           temp_msystem="${{ inputs.msystem || 'CLANGARM64' }}"
-          echo "msystem=${temp_msystem}" >> $GITHUB_OUTPUT
+          echo "msystem=${temp_msystem}" >> $GITHUB_ENV
 
           temp_environment="${{ inputs.environment || 'base' }}"
-          echo "environment=${temp_environment}" >> $GITHUB_OUTPUT
+          echo "environment=${temp_environment}" >> $GITHUB_ENV
       - name: '🗺️ Map Toolchain Architecture Name'
         shell: bash
         run: |
@@ -105,9 +105,7 @@ jobs:
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
               echo "package_prefix=${{ env.msys_prefix }}-clang-x86_64" >> $GITHUB_ENV
           fi
-      - name: '🗺️ Verify Environment Variables'
-        shell: bash
-        run: |
+ 
 
   # setup-ffmpeg-options:
   #   name: '🎞️ Setup FFmpeg Configuration'
