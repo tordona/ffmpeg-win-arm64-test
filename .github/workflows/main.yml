@@ -55,23 +55,38 @@ env:
   inputs_link_type: "shared"
   inputs_msystem: 'CLANGARM64'
   inputs_environment: "base"
+  ffmpeg_version: "0"
   arch: "aarch64"
   msys_prefix: "mingw-w64"
   toolchain_arch: "clang-aarch64"
   package_prefix: "mingw-w64-clang-aarch64"
   source_repo: "https://github.com/FFmpeg/FFmpeg"
   source_version: "0"
+  build_config: ""
 
 jobs:
-  # setup-config-cmd:
-  #   name: '🌐 Setup Environment Variables'
-  #   runs-on: ubuntu-latest
-  #   environment: 'base'
-  #   steps:
-  #     - name: Config start
-  #       run: |
-  #         echo
-
+  setup-ffmpeg-options:
+    name: '🌐 Setup Environment Variables'
+    runs-on: ubuntu-latest
+    environment: 'base'
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - name: '🗺️ Map Workflow Inputs to Environment Variables'
+      working-directory: ./config
+      run: |
+        base_config=$(jq -r '.config' options.json)
+        echo "build_config+=$base_config" >> $GITHUB_ENV
+    - name: '🗺️ Set Architecture'
+      run: |
+        if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
+            echo "build_config+=' --arch=arch64'" >> $GITHUB_ENV
+        elif [[ ${inputs_msystem} == "CLANG64" ]]; then
+            echo "build_config+=' --arch=x86_64'" >> $GITHUB_ENV
+        fi
+    - name: '🗺️ Set Architecture'
+      run: |
+        echo $build_config
   setup-defaults:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
@@ -94,13 +109,22 @@ jobs:
 
           environment="${{ inputs.environment || 'CLANGARM64' }}"
           echo "inputs_environment=${environment}" >> $GITHUB_ENV
+      - name: '🗺️ Map FFmpeg Version'
+        shell: bash
+        run: |
+          if [[ "$inputs_github_tag" =~ ([0-9]+) ]]; then
+              major_version="${BASH_REMATCH[1]}"
+              echo "ffmpeg_version=${major_version}" >> $GITHUB_ENV
+          fi
       - name: '🗺️ Map Toolchain Architecture Name'
         shell: bash
         run: |
           if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
+              echo "arch=arch64" >> $GITHUB_ENV
               echo "toolchain_arch=clang-aarch64" >> $GITHUB_ENV
               echo "package_prefix=${msys_prefix}-clang-aarch64" >> $GITHUB_ENV
           elif [[ ${inputs_msystem} == "CLANG64" ]]; then
+              echo "arch=x86_64" >> $GITHUB_ENV
               echo "toolchain_arch=clang-x86_64" >> $GITHUB_ENV
               echo "package_prefix=${msys_prefix}-clang-x86_64" >> $GITHUB_ENV
           fi
@@ -108,135 +132,116 @@ jobs:
         shell: bash
         run: |
           echo $inputs_environment
-  msys2:
-    name: '💻 MSYS2 Environment'
-    runs-on: windows-11-arm
-    needs: ['setup-defaults']
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-    - name: '🔧 Setup MSYS2'
-      id: msys2-setup
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: ${{ env.inputs_msystem }}
-        update: true
-        cache: true
-        release: true
-        install:
-            gcc
-            git
-            make
-        pacboy:
-            toolchain:p
-            gcc-compat:p
-            diffutils:p
-            jq:p
-            github-cli:p
-    - name: 'Verify MSYS2 Install'
-      run: |
-        echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
-    - name: '🛒 Checkout'
-      uses: actions/checkout@v5
-    - name: "📦 Install support packages - Generic Build"
-      working-directory: ./config
-      run: |
-        echo "Install support packages - Generic Build"
-        packages=$(jq -r --arg prefix "$package_prefix" '.options.base.extras | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
-        echo $packages
-        pacman -S --noconfirm --overwrite '*' $packages
-    - name: "📦 Install base level packages - Essentials Build"
-      working-directory: ./config
-      run: |
-        echo "Install base packages - Essentials Build"
-        packages=$(jq -r --arg prefix "$package_prefix" '.options.essentials.base | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
-        echo $packages
-        pacman -S --noconfirm --overwrite '*' $packages
-    - name: "📦 Install base level packages - Full Build"
-      working-directory: ./config
-      run: |
-        echo "Install base packages - Full Release build"
-        packages=$(jq -r --arg prefix "$package_prefix" '.options.full.base | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
-        echo $packages
-        pacman -S --noconfirm --overwrite '*' $packages
-    - name: "⬇️ Download External Packages"
-      run: |
-       mkdir packages
-       gh release download "${toolchain_arch}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
-    - name: "➡️ Install External Packages"
-      run: |
-        echo "Install Custom Packages from External Repo"
-        cd packages
-        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
-    - name: "📦 Install external dependent packages - Essentials Build"
-      working-directory: ./config
-      run: |
-        echo "Install external dependent packages - Essentials Release build"
-        packages=$(jq -r --arg prefix "$package_prefix" '.options.essentials.dependent | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
-        echo $packages
-        pacman -S --noconfirm --overwrite '*' $packages
-    - name: "📦 Install external dependent packages - Full Build"
-      working-directory: ./config
-      run: |
-        echo "Install external dependent packages - Full Release build"
-        packages=$(jq -r --arg prefix "$package_prefix" '.options.full.dependent | map(.package) | map($prefix + "-" + .) | join(" ")' options.json)
-        echo $packages
-        pacman -S --noconfirm --overwrite '*' $packages
-    # - name: "⬇️ Download External Utlities"
-    #   run: |
-    #     mkdir utilities
-    #     gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
-    #     cd utilities
-    #     ls -la
-    - uses: hmarr/debug-action@v3
-    - name: "🌪️ Clone FFmpeg source repository"
-      run: |
-        mkdir source
-        git -c advice.detachedHead=false clone --branch $inputs_github_tag $source_repo ./source
-        cd source
-        if test -f "RELEASE"; then
-          version=$(<RELEASE)
-          echo "source_version=$version" >> $GITHUB_ENV
-        else
-          echo "release version not found"
-          exit 1
-        fi
-    - name: "🔨 Test: Configure FFmpeg"
-      continue-on-error: true
-      run: |
-        echo "Test tooling and library availability"
-        echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
-        cd source
-        echo "$env:MSYS2_LOCATION"
-        full_command="./configure --extra-libs='-static -lpthread -lm -liconv' --arch=aarch64 --enable-gpl --enable-version3 --enable-pic --enable-static --disable-shared --disable-debug --disable-w32threads --enable-pthreads --disable-autodetect --enable-iconv --enable-libxml2 --enable-bzlib --enable-lzma --enable-zlib --enable-dxva2 --enable-d3d11va --enable-d3d12va --enable-avisynth --enable-libaom  --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libspeex --enable-libsrt --enable-libtheora --enable-libvo-amrwbenc --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxvid --enable-mediafoundation --enable-sdl2 --enable-frei0r --enable-ladspa --enable-lcms2 --enable-libbs2b --enable-libcdio --enable-libdav1d --enable-libdvdnav --enable-libdvdread --enable-liblc3 --enable-libmysofa --enable-librav1e --enable-librist --enable-libshine --enable-libsnappy --enable-libsvtav1 --enable-libtwolame --enable-libxevd --enable-libxeve --enable-libzvbi --enable-liboapv --enable-libvvenc --enable-pic --disable-manpages --disable-podpages --disable-txtpages --extra-cflags=-I/d/msys64-dev/clangarm64/include --extra-ldflags='-Wl,--allow-multiple-definition'"
-        extra="--extra-libs='-static -lpthread -lm -liconv'"
-        arch="--arch=${toolchain_arch##clang\-}"
-        generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
-        essential_base_options=$(jq -r '.options.essentials.base | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-        essential_external_options=$(jq -r '.options.essentials.external | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-        essential_dependent_options=$(jq -r '.options.essentials.dependent | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-        command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
-        echo $command
-        eval $command
-    - name: "🔨 Test: Configure FFmpeg"
-      run: |
-        echo "Test tooling and library availability"
-        cd source
-        cd ffbuild
-        cat config.log
-    # - name: '🖥️ Get number of CPU cores'
-    #   uses: SimenB/github-actions-cpu-cores@v2
-    #   id: cpu-cores
-    # - name: "🔨 Test: Configure FFmpeg"
-    #   run: |
-    #     echo "Test tooling and library availability"
-    #     cd source
-    #     make -j${{ steps.cpu-cores.outputs.count }}
-    # - name: "🔨 Test: Configure FFmpeg"
-    #   run: |
-    #     echo "Test tooling and library availability"
-    #     cd source/ffbuild
-    #     cat config.log
+  # msys2:
+  #   name: '💻 MSYS2 Environment'
+  #   runs-on: windows-11-arm
+  #   needs: ['setup-defaults']
+  #   env:
+  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   defaults:
+  #     run:
+  #       shell: msys2 {0}
+  #   steps:
+  #   - name: '🔧 Setup MSYS2'
+  #     id: msys2-setup
+  #     uses: msys2/setup-msys2@v2
+  #     with:
+  #       msystem: ${{ env.inputs_msystem }}
+  #       update: true
+  #       cache: true
+  #       release: true
+  #       install:
+  #           gcc
+  #           git
+  #           make
+  #       pacboy:
+  #           toolchain:p
+  #           gcc-compat:p
+  #           diffutils:p
+  #           libssh2:p
+  #           jq:p
+  #           github-cli:p
+  #   - name: 'Verify MSYS2 Install'
+  #     run: |
+  #       echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
+  #   - name: '🛒 Checkout'
+  #     uses: actions/checkout@v5
+  #   - name: "🌪️ Clone FFmpeg source repository"
+  #     run: |
+  #       mkdir source
+  #       git -c advice.detachedHead=false clone --branch $inputs_github_tag $source_repo ./source
+  #       cd source
+  #       if test -f "RELEASE"; then
+  #         version=$(<RELEASE)
+  #         echo "source_version=$version" >> $GITHUB_ENV
+  #       else
+  #         echo "Release Version Not Found"
+  #         exit 1
+  #       fi
+  #   - name: "📦 Install packages - Essentials Build"
+  #     working-directory: ./config
+  #     run: |
+  #       echo "Install required library packages - Essentials Build
+  #       packages=$(jq -r --arg version "$source_version" --arg prefix "$package_prefix"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= "$version") | $prefix + "-" + .package] | join(" ")' options.json)
+  #       echo $packages
+  #       pacman -S --noconfirm --overwrite '*' $packages
+  #   - name: "📦 Install base level packages - Full Build"
+  #     if: ${{ env.inputs_build_type == 'full' }}
+  #     working-directory: ./config
+  #     run: |
+  #       echo "Install required library packages - Full Build
+  #       packages=$(jq -r --arg version "$source_version" --arg prefix "$package_prefix"  '[.options.full[] | .[] | select(.version <= "$version") | $prefix + "-" + .package] | join(" ")' options.json)
+  #       echo $packages
+  #       pacman -S --noconfirm --overwrite '*' $packages
+  #   - name: "⬇️ Download External Packages"
+  #     run: |
+  #      mkdir packages
+  #      gh release download "${toolchain_arch}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
+  #   - name: "➡️ Install External Packages"
+  #     run: |
+  #       echo "Install Custom Packages from External Repo"
+  #       cd packages
+  #       pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
+  #   # - name: "⬇️ Download External Utlities"
+  #   #   run: |
+  #   #     mkdir utilities
+  #   #     gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
+  #   #     cd utilities
+  #   #     ls -la
+  #   - uses: hmarr/debug-action@v3
+  #   - name: "🔨 Test: Configure FFmpeg"
+  #     continue-on-error: true
+  #     run: |
+  #       echo "Test tooling and library availability"
+  #       echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
+  #       cd source
+  #       # echo "$env:MSYS2_LOCATION"
+  #       # full_command="./configure --extra-libs='-static -lpthread -lm -liconv' --arch=aarch64 --enable-gpl --enable-version3 --enable-pic --enable-static --disable-shared --disable-debug --disable-w32threads --enable-pthreads --disable-autodetect --enable-iconv --enable-libxml2 --enable-bzlib --enable-lzma --enable-zlib --enable-dxva2 --enable-d3d11va --enable-d3d12va --enable-avisynth --enable-libaom  --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libspeex --enable-libsrt --enable-libtheora --enable-libvo-amrwbenc --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxvid --enable-mediafoundation --enable-sdl2 --enable-frei0r --enable-ladspa --enable-lcms2 --enable-libbs2b --enable-libcdio --enable-libdav1d --enable-libdvdnav --enable-libdvdread --enable-liblc3 --enable-libmysofa --enable-librav1e --enable-librist --enable-libshine --enable-libsnappy --enable-libsvtav1 --enable-libtwolame --enable-libxevd --enable-libxeve --enable-libzvbi --enable-liboapv --enable-libvvenc --enable-pic --disable-manpages --disable-podpages --disable-txtpages --extra-cflags=-I/d/msys64-dev/clangarm64/include --extra-ldflags='-Wl,--allow-multiple-definition'"
+  #       # extra="--extra-libs='-static -lpthread -lm -liconv'"
+  #       # arch="--arch=${toolchain_arch##clang\-}"
+  #       # generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
+  #       # essential_base_options=$(jq -r '.options.essentials.base | map("--enable-\(.option)") | join(" ")' ../config/options.json)
+  #       # essential_external_options=$(jq -r '.options.essentials.external | map("--enable-\(.option)") | join(" ")' ../config/options.json)
+  #       # essential_dependent_options=$(jq -r '.options.essentials.dependent | map("--enable-\(.option)") | join(" ")' ../config/options.json)
+  #       # command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
+  #       echo $command
+  #       eval $command
+  #   - name: "🔨 Test: Configure FFmpeg"
+  #     run: |
+  #       echo "Test tooling and library availability"
+  #       cd source
+  #       cd ffbuild
+  #       cat config.log
+  #   # - name: '🖥️ Get number of CPU cores'
+  #   #   uses: SimenB/github-actions-cpu-cores@v2
+  #   #   id: cpu-cores
+  #   # - name: "🔨 Test: Configure FFmpeg"
+  #   #   run: |
+  #   #     echo "Test tooling and library availability"
+  #   #     cd source
+  #   #     make -j${{ steps.cpu-cores.outputs.count }}
+  #   # - name: "🔨 Test: Configure FFmpeg"
+  #   #   run: |
+  #   #     echo "Test tooling and library availability"
+  #   #     cd source/ffbuild
+  #   #     cat config.log

@@ -1,5 +1,6 @@
 
 {
+  "config": "--extra-libs='-static -lpthread -lm -liconv' --pkg-config-flags=--static",
   "options": {
     "generic": [
         {
@@ -75,8 +76,8 @@
           "status": "disable"
         }
     ],
-    "base": {
-      "extras": [
+    "standard": {
+      "base": [
         {
           "option": "gnutls",
           "package": "gnutls",
@@ -394,7 +395,7 @@
           "package": "libmodplug",
           "version": "7"
         }, {
-          "option": "libplacebo:",
+          "option": "libplacebo",
           "package": "libplacebo",
           "version": "7"
         }, {
