@@ -1,6 +1,6 @@
 
 {
-  "config": "--extra-libs='-static -lpthread -lm -liconv' --pkg-config-flags=--static",
+  "config": "--extra-libs='-static -lpthread -lm -liconv' --pkg-config-flags='--static'",
   "options": {
     "generic": [
         {

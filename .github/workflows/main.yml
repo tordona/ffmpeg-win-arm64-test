@@ -80,12 +80,20 @@ jobs:
     - name: '🏛️ Set Architecture'
       run: |
         if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
-          temp_config=" --arch=arch64"
+          temp_config=" --arch=aarch64"
         elif [[ ${inputs_msystem} == "CLANG64" ]]; then
           temp_config="${build_config} --arch=x86_64"
         fi
         echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-    - name: '🗺️ Echo Configuration'
+    - name: '🔗 Set Link Type'
+      run: |
+        if [[ ${inputs_link_type} == "shared" ]]; then
+          temp_config=" --enable-shared --disable-static"
+        else
+          temp_config=" --disable-shared --enable-static"
+        fi
+        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+    - name: '🐬 Echo Configuration'
       run: |
         echo $build_config
   setup-defaults:
