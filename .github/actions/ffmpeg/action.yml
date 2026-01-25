@@ -86,10 +86,10 @@ runs:
 # --extra-cflags=-I/d/msys64/clangarm64/include
 
 
---prefix=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64
---datadir=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64/presets
---docdir=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64/docs
---libdir=/d/builds/ffmpeg-static/dump/libs
---incdir=/d/builds/ffmpeg-static/dump/include
---extra-cflags=-I/d/msys64/clangarm64/include
---extra-ldflags='-Wl,--allow-multiple-definition'
+# --prefix=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64
+# --datadir=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64/presets
+# --docdir=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64/docs
+# --libdir=/d/builds/ffmpeg-static/dump/libs
+# --incdir=/d/builds/ffmpeg-static/dump/include
+# --extra-cflags=-I/d/msys64/clangarm64/include
+# --extra-ldflags='-Wl,--allow-multiple-definition'
