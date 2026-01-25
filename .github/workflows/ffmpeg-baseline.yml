@@ -21,7 +21,7 @@ jobs:
     name: '🎞️ Setup FFmpeg Configuration'
     runs-on: ubuntu-latest
     outputs:
-      build-config: ${{ env.build_config }}
+      build_config: ${{ steps.ffmpeg-config.outputs.build_config }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
@@ -66,4 +66,4 @@ jobs:
     - name: '🐬 Echo Configuration'
       id: 'ffmpeg-config'
       run: |
-        echo $build_config
+        echo "build_config=$build_config$temp_config" >> $GITHUB_OUTPUT
