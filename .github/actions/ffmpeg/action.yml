@@ -44,13 +44,18 @@ runs:
       id: 'version-name'
       shell: bash
       run: |
-        echo "version_name=2" >> $GITHUB_OUTPUT
+        echo "version" ${{ inputs.version }}
+        echo "build_type" ${{ inputs.build_type }}
+        echo "link_type" ${{ inputs.link_type }}
+        echo "msys_path" ${{ inputs.msys_path }}
+        echo "arch" ${{ inputs.arch }}
+        echo "ffmpeg_config" ${{ inputs.ffmpeg_config }}
     - name: Echo a config settings
       id: 'build-config'
       shell: bash
       run: |
         echo "ffmpeg_config ============"
-        echo "$ffmpeg_config"
+        echo "$inputs.ffmpeg_config"
         # --prefix=$output_path/$version_name
         # --datadir=$output_path/$version_name/presets
         # --docdir=$output_path/$version_name/docs
