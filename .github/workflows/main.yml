@@ -66,26 +66,26 @@ env:
 
 jobs:
   setup-ffmpeg-options:
-    name: '🌐 Setup Environment Variables'
+    name: '🎞️ Setup FFmpeg Configuration'
     runs-on: ubuntu-latest
     environment: 'base'
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
-    - name: '🗺️ Map Workflow Inputs to Environment Variables'
+    - name: '🗺️ Setup Baseline Configuration'
       working-directory: ./config
       run: |
         base_config=$(jq -r '.config' options.json)
         echo "build_config=${base_config}" >> $GITHUB_ENV
-    - name: '🗺️ Set Architecture'
+    - name: '🏛️ Set Architecture'
       run: |
         if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
           temp_config=" --arch=arch64"
         elif [[ ${inputs_msystem} == "CLANG64" ]]; then
           temp_config="${build_config} --arch=x86_64"
         fi
-        echo "build_config={$build_config}{${temp_config}" >> $GITHUB_ENV
-    - name: '🗺️ Set Architecture'
+        echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
+    - name: '🗺️ Echo Configuration'
       run: |
         echo $build_config
   setup-defaults:
