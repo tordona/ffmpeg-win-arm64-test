@@ -93,7 +93,7 @@ jobs:
         id: msys-defaults
         shell: bash
         run: |
-          if [[ ${{ steps.input-defaults.outputs.msystem }}== "CLANGARM64" ]]; then
+          if [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANGARM64" ]]; then
               echo "arch=aarch64" >> $GITHUB_OUTPUT
           elif [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANG64" ]]; then
               echo "arch=x86_64" >> $GITHUB_OUTPUT
