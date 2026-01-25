@@ -1,0 +1,14 @@
+name: 'FFmpeg Configuration Bits'
+description: 'Add bits to FFmpeg config setup'
+inputs:
+  config:
+    description: 'test'
+    required: true
+    default: 'true'
+runs:
+  using: "composite"
+  steps:
+    - name: Echo a config settings
+      shell: bash
+      run: |
+        echo "test ffmpeg config, ${{ inputs.config }}."
