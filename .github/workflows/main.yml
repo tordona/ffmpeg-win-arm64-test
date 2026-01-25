@@ -91,7 +91,7 @@ jobs:
         id: msys-defaults
         shell: bash
         run: |
-          prefix="${msys_prefix}-${toolchain}-"
+          prefix="${msys_prefix}-${toolchain}"
           if [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANGARM64" ]]; then
               echo "arch=aarch64" >> $GITHUB_OUTPUT
               echo "package_prefix=${prefix}-aarch64" >> $GITHUB_OUTPUT
@@ -158,7 +158,7 @@ jobs:
       working-directory: ./config
       run: |
         echo "Install required library packages - Essentials Build"
-        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | $prefix + .package] | join(" ")' options.json)
+        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | $prefix + "-" + .package] | join(" ")' options.json)
         echo "$packages"
         pacman -S --noconfirm --overwrite '*' "$packages"
     - name: "📦 Install base level packages - Full Build"
@@ -166,7 +166,7 @@ jobs:
       working-directory: ./config
       run: |
         echo "Install required library packages - Full Build"
-        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | $prefix + .package] | join(" ")' options.json)
+        packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | $prefix + "-" + .package] | join(" ")' options.json)
         echo "$packages"
         pacman -S --noconfirm --overwrite '*' "$packages"
     - name: "⬇️ Download External Packages"
