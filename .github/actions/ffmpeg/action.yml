@@ -47,14 +47,14 @@ runs:
         path=$(pwd)
         msystem=${{ inputs.msystem }}
         msystem=${${{ inputs.msystem }},,}
-        msys_path=${{ inputs.msys_path }}
+        msys_path="${{ inputs.msys_path }}"
         msys_path="${msys_path//\\//}"
         include_path="/${msys_path//:}"
-        echo "$msystem"
-        echo $msystem
-        echo $include_path
-        echo "$include_path"
-        echo "$msys_path"
+        # echo "$msystem"
+        # echo $msystem
+        # echo $include_path
+        # echo "$include_path"
+        # echo "$msys_path"
         echo $msys_path
         echo "End Edit MSYS include path"
     - name: Echo a config settings
