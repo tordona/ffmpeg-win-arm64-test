@@ -178,35 +178,46 @@ jobs:
         echo "Install Custom Packages from External Repo"
         cd packages
         pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
-    # - name: "⬇️ Download External Utlities"
-    #   run: |
-    #     mkdir utilities
-    #     gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
-    #     cd utilities
-    #     ls -la
+    - name: "⬇️ Download External Utlities"
+      run: |
+        mkdir utilities
+        gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
+        cd utilities
+        ls -la
     - uses: hmarr/debug-action@v3
-  #   - name: "🔨 Test: Configure FFmpeg"
-  #     continue-on-error: true
-  #     run: |
-  #       echo "Test tooling and library availability"
-  #       echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
-  #       cd source
-  #       # echo "$env:MSYS2_LOCATION"
-  #       # extra="--extra-libs='-static -lpthread -lm -liconv'"
-  #       # arch="--arch=${toolchain_arch##clang\-}"
-  #       # generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
-  #       # essential_base_options=$(jq -r '.options.essentials.base | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-  #       # essential_external_options=$(jq -r '.options.essentials.external | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-  #       # essential_dependent_options=$(jq -r '.options.essentials.dependent | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-  #       # command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
-  #       echo $command
-  #       eval $command
-  #   - name: "🔨 Test: Configure FFmpeg"
-  #     run: |
-  #       echo "Test tooling and library availability"
-  #       cd source
-  #       cd ffbuild
-  #       cat config.log
+    # - name: "🔨 Test: Configure FFmpeg"
+    #   continue-on-error: true
+    #   run: |
+    #     echo "Test general tooling and library availability"
+    #     echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
+    #     cd source
+    #     # echo "$env:MSYS2_LOCATION"
+    #     # extra="--extra-libs='-static -lpthread -lm -liconv'"
+    #     # arch="--arch=${toolchain_arch##clang\-}"
+    #     # generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
+    #     # essential_base_options=$(jq -r '.options.essentials.base | map("--enable-\(.option)") | join(" ")' ../config/options.json)
+    #     # essential_external_options=$(jq -r '.options.essentials.external | map("--enable-\(.option)") | join(" ")' ../config/options.json)
+    #     # essential_dependent_options=$(jq -r '.options.essentials.dependent | map("--enable-\(.option)") | join(" ")' ../config/options.json)
+    #     # command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
+    #     echo $command
+    #     eval $command
+    # - name: "🔨 Log: Configure FFmpeg"
+    #   if: failure()
+    #   run: |
+    #     log="./source/ffbuild/config.log"
+    #     if [ -f "$log" ]; then
+    #         cat ./source/ffbuild/config.log
+    #     fi
+    - name: "🔨 Configure FFmpeg Build"
+      continue-on-error: true
+      run: |
+        echo "Configure FFmpeg Build"
+        echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
+        # cd source
+
+        echo ${{ needs.ffmpeg-baseline.outputs.build_config }}
+        # echo $command
+        # eval $command
   #   # - name: '🖥️ Get number of CPU cores'
   #   #   uses: SimenB/github-actions-cpu-cores@v2
   #   #   id: cpu-cores
