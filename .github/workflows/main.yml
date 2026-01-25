@@ -68,7 +68,7 @@ jobs:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
     outputs:
-      env: ${{ env.ffmpeg_version }}
+      env: ${{ env }}
     steps:
       - name: '🛒 Checkout'
         uses: actions/checkout@v5
@@ -111,7 +111,7 @@ jobs:
       - name: '🗺️ Verify Environment Variables'
         shell: bash
         run: |
-          echo $inputs_environment
+          echo "env=${{ env }}-clang-x86_64" >> $GITHUB_ENV
   setup-ffmpeg-options:
     name: '🎞️ Setup FFmpeg Configuration'
     runs-on: ubuntu-latest
