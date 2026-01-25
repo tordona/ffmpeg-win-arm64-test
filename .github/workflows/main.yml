@@ -68,7 +68,7 @@ jobs:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
     outputs:
-      env: ${{ env }}
+      env: ${{ env.ffmpeg_version }}
     steps:
       - name: '🛒 Checkout'
         uses: actions/checkout@v5
