@@ -67,11 +67,11 @@ jobs:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
     outputs:
-      github_tag: ${{ steps.env-defaults.github_tag }}
-      build_type: ${{ steps.env-defaults.build_type }}
-      link_type: ${{ steps.env-defaults.link_type }}
-      msystem: ${{ steps.env-defaults.msystem }}
-      environment: ${{ steps.env-defaults.environment }}
+      github_tag: ${{ steps.env-defaults.outputs.github_tag }}
+      build_type: ${{ steps.env-defaults.outputs.build_type }}
+      link_type: ${{ steps.env-defaults.outputs.link_type }}
+      msystem: ${{ steps.env-defaults.outputs.msystem }}
+      environment: ${{ steps.env-defaults.outputs.environment }}
     steps:
       - name: '🛒 Checkout'
         uses: actions/checkout@v5
@@ -92,7 +92,7 @@ jobs:
           echo "msystem=${temp_msystem}" >> $GITHUB_ENV
 
           temp_environment="${{ inputs.environment || 'base' }}"
-          echo "environment=${temp_environment}" >> $GITHUB_ENV
+          echo "environment=${temp_environment}" >> "$GITHUB_OUTPUT"
       - name: '🗺️ Map Toolchain Architecture Name'
         shell: bash
         run: |
