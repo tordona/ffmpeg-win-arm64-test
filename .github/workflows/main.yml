@@ -76,13 +76,15 @@ jobs:
       working-directory: ./config
       run: |
         base_config=$(jq -r '.config' options.json)
-        echo "build_config+=$base_config" >> $GITHUB_ENV
+        echo "build_config=${base_config}" >> $GITHUB_ENV
     - name: '🗺️ Set Architecture'
       run: |
         if [[ ${inputs_msystem} == "CLANGARM64" ]]; then
-            echo "build_config+=' --arch=arch64'" >> $GITHUB_ENV
+          temp_config="${build_config}: --arch=arch64"
+          echo "build_config=${temp_config}" >> $GITHUB_ENV
         elif [[ ${inputs_msystem} == "CLANG64" ]]; then
-            echo "build_config+=' --arch=x86_64'" >> $GITHUB_ENV
+          temp_config="${build_config}: --arch=x86_64"
+          echo "build_config=${temp_config}" >> $GITHUB_ENV
         fi
     - name: '🗺️ Set Architecture'
       run: |
