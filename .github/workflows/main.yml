@@ -49,6 +49,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  toolchain: "clang"
   source_repo: "https://github.com/FFmpeg/FFmpeg"
 
 jobs:
