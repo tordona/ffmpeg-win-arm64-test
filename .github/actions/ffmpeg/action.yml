@@ -25,7 +25,7 @@ inputs:
 outputs:
   output_path:
     description: 'Add bits to FFmpeg config setup'
-    value: ${{ steps.step2.outputs.random-number }}
+    value: ${{ steps.step2.outputs.output_path }}
   build_file_ref:
     description: 'Filename of readme file included with generated build archive'
     value: ${{ steps.step2.outputs.random-number }}
@@ -66,11 +66,9 @@ runs:
         if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
           cpu="x64"
         fi
-        lt="${{ inputs.link_type }}"
-        echo "1=====$lt=====1"
-        lt="${lt//[[:space:]]/}"
-        echo "2=====$lt=====2"
         version_name="ffmpeg-${{ inputs.version }}-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
+        version_name="${version_name//[[:space:]]/}"
+        echo "version_name=${version_name}" >> $GITHUB_OUTPUT
         echo "$version_name"
     - name: Echo a config settings
       id: 'build-config'
