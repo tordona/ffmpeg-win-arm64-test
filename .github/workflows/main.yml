@@ -188,17 +188,17 @@ jobs:
         arch: ${{ needs.msys-defaults.outputs.arch }}
         msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
         ffmpeg_config: ${{ needs.ffmpeg-baseline.outputs.build_config }}
-    - name: Test Composite output
-      run: |
-        echo ${{ steps.composite-test.outputs.ffmpeg_config }}
-        echo ${{ steps.composite-test.outputs.path_msys_include }}
-        echo ${{ steps.composite-test.outputs.output_path }}
-    - name: "📦 Test"
-      working-directory: ./config
-      run: |
-        echo ${GITHUB_WORKSPACE}
-        cd ..
-        pwd
+    # - name: Test Composite output
+    #   run: |
+    #     echo ${{ steps.composite-test.outputs.ffmpeg_config }}
+    #     echo ${{ steps.composite-test.outputs.path_msys_include }}
+    #     echo ${{ steps.composite-test.outputs.output_path }}
+    # - name: "📦 Test"
+    #   working-directory: ./config
+    #   run: |
+    #     echo ${GITHUB_WORKSPACE}
+    #     cd ..
+    #     pwd
   #   - name: "📦 Install packages - Essentials Build"
   #     working-directory: ./config
   #     run: |
@@ -253,14 +253,18 @@ jobs:
   #   #     if [ -f "$log" ]; then
   #   #         cat ./source/ffbuild/config.log
   #   #     fi
-  #   - name: "🔨 Configure FFmpeg Build"
-  #     continue-on-error: true
-  #     run: |
-  #       echo "Configure FFmpeg Build"
-  #       echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
-  #       # cd source
+    - name: "🔨 Configure FFmpeg Build"
+      continue-on-error: true
+      run: |
+        echo "Configure FFmpeg Build with Library Options"
+        cd source
+        build_type="${{ needs.defaults.outputs.build_type }}""
+        ffmpeg_options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= "$version") | "--enable-" + .option] | join(" ")' options.json)
+        # if [[ "$build_type" == "full" ]]; then
+        #   packages_full=$(jq -r --arg version "$ffmpeg_version" --arg prefix "$package_prefix"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+        # fi
 
-  #       echo ${{ needs.ffmpeg-baseline.outputs.build_config }}
+        echo $ffmpeg_options
   #       # echo $command
   #       # eval $command
   # #   # - name: '🖥️ Get number of CPU cores'
