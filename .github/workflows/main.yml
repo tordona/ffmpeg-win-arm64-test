@@ -219,4 +219,4 @@ jobs:
         if-no-files-found: error
         name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
-          ${{ steps.ffmpeg-config-setup.outputs.output_path }}/**/*.*
+          ./builds/**/*.*
