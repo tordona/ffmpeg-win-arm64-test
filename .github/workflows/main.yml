@@ -179,13 +179,14 @@ jobs:
       run: |
         echo "Configure FFmpeg Build with Library Options"
         major_version="${{ steps.source-code.outputs.major_version }}"
+        generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ./config/options.json)
         ffmpeg_lib_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         build_type="${{ needs.defaults.outputs.build_type }}"
         if [[ "$build_type" == "full" ]]; then
           ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         fi
         cd source
-        command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} $ffmpeg_lib_options" 
+        command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} $generic_options $ffmpeg_lib_options" 
         eval $command
     - name: '🔨 Log: Configure FFmpeg'
       if: failure()
