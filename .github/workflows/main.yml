@@ -195,7 +195,7 @@ jobs:
   #     working-directory: ./config
   #     run: |
   #       echo "Install required library packages - Essentials Build"
-  #       major_version: ${{ steps.source-code.outputs.major_version }}
+  #       major_version="${{ steps.source-code.outputs.major_version }}"
   #       packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
   #       echo "$packages"
   #       pacman -S --noconfirm --overwrite '*' $packages
@@ -204,7 +204,7 @@ jobs:
   #     working-directory: ./config
   #     run: |
   #       echo "Install required library packages - Full Build"
-  #       major_version: ${{ steps.source-code.outputs.major_version }}
+  #       major_version="${{ steps.source-code.outputs.major_version }}"
   #       packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
   #       echo "$packages"
   #       pacman -S --noconfirm --overwrite '*' $packages
@@ -251,10 +251,9 @@ jobs:
       continue-on-error: true
       run: |
         echo "Configure FFmpeg Build with Library Options"
-        mkdir source
         pwd
         ls
-        major_version: ${{ steps.source-code.outputs.major_version }}
+        major_version="${{ steps.source-code.outputs.major_version }}"
         ffmpeg_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         echo "$ffmpeg_options"
   #       # echo $command
