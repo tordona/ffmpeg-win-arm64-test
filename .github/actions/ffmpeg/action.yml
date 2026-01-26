@@ -25,19 +25,19 @@ inputs:
 outputs:
   output_path:
     description: 'Add bits to FFmpeg config setup'
-    value: ${{ steps.step2.outputs.output_path }}
+    value: ${{ steps.output-path.outputs.output_path }}
   build_file_ref:
     description: 'Filename of readme file included with generated build archive'
     value: ${{ steps.build-file-ref.outputs.build_file_ref }}
   version_name:
     description: 'Version header string'
     value: ${{ steps.version-name.outputs.version_name }}
-  build_config:
-    description: 'Updated build configuration'
-    value: ${{ steps.build-config.outputs.build_config }}
   path_msys_include:
     description: "MSYS Path to lib includes"
     value: ${{ steps.path-msys-include.outputs.path_msys_include }}
+  build_config:
+    description: 'Updated build configuration'
+    value: ${{ steps.build-config.outputs.build_config }}
 
 runs:
   using: "composite"
@@ -51,6 +51,7 @@ runs:
         msys_path="${msys_path//\\//}"
         include_path="/${msys_path//:}/${{ inputs.msystem }}/include"
         include_path="${include_path,,}"
+        include_path="${include_path//[[:space:]]/}"
         echo "path_msys_include: $include_path"
         echo "path_msys_include=${include_path}" >> $GITHUB_OUTPUT
     - name: Build output path
@@ -59,7 +60,7 @@ runs:
       run: |
         echo "Define path for build output (prefix)"
         path=$(pwd)
-        path="${path}/ffmpeg-${{ inputs.link_type }}"
+        path="${path}/builds/ffmpeg-${{ inputs.link_type }}"
         path="${path//[[:space:]]/}"
         echo "output_path: $path"
         echo "output_path=${path}" >> $GITHUB_OUTPUT
@@ -81,23 +82,23 @@ runs:
       shell: bash
       run: |
         build_file_ref="${{ inputs.build_type}}-${{ inputs.link_type }}.txt"
+        build_file_ref="${build_file_ref//[[:space:]]/}"
         echo "build_file_ref: $build_file_ref"
         echo "build_file_ref=${build_file_ref}" >> $GITHUB_OUTPUT
     - name: Echo a config settings
       id: 'build-config'
       shell: bash
       run: |
-        temp_config="--extra-cflags=-I${{ steps.path-msys-include.outputs.path_msys_include }}"
-
-        echo "ffmpeg_config ============"
-        echo "$inputs.ffmpeg_config"
-        # --prefix=$output_path/$version_name
-        # --datadir=$output_path/$version_name/presets
-        # --docdir=$output_path/$version_name/docs
-        # --libdir=$output_path/dump/libs
-        # --incdir=$output_path/dump/include 
-        # --extra-cflags=-I/d/msys64/clangarm64/include
-        echo "build_config=${temp_build_config}" >> $GITHUB_OUTPUT
+        Echo "Update FFmpeg build config with distribution specific settings"
+        temp_config="${{ inputs.ffmpeg_config }}"
+        temp_config+=" --prefix=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}"
+        temp_config+=" --datadir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/presets"
+        temp_config+=" --docdir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/docs"
+        temp_config+=" --libdir=${{ steps.output-path.outputs.output_path }}/dump/libs"
+        temp_config+=" --incdir=${{ steps.output-path.outputs.output_path }}/dump/include"
+        temp_config+=" --extra-cflags=-I${{ steps.path-msys-include.outputs.path_msys_include }}"
+        echo "temp_config: $temp_config"
+        echo "build_config=${temp_config}" >> $GITHUB_OUTPUT
 
 
 # output_path="${path_base}/ffmpeg-${link_type}"
