@@ -1,4 +1,4 @@
-name: Build Packages (PKGBUILD)
+name: Setup FFmpeg Baseline Configuration
 
 on:
   workflow_call:
@@ -24,7 +24,7 @@ jobs:
     name: '🎞️ Setup FFmpeg Baseline Configuration'
     runs-on: ubuntu-latest
     outputs:
-      build_config: ${{ steps.ffmpeg-config.outputs.build_config }}
+      build_config: ${{ steps.config.outputs.build_config }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
@@ -66,7 +66,7 @@ jobs:
           fi
         fi
     - name: '🏴 Set Initial FFmpeg Build Config'
-      id: 'output'
+      id: 'config'
       working-directory: ./config
       run: |
         echo "build_config: $build_config"
