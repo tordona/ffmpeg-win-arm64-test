@@ -258,8 +258,9 @@ jobs:
       run: |
         echo "Configure FFmpeg Build with Library Options"
         mkdir source
+        pwd
         # build_type="${{ needs.defaults.outputs.build_type }}""
-        ffmpeg_options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' options.json)
+        ffmpeg_options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         echo $ffmpeg_options
   #       # echo $command
   #       # eval $command
