@@ -66,6 +66,10 @@ runs:
         if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
           cpu="x64"
         fi
+        lt="${{ inputs.link_type }}"
+        echo "1=====$lt=====1"
+        lt="${lt//[[:space:]]/}"
+        echo "2=====$lt=====2"
         version_name="ffmpeg-${{ inputs.version }}-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
         echo "$version_name"
     - name: Echo a config settings
