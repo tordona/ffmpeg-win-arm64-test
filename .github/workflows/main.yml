@@ -112,6 +112,8 @@ jobs:
     - name: '🏃‍➡️ Quick Verify MSYS2 Install'
       run: |
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
+        command="clang --version"
+        eval $command
     - name: '🌪️ Clone FFmpeg source repository'
       id: 'source-code'
       run: |
