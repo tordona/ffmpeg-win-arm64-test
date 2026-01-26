@@ -179,7 +179,7 @@ jobs:
         msystem: ${{ needs.defaults.outputs.msystem }}
         arch: ${{ needs.msys-defaults.outputs.arch }}
         msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
-        ffmpeg_config: ${{ needs.ffmpeg-baseline.outputs.build_config }}
+        build_config: ${{ needs.ffmpeg-baseline.outputs.build_config }}
     # - name: Test Composite output
     #   run: |
     #     echo ${{ steps.ffmpeg-config-setup.outputs.ffmpeg_config }}
@@ -223,30 +223,7 @@ jobs:
   #       gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
   #       cd utilities
   #       ls -la
-  #   - uses: hmarr/debug-action@v3
-  #   # - name: "🔨 Test: Configure FFmpeg"
-  #   #   continue-on-error: true
-  #   #   run: |
-  #   #     echo "Test general tooling and library availability"
-  #   #     echo "MSYS2 is installed at: ${{ steps.msys2-setup.outputs.msys2-location }}"
-  #   #     cd source
-  #   #     # echo "$env:MSYS2_LOCATION"
-  #   #     # extra="--extra-libs='-static -lpthread -lm -liconv'"
-  #   #     # arch="--arch=${toolchain_arch##clang\-}"
-  #   #     # generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
-  #   #     # essential_base_options=$(jq -r '.options.essentials.base | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-  #   #     # essential_external_options=$(jq -r '.options.essentials.external | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-  #   #     # essential_dependent_options=$(jq -r '.options.essentials.dependent | map("--enable-\(.option)") | join(" ")' ../config/options.json)
-  #   #     # command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
-  #   #     echo $command
-  #   #     eval $command
-  #   # - name: '🔨 Log: Configure FFmpeg'
-  #   #   if: failure()
-  #   #   run: |
-  #   #     log="./source/ffbuild/config.log"
-  #   #     if [ -f "$log" ]; then
-  #   #         cat ./source/ffbuild/config.log
-  #   #     fi
+    - uses: hmarr/debug-action@v3
     - name: '🔨 Configure FFmpeg Build'
       continue-on-error: true
       run: |
@@ -257,8 +234,15 @@ jobs:
         if [[ "$build_type" == "full" ]]; then
           ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         fi
-        ffmpeg_config="${{ steps.ffmpeg-config-setup.outputs.ffmpeg_config }} $ffmpeg_lib_options" 
+        ffmpeg_config="${{ steps.ffmpeg-config-setup.outputs.build_config }} $ffmpeg_lib_options" 
         echo "$ffmpeg_config"
+    - name: '🔨 Log: Configure FFmpeg'
+      if: failure()
+      run: |
+        log="./source/ffbuild/config.log"
+        if [ -f "$log" ]; then
+            cat ./source/ffbuild/config.log
+        fi
   #       # echo $command
   #       # eval $command
   # #   # - name: '🖥️ Get number of CPU cores'

@@ -19,7 +19,7 @@ inputs:
   arch:
     description: 'CPU Architecture'
     required: true
-  ffmpeg_config:
+  build_config:
     description: 'FFmpeg Baseline Configuration'
     required: true
 outputs:
@@ -91,7 +91,7 @@ runs:
       shell: bash
       run: |
         Echo "Update FFmpeg build config with distribution specific settings"
-        temp_config="${{ inputs.ffmpeg_config }}"
+        temp_config="${{ inputs.build_config }}"
         temp_config+=" --prefix=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}"
         temp_config+=" --datadir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/presets"
         temp_config+=" --docdir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/docs"
