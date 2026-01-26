@@ -188,7 +188,7 @@ jobs:
         cd source
         command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
         echo $command
-        eval "$command > ${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}" 
+        eval "$command" 
     - name: '🔨 Log: Configure FFmpeg'
       if: failure()
       run: |
