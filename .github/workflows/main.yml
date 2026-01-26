@@ -187,7 +187,12 @@ jobs:
         fi
         cd source
         test="${{ steps.ffmpeg-config-setup.outputs.build_config }}"
-        test2="$generic_options $ffmpeg_lib_options"
+        test2="${generic_options} ${ffmpeg_lib_options}"
+        echo $test2
+        echo $generic_options
+        echo $ffmpeg_lib_options
+        echo "$generic_options"
+        echo "$ffmpeg_lib_options"
         command="${{ steps.ffmpeg-config-setup.outputs.build_config }}"
         echo $command
         #eval $command
