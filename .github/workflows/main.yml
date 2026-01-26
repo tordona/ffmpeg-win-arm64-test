@@ -71,14 +71,6 @@ jobs:
       build_type: ${{ needs.defaults.outputs.build_type }}
       link_type: ${{ needs.defaults.outputs.link_type }}
       github_tag: ${{ needs.defaults.outputs.github_tag }}
-  # setup-test:
-  #   name: '🌐 Setup Environment Variabless'
-  #   runs-on: ubuntu-latest
-  #   needs: ['defaults', 'ffmpeg-baseline']
-  #   steps:
-  #     - name: test
-  #       run: |
-  #         echo "${{ needs.ffmpeg-baseline.outputs.build_config }}"
   msys2:
     name: '💻 MSYS2 Environment'
     runs-on: windows-11-arm
@@ -110,7 +102,7 @@ jobs:
             libssh2:p
             jq:p
             github-cli:p
-    - name: '🏃‍➡️ Quick Verify MSYS2 Install'
+    - name: '🏃‍➡️ Verify MSYS2 Install'
       run: |
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
         command="clang --version"
@@ -208,8 +200,16 @@ jobs:
     - name: '🍳 Trigger Make Command'
       id: 'make-ffmpeg'
       run: |
+        cd source
         make -j${{ steps.cpu-cores.outputs.count }}
     - name: '🏭 Trigger Install Command'
       id: 'install-ffmpeg'
       run: |
+        cd source
         make install
+    - name: '📤 Upload artifact: package'
+      uses: actions/upload-artifact@v6
+      with: 
+        name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
+        path: |
+            ${{ steps.ffmpeg-config-setup.outputs.output_path }}/**
