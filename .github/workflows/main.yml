@@ -116,8 +116,6 @@ jobs:
     - name: '🌪️ Clone FFmpeg source repository'
       id: 'source-code'
       run: |
-        pwd
-        ls -laR
         mkdir source
         git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
         cd source
@@ -180,13 +178,13 @@ jobs:
       continue-on-error: true
       run: |
         echo "Configure FFmpeg Build with Library Options"
-        cd source
         major_version="${{ steps.source-code.outputs.major_version }}"
         ffmpeg_lib_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         build_type="${{ needs.defaults.outputs.build_type }}"
         if [[ "$build_type" == "full" ]]; then
           ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         fi
+        cd source
         command="./config ${{ steps.ffmpeg-config-setup.outputs.build_config }} $ffmpeg_lib_options" 
         eval $command
     - name: '🔨 Log: Configure FFmpeg'
