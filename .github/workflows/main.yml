@@ -207,11 +207,16 @@ jobs:
       run: |
         cd source
         make install
+        cd ..
+        pwd
+        ls -laR
         cd ${{ steps.ffmpeg-config-setup.outputs.output_path }}
+        pwd
         ls -laR
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
-      with: 
+      with:
+        if-no-files-found: error
         name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
-          ${{ steps.ffmpeg-config-setup.outputs.output_path }}
+          ${{ steps.ffmpeg-config-setup.outputs.output_path }}/**/*.*
