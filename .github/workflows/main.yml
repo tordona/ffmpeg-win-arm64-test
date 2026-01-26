@@ -178,6 +178,7 @@ jobs:
     - name: Test Composite output
       run: |
         echo ${{ steps.composite-test.outputs.ffmpeg_config }}
+        echo ${{ steps.composite-test.outputs.path_msys_include }}
     - name: "📦 Test"
       working-directory: ./config
       run: |

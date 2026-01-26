@@ -35,30 +35,21 @@ outputs:
   build_config:
     description: 'Updated build configuration'
     value: ${{ steps.build-config.outputs.build_config }}
-
+  path_msys_include:
+    description: "MSYS Path to lib includes"
+    value: ${{ steps.path-msys-include.outputs.path_msys_include }}
 runs:
   using: "composite"
   steps:
-    - name: Edit MSYS include path
+    - name: Include path
+      id: 'path-msys-include'
       shell: bash
       run: |
-        echo "Start Edit MSYS include path"
-        echo ${GITHUB_WORKSPACE}
-        path=$(pwd)
-        msystem="${{ inputs.msystem }}"
-        msystem="${msystem,,}"
         msys_path="${{ inputs.msys_path }}"
         msys_path="${msys_path//\\//}"
-        include_path="/${msys_path//:}/${{ inputs.msystem }}"
+        include_path="/${msys_path//:}/${{ inputs.msystem }}/include"
         include_path="${include_path,,}"
-        echo "$msystem"
-        echo $msystem
-        # echo $include_path
-        # echo "$include_path"
-        # echo "$msys_path"
-        echo $msys_path
-        echo $include_path
-        echo "End Edit MSYS include path"
+        echo "path_msys_include=${include_path}" >> $GITHUB_OUTPUT
     - name: Echo a config settings
       id: 'version-name'
       shell: bash
@@ -102,4 +93,3 @@ runs:
 # --libdir=/d/builds/ffmpeg-static/dump/libs
 # --incdir=/d/builds/ffmpeg-static/dump/include
 # --extra-cflags=-I/d/msys64/clangarm64/include
-# --extra-ldflags='-Wl,--allow-multiple-definition'
