@@ -190,7 +190,6 @@ jobs:
         echo $command
         eval "$command" 
     - name: '🔨 Log: Configure FFmpeg'
-      if: failure()
       run: |
         log="./source/ffbuild/config.log"
         if [ -f "$log" ]; then
