@@ -150,10 +150,10 @@ jobs:
         update: true
         cache: true
         release: true
-        # install:
-        #     gcc
-        #     git
-        #     make
+        install:
+            gcc
+            git
+            make
         # pacboy:
         #     toolchain:p
         #     gcc-compat:p
