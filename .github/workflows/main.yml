@@ -49,7 +49,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  toolchain: "clang"
   source_repo: "https://github.com/FFmpeg/FFmpeg"
 
 jobs:
@@ -161,7 +160,8 @@ jobs:
     - name: "⬇️ Download External Packages"
       run: |
        mkdir packages
-       gh release download "${{ env.toolchain }}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
+       # gh release download "clang-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
+       gh release download "clang-aarch64" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
     - name: "➡️ Install External Packages"
       run: |
         echo "Install Custom Packages from External Repo"
@@ -186,9 +186,10 @@ jobs:
           ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         fi
         cd source
-        command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
+        # command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
+        command="./configure"
         echo $command
-        eval "$command" 
+        eval "$command"
     - name: '🔨 Log: Configure FFmpeg'
       run: |
         log="./source/ffbuild/config.log"
