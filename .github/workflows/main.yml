@@ -195,8 +195,8 @@ jobs:
   #     working-directory: ./config
   #     run: |
   #       echo "Install required library packages - Essentials Build"
-  #       source_version: ${{ steps.source-code.outputs.source_version }}
-  #       packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+  #       major_version: ${{ steps.source-code.outputs.major_version }}
+  #       packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
   #       echo "$packages"
   #       pacman -S --noconfirm --overwrite '*' $packages
   #   - name: "📦 Install base level packages - Full Build"
@@ -204,8 +204,8 @@ jobs:
   #     working-directory: ./config
   #     run: |
   #       echo "Install required library packages - Full Build"
-  #       source_version: ${{ steps.source-code.outputs.source_version }}
-  #       packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+  #       major_version: ${{ steps.source-code.outputs.major_version }}
+  #       packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
   #       echo "$packages"
   #       pacman -S --noconfirm --overwrite '*' $packages
   #   - name: "⬇️ Download External Packages"
@@ -254,8 +254,8 @@ jobs:
         mkdir source
         pwd
         ls
-        source_version: ${{ steps.source-code.outputs.source_version }}
-        ffmpeg_options=$(jq -r --arg version "$source_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
+        major_version: ${{ steps.source-code.outputs.major_version }}
+        ffmpeg_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         echo "$ffmpeg_options"
   #       # echo $command
   #       # eval $command
