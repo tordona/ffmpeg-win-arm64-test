@@ -178,24 +178,17 @@ jobs:
       continue-on-error: true
       run: |
         echo "Configure FFmpeg Build with Library Options"
+        build_type="${{ needs.defaults.outputs.build_type }}"
         major_version="${{ steps.source-code.outputs.major_version }}"
         generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ./config/options.json)
         ffmpeg_lib_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
-        build_type="${{ needs.defaults.outputs.build_type }}"
         if [[ "$build_type" == "full" ]]; then
           ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         fi
         cd source
-        # test="${{ steps.ffmpeg-config-setup.outputs.build_config }}"
-        # test2="${generic_options} ${ffmpeg_lib_options}"
-        # echo $test2
-        # echo $generic_options
-        # echo $ffmpeg_lib_options
-        # echo "$generic_options"
-        # echo "$ffmpeg_lib_options"
         command="${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
         echo $command
-        #eval $command
+        eval "$command > ${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}" 
     - name: '🔨 Log: Configure FFmpeg'
       if: failure()
       run: |
