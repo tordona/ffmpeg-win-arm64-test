@@ -100,23 +100,3 @@ runs:
         temp_config+=" --extra-cflags=-I${{ steps.path-msys-include.outputs.path_msys_include }}"
         echo "temp_config: $temp_config"
         echo "build_config=${temp_config}" >> $GITHUB_OUTPUT
-
-
-# output_path="${path_base}/ffmpeg-${link_type}"
-# build_file_ref="$build_type-${link_type}.txt"
-# version_name="ffmpeg-$version-$build_type-$link_type-win-arm64"
-
-# --prefix=$output_path/$version_name
-# --datadir=$output_path/$version_name/presets
-# --docdir=$output_path/$version_name/docs
-# --libdir=$output_path/dump/libs
-# --incdir=$output_path/dump/include 
-# --extra-cflags=-I/d/msys64/clangarm64/include
-
-
-# --prefix=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64
-# --datadir=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64/presets
-# --docdir=/d/builds/ffmpeg-static/ffmpeg-8.0.1-full-static-win-arm64/docs
-# --libdir=/d/builds/ffmpeg-static/dump/libs
-# --incdir=/d/builds/ffmpeg-static/dump/include
-# --extra-cflags=-I/d/msys64/clangarm64/include

@@ -65,3 +65,8 @@ jobs:
             echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
           fi
         fi
+    - name: '🏴 Set Initial FFmpeg Build Config'
+      id: 'output'
+      working-directory: ./config
+      run: |
+        echo "build_config=$build_config" >> $GITHUB_OUTPUT
