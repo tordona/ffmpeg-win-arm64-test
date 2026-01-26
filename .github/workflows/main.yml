@@ -49,6 +49,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  msys_toolchain: "clang"
   source_repo: "https://github.com/FFmpeg/FFmpeg"
 
 jobs:
@@ -150,7 +151,7 @@ jobs:
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         echo "$packages"
         pacman -S --noconfirm --overwrite '*' $packages
-    - name: "📦 Install base level packages - Full Build"
+    - name: "📦 Install packages - Full Build"
       if: ${{ needs.defaults.outputs.build_type == 'full' }}
       working-directory: ./config
       run: |
@@ -162,8 +163,7 @@ jobs:
     - name: "⬇️ Download External Packages"
       run: |
        mkdir packages
-       # gh release download "${{ env.msys_toolchain }}}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
-       gh release download "clang-aarch64" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
+       gh release download "${{ env.msys_toolchain }}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
     - name: "➡️ Install External Packages"
       run: |
         echo "Install Custom Packages from External Repo"
@@ -189,7 +189,6 @@ jobs:
         fi
         cd source
         command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
-        # command="./configure"
         echo $command
         eval "$command"
     - name: '🔨 Log: Configure FFmpeg'

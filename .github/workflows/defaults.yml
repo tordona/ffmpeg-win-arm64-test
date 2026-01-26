@@ -86,7 +86,7 @@ jobs:
         id: msys-defaults
         shell: bash
         run: |
-          prefix="${msys_prefix}-${toolchain}"
+          prefix="${msys_prefix}-${msys_toolchain}"
           if [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANGARM64" ]]; then
               echo "arch=aarch64" >> $GITHUB_OUTPUT
               echo "package_prefix=${prefix}-aarch64" >> $GITHUB_OUTPUT
