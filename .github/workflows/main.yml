@@ -190,25 +190,26 @@ jobs:
         cd source
         command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
         echo $command
-        eval "$command"
-    - name: '🔨 Log: Configure FFmpeg'
+        eval "$command > ${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}" 
+    - name: '🔨 Log: Show FFmpeg Build Config'
       run: |
         log="./source/ffbuild/config.log"
         if [ -f "$log" ]; then
             cat ./source/ffbuild/config.log
         fi
-  #       # echo $command
-  #       # eval $command
-  # #   # - name: '🖥️ Get number of CPU cores'
-  # #   #   uses: SimenB/github-actions-cpu-cores@v2
-  # #   #   id: cpu-cores
-  # #   # - name: '🔨 Test: Configure FFmpeg'
-  # #   #   run: |
-  # #   #     echo "Test tooling and library availability"
-  # #   #     cd source
-  # #   #     make -j${{ steps.cpu-cores.outputs.count }}
-  # #   # - name: '🔨 Test: Configure FFmpeg'
-  # #   #   run: |
-  # #   #     echo "Test tooling and library availability"
-  # #   #     cd source/ffbuild
-  # #   #     cat config.log
+    - name: '🔨 Log: Show FFmpeg Configuration Output'
+      run: |
+        if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
+          echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
+        fi
+    - name: '🖥️ Get number of CPU cores'
+      uses: SimenB/github-actions-cpu-cores@v2
+      id: 'cpu-cores'
+    - name: '🍳 Trigger Make Command'
+      id: 'make-ffmpeg'
+      run: |
+        make -j${{ steps.cpu-cores.outputs.count }}
+    - name: '🏭 Trigger Install Command'
+      id: 'install-ffmpeg'
+      run: |
+        make install
