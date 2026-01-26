@@ -118,18 +118,6 @@ jobs:
       build_type: ${{ needs.defaults.outputs.build_type }}
       link_type: ${{ needs.defaults.outputs.link_type }}
       github_tag: ${{ needs.defaults.outputs.github_tag }}
-  setup-test:
-    name: '🌐 Setup Environment Variabless'
-    runs-on: ubuntu-latest
-    needs: ['defaults']
-    steps:
-      - name: test
-        run: |
-          echo "${{ needs.defaults.outputs.github_tag }}"
-          echo "${{ needs.defaults.outputs.build_type }}"
-          echo "${{ needs.defaults.outputs.link_type }}"
-          echo "${{ needs.defaults.outputs.msystem }}"
-          echo "${{ needs.defaults.outputs.environment }}"
   msys2:
     name: '💻 MSYS2 Environment'
     runs-on: windows-11-arm
@@ -161,10 +149,10 @@ jobs:
             libssh2:p
             jq:p
             github-cli:p
-    - name: 'Verify MSYS2 Install'
+    - name: '🏃‍➡️ Quick Verify MSYS2 Install'
       run: |
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
-    # - name: "🌪️ Clone FFmpeg source repository"
+    # - name: '🌪️ Clone FFmpeg source repository'
     #   id: 'source-code'
     #   run: |
     #     mkdir source
@@ -177,7 +165,7 @@ jobs:
     #       echo "Release Version Not Found"
     #       exit 1
     #     fi
-    - name: FFmpeg config setup
+    - name: '🪡 Create FFmpeg config pieces'
       id: 'ffmpeg-config-setup'
       uses: ./.github/actions/ffmpeg 
       with:
@@ -246,33 +234,34 @@ jobs:
   #   #     # command="./configure $extra $arch --enable-shared --disable-static $generic_options $essential_base_options $essential_external_options $essential_dependent_options"
   #   #     echo $command
   #   #     eval $command
-  #   # - name: "🔨 Log: Configure FFmpeg"
+  #   # - name: '🔨 Log: Configure FFmpeg'
   #   #   if: failure()
   #   #   run: |
   #   #     log="./source/ffbuild/config.log"
   #   #     if [ -f "$log" ]; then
   #   #         cat ./source/ffbuild/config.log
   #   #     fi
-    - name: "🔨 Configure FFmpeg Build"
+    - name: '🔨 Configure FFmpeg Build'
       continue-on-error: true
       run: |
         echo "Configure FFmpeg Build with Library Options"
         mkdir source
         pwd
+        ls
         # build_type="${{ needs.defaults.outputs.build_type }}""
         ffmpeg_options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
-        echo $ffmpeg_options
+        echo "$ffmpeg_options"
   #       # echo $command
   #       # eval $command
   # #   # - name: '🖥️ Get number of CPU cores'
   # #   #   uses: SimenB/github-actions-cpu-cores@v2
   # #   #   id: cpu-cores
-  # #   # - name: "🔨 Test: Configure FFmpeg"
+  # #   # - name: '🔨 Test: Configure FFmpeg'
   # #   #   run: |
   # #   #     echo "Test tooling and library availability"
   # #   #     cd source
   # #   #     make -j${{ steps.cpu-cores.outputs.count }}
-  # #   # - name: "🔨 Test: Configure FFmpeg"
+  # #   # - name: '🔨 Test: Configure FFmpeg'
   # #   #   run: |
   # #   #     echo "Test tooling and library availability"
   # #   #     cd source/ffbuild

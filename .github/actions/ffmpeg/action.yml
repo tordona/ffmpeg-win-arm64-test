@@ -68,6 +68,7 @@ runs:
       id: 'version-name'
       shell: bash
       run: |
+        # git checkout <branch-name> -- <path/to/file>
         echo "Make a version name string for headers and arcbive file naming"
         cpu="arm64"
         if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
