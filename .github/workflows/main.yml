@@ -199,38 +199,38 @@ jobs:
     #     echo ${GITHUB_WORKSPACE}
     #     cd ..
     #     pwd
-  #   - name: "📦 Install packages - Essentials Build"
-  #     working-directory: ./config
-  #     run: |
-  #       echo "Install required library packages - Essentials Build"
-  #       major_version="${{ steps.source-code.outputs.major_version }}"
-  #       packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-  #       echo "$packages"
-  #       pacman -S --noconfirm --overwrite '*' $packages
-  #   - name: "📦 Install base level packages - Full Build"
-  #     if: ${{ needs.defaults.outputs.build_type == 'full' }}
-  #     working-directory: ./config
-  #     run: |
-  #       echo "Install required library packages - Full Build"
-  #       major_version="${{ steps.source-code.outputs.major_version }}"
-  #       packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-  #       echo "$packages"
-  #       pacman -S --noconfirm --overwrite '*' $packages
-  #   - name: "⬇️ Download External Packages"
-  #     run: |
-  #      mkdir packages
-  #      gh release download "${{ env.toolchain }}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
-  #   - name: "➡️ Install External Packages"
-  #     run: |
-  #       echo "Install Custom Packages from External Repo"
-  #       cd packages
-  #       pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
-  #   - name: "⬇️ Download External Utlities"
-  #     run: |
-  #       mkdir utilities
-  #       gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
-  #       cd utilities
-  #       ls -la
+    - name: "📦 Install packages - Essentials Build"
+      working-directory: ./config
+      run: |
+        echo "Install required library packages - Essentials Build"
+        major_version="${{ steps.source-code.outputs.major_version }}"
+        packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+        echo "$packages"
+        pacman -S --noconfirm --overwrite '*' $packages
+    - name: "📦 Install base level packages - Full Build"
+      if: ${{ needs.defaults.outputs.build_type == 'full' }}
+      working-directory: ./config
+      run: |
+        echo "Install required library packages - Full Build"
+        major_version="${{ steps.source-code.outputs.major_version }}"
+        packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+        echo "$packages"
+        pacman -S --noconfirm --overwrite '*' $packages
+    - name: "⬇️ Download External Packages"
+      run: |
+       mkdir packages
+       gh release download "${{ env.toolchain }}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
+    - name: "➡️ Install External Packages"
+      run: |
+        echo "Install Custom Packages from External Repo"
+        cd packages
+        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
+    - name: "⬇️ Download External Utlities"
+      run: |
+        mkdir utilities
+        gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
+        cd utilities
+        ls -la
     - uses: hmarr/debug-action@v3
     - name: '🔨 Configure FFmpeg Build'
       continue-on-error: true
