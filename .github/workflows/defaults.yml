@@ -79,7 +79,7 @@ jobs:
 
           temp_msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "msystem=${temp_msystem}" >> $GITHUB_OUTPUT
-
+          echo "temp_msystem: $temp_msystem"
           temp_environment="${{ inputs.environment || 'base' }}"
           echo "environment=${temp_environment}" >> $GITHUB_OUTPUT
       - name: '🗺️ Map Toolchain Architecture Name'
@@ -87,6 +87,7 @@ jobs:
         shell: bash
         run: |
           prefix="${msys_prefix}-${toolchain}"
+          temp_msystem="${{ steps.input-defaults.outputs.msystem }}"
           if [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANGARM64" ]]; then
               echo "arch=aarch64" >> $GITHUB_OUTPUT
               echo "package_prefix=${prefix}-aarch64" >> $GITHUB_OUTPUT
