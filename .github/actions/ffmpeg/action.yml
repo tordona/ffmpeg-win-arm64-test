@@ -83,7 +83,7 @@ runs:
       shell: bash
       run: |
         build_file_ref="${{ inputs.build_type}}-${{ inputs.link_type }}.txt"
-        build_file_ref="${build_file_ref//[[:space:]]/}.txt"
+        build_file_ref="${build_file_ref//[[:space:]]/}"
         echo "build_file_ref: $build_file_ref"
         echo "build_file_ref=${build_file_ref}" >> $GITHUB_OUTPUT
     - name: Echo a config settings

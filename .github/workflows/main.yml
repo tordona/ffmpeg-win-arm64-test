@@ -186,7 +186,7 @@ jobs:
           ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         fi
         cd source
-        command="${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
+        command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
         echo $command
         eval "$command > ${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}" 
     - name: '🔨 Log: Configure FFmpeg'
