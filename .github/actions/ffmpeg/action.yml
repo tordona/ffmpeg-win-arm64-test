@@ -28,10 +28,10 @@ outputs:
     value: ${{ steps.step2.outputs.output_path }}
   build_file_ref:
     description: 'Filename of readme file included with generated build archive'
-    value: ${{ steps.step2.outputs.random-number }}
+    value: ${{ steps.build-file-ref.outputs.build_file_ref }}
   version_name:
     description: 'Version header string'
-    value: ${{ steps.step2.outputs.random-number }}
+    value: ${{ steps.version-name.outputs.version_name }}
   build_config:
     description: 'Updated build configuration'
     value: ${{ steps.build-config.outputs.build_config }}
@@ -46,30 +46,43 @@ runs:
       id: 'path-msys-include'
       shell: bash
       run: |
+        echo "Make a path string for using as include"
         msys_path="${{ inputs.msys_path }}"
         msys_path="${msys_path//\\//}"
         include_path="/${msys_path//:}/${{ inputs.msystem }}/include"
         include_path="${include_path,,}"
+        echo "path_msys_include: $include_path"
         echo "path_msys_include=${include_path}" >> $GITHUB_OUTPUT
-    - name: Output path
+    - name: Build output path
       id: 'output-path'
       shell: bash
       run: |
+        echo "Define path for build output (prefix)"
         path=$(pwd)
         path="${path}/ffmpeg-${{ inputs.link_type }}"
+        path="${path//[[:space:]]/}"
+        echo "output_path: $path"
         echo "output_path=${path}" >> $GITHUB_OUTPUT
-    - name: Echo a config settings
+    - name: Make version name string
       id: 'version-name'
       shell: bash
       run: |
+        echo "Make a version name string for headers and arcbive file naming"
         cpu="arm64"
         if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
           cpu="x64"
         fi
         version_name="ffmpeg-${{ inputs.version }}-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
         version_name="${version_name//[[:space:]]/}"
+        echo "version_name: $version_name"
         echo "version_name=${version_name}" >> $GITHUB_OUTPUT
-        echo "$version_name"
+    - name: Make readme.txt filename
+      id: 'build-file-ref'
+      shell: bash
+      run: |
+        build_file_ref="${{ inputs.build_type}}-${{ inputs.link_type }}.txt"
+        echo "build_file_ref: $build_file_ref"
+        echo "build_file_ref=${build_file_ref}" >> $GITHUB_OUTPUT
     - name: Echo a config settings
       id: 'build-config'
       shell: bash

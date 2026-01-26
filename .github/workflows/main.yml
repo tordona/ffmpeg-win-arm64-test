@@ -164,24 +164,24 @@ jobs:
     - name: 'Verify MSYS2 Install'
       run: |
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
-    - name: "🌪️ Clone FFmpeg source repository"
-      id: 'source-code'
-      run: |
-        mkdir source
-        git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
-        cd source
-        if test -f "RELEASE"; then
-          version=$(<release)
-          echo "source_version=${version}" >> $GITHUB_OUTPUT
-        else
-          echo "Release Version Not Found"
-          exit 1
-        fi
-    - name: Run my composite action
-      id: 'composite-test'
+    # - name: "🌪️ Clone FFmpeg source repository"
+    #   id: 'source-code'
+    #   run: |
+    #     mkdir source
+    #     git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
+    #     cd source
+    #     if test -f "RELEASE"; then
+    #       version=$(<release)
+    #       echo "source_version=${version}" >> $GITHUB_OUTPUT
+    #     else
+    #       echo "Release Version Not Found"
+    #       exit 1
+    #     fi
+    - name: FFmpeg config setup
+      id: 'ffmpeg-config-setup'
       uses: ./.github/actions/ffmpeg 
       with:
-        version: ${{ steps.source-code.outputs.source_version }}
+        version: ${{ steps.source-code.outputs.source_version || '8.0.1' }}
         build_type: ${{ needs.defaults.outputs.build_type }}
         link_type: ${{ needs.defaults.outputs.link_type }}
         msystem: ${{ needs.defaults.outputs.msystem }}
