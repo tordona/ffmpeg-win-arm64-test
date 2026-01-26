@@ -141,7 +141,7 @@ jobs:
         major_version="${{ steps.source-code.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         echo "$packages"
-        pacman -S --noconfirm --overwrite '*' $packages
+        pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
     - name: "📦 Install packages - Full Build"
       if: ${{ needs.defaults.outputs.build_type == 'full' }}
       working-directory: ./config
@@ -150,7 +150,7 @@ jobs:
         major_version="${{ steps.source-code.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         echo "$packages"
-        pacman -S --noconfirm --overwrite '*' $packages
+        pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
     - name: "⬇️ Download External Packages"
       run: |
        mkdir packages
@@ -159,7 +159,7 @@ jobs:
       run: |
         echo "Install Custom Packages from External Repo"
         cd packages
-        pacman -U --overwrite '*' --noconfirm *.pkg.tar.zst
+        pacman -U --disable-download-timeout --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: "⬇️ Download External Utlities"
       run: |
         mkdir utilities
