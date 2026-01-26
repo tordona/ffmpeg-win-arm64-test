@@ -152,24 +152,28 @@ jobs:
     - name: '🏃‍➡️ Quick Verify MSYS2 Install'
       run: |
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
-    # - name: '🌪️ Clone FFmpeg source repository'
-    #   id: 'source-code'
-    #   run: |
-    #     mkdir source
-    #     git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
-    #     cd source
-    #     if test -f "RELEASE"; then
-    #       version=$(<release)
-    #       echo "source_version=${version}" >> $GITHUB_OUTPUT
-    #     else
-    #       echo "Release Version Not Found"
-    #       exit 1
-    #     fi
+    - name: '🌪️ Clone FFmpeg source repository'
+      id: 'source-code'
+      run: |
+        mkdir source
+        git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
+        cd source
+        if test -f "RELEASE"; then
+          version=$(<release)
+          if [[ "$version" =~ ([0-9]+) ]]; then
+              major_version="${BASH_REMATCH[1]}"
+          fi
+          echo "source_version=${version}" >> $GITHUB_OUTPUT
+          echo "major_version=${major_version}" >> $GITHUB_OUTPUT
+        else
+          echo "Release Version Not Found"
+          exit 1
+        fi
     - name: '🪡 Create FFmpeg config pieces'
       id: 'ffmpeg-config-setup'
       uses: ./.github/actions/ffmpeg 
       with:
-        version: ${{ steps.source-code.outputs.source_version || '8.0.1' }}
+        version: ${{ steps.source-code.outputs.source_version }}
         build_type: ${{ needs.defaults.outputs.build_type }}
         link_type: ${{ needs.defaults.outputs.link_type }}
         msystem: ${{ needs.defaults.outputs.msystem }}
@@ -191,6 +195,7 @@ jobs:
   #     working-directory: ./config
   #     run: |
   #       echo "Install required library packages - Essentials Build"
+  #       source_version: ${{ steps.source-code.outputs.source_version }}
   #       packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
   #       echo "$packages"
   #       pacman -S --noconfirm --overwrite '*' $packages
@@ -199,6 +204,7 @@ jobs:
   #     working-directory: ./config
   #     run: |
   #       echo "Install required library packages - Full Build"
+  #       source_version: ${{ steps.source-code.outputs.source_version }}
   #       packages=$(jq -r --arg version "$source_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
   #       echo "$packages"
   #       pacman -S --noconfirm --overwrite '*' $packages
@@ -248,8 +254,8 @@ jobs:
         mkdir source
         pwd
         ls
-        # build_type="${{ needs.defaults.outputs.build_type }}""
-        ffmpeg_options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
+        source_version: ${{ steps.source-code.outputs.source_version }}
+        ffmpeg_options=$(jq -r --arg version "$source_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         echo "$ffmpeg_options"
   #       # echo $command
   #       # eval $command
