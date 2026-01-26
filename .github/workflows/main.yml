@@ -182,9 +182,9 @@ jobs:
         ffmpeg_config: ${{ needs.ffmpeg-baseline.outputs.build_config }}
     # - name: Test Composite output
     #   run: |
-    #     echo ${{ steps.composite-test.outputs.ffmpeg_config }}
-    #     echo ${{ steps.composite-test.outputs.path_msys_include }}
-    #     echo ${{ steps.composite-test.outputs.output_path }}
+    #     echo ${{ steps.ffmpeg-config-setup.outputs.ffmpeg_config }}
+    #     echo ${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}
+    #     echo ${{ steps.ffmpeg-config-setup.outputs.output_path }}
     # - name: "📦 Test"
     #   working-directory: ./config
     #   run: |
@@ -251,11 +251,14 @@ jobs:
       continue-on-error: true
       run: |
         echo "Configure FFmpeg Build with Library Options"
-        pwd
-        ls
         major_version="${{ steps.source-code.outputs.major_version }}"
-        ffmpeg_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
-        echo "$ffmpeg_options"
+        ffmpeg_lib_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
+        build_type="${{ needs.defaults.outputs.build_type }}"
+        if [[ "$build_type" == "full" ]]; then
+          ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
+        fi
+        ffmpeg_config="${{ steps.ffmpeg-config-setup.outputs.ffmpeg_config }} $ffmpeg_lib_options" 
+        echo "$ffmpeg_config"
   #       # echo $command
   #       # eval $command
   # #   # - name: '🖥️ Get number of CPU cores'
