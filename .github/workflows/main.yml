@@ -171,6 +171,7 @@ jobs:
         git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
         cd source
         if test -f "RELEASE"; then
+          version=$(<release)
           echo "source_version=${version}" >> $GITHUB_OUTPUT
         else
           echo "Release Version Not Found"
