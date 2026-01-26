@@ -162,7 +162,7 @@ jobs:
     - name: "⬇️ Download External Packages"
       run: |
        mkdir packages
-       # gh release download "clang-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
+       # gh release download "${{ env.msys_toolchain }}}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
        gh release download "clang-aarch64" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
     - name: "➡️ Install External Packages"
       run: |

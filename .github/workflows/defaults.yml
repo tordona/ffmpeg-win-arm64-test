@@ -45,7 +45,7 @@ on:
         value: ${{ jobs.defaults.outputs.package_prefix }}
 
 env:
-  toolchain: "clang"
+  msys_toolchain: "clang"
   msys_prefix: "mingw-w64"
 
 jobs:
