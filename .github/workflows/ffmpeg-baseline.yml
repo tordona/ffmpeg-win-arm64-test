@@ -65,11 +65,3 @@ jobs:
             echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
           fi
         fi
-    - name: 'Set Paths'
-      id: 'paths'
-      run: |
-      # --prefix=$output_path/$version_name --datadir=$output_path/$version_name/presets --docdir=$output_path/$version_name/docs --libdir=$output_path/dump/libs --incdir=$output_path/dump/include --pkg-config-flags=--static --extra-cflags=-march=native --extra-cflags=-I/d/msys64/clangarm64/include"
-    - name: '🐬 Echo Configuration'
-      id: 'ffmpeg-config'
-      run: |
-        echo "build_config=$build_config$temp_config" >> $GITHUB_OUTPUT
