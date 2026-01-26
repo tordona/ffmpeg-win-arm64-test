@@ -69,4 +69,5 @@ jobs:
       id: 'output'
       working-directory: ./config
       run: |
+        echo "build_config: $build_config"
         echo "build_config=$build_config" >> $GITHUB_OUTPUT
