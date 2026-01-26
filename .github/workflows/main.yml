@@ -154,13 +154,13 @@ jobs:
             gcc
             git
             make
-        # pacboy:
-        #     toolchain:p
-        #     gcc-compat:p
-        #     diffutils:p
-        #     libssh2:p
-        #     jq:p
-        #     github-cli:p
+        pacboy:
+            toolchain:p
+            gcc-compat:p
+            diffutils:p
+            libssh2:p
+            jq:p
+            github-cli:p
     - name: 'Verify MSYS2 Install'
       run: |
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
@@ -257,7 +257,7 @@ jobs:
       continue-on-error: true
       run: |
         echo "Configure FFmpeg Build with Library Options"
-        cd source
+        mkdir source
         build_type="${{ needs.defaults.outputs.build_type }}""
         ffmpeg_options=$(jq -r --arg version "$ffmpeg_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= "$version") | "--enable-" + .option] | join(" ")' options.json)
         # if [[ "$build_type" == "full" ]]; then
