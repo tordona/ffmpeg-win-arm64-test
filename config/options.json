@@ -418,6 +418,7 @@
         }, {
           "option": "libvvenc",
           "package": "libvvenc",
+          "custom": "true",
           "version": "7"
         }, {
           "option": "vulkan",

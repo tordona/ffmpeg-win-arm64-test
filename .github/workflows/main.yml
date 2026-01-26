@@ -30,7 +30,6 @@ on:
         default: 'CLANGARM64'
         type: choice
         options:
-        - CLANG64
         - CLANGARM64
       environment:
         description: 'Deploy Environment'
