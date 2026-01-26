@@ -87,10 +87,10 @@ jobs:
         shell: bash
         run: |
           prefix="${msys_prefix}-${toolchain}"
-          if [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANGARM64" ]]; then
+          if [[ ${{ inputs.msystem }} == "CLANGARM64" ]]; then
               echo "arch=aarch64" >> $GITHUB_OUTPUT
               echo "package_prefix=${prefix}-aarch64" >> $GITHUB_OUTPUT
-          elif [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANG64" ]]; then
+          elif [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
               echo "arch=x86_64" >> $GITHUB_OUTPUT
               echo "package_prefix=${prefix}-x86_64" >> $GITHUB_OUTPUT
           fi
