@@ -49,8 +49,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  toolchain: "clang"
-  msys_prefix: "mingw-w64"
   source_repo: "https://github.com/FFmpeg/FFmpeg"
 
 jobs:

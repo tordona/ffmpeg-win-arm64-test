@@ -44,6 +44,9 @@ on:
       package_prefix:
         value: ${{ jobs.defaults.outputs.package_prefix }}
 
+env:
+  toolchain: "clang"
+  msys_prefix: "mingw-w64"
 
 jobs:
   defaults:
@@ -91,3 +94,5 @@ jobs:
               echo "arch=x86_64" >> $GITHUB_OUTPUT
               echo "package_prefix=${prefix}-x86_64" >> $GITHUB_OUTPUT
           fi
+          echo "prefix: $prefix"
+          echo "package_prefix: $package_prefix"
