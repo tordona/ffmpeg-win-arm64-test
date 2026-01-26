@@ -38,6 +38,7 @@ outputs:
   path_msys_include:
     description: "MSYS Path to lib includes"
     value: ${{ steps.path-msys-include.outputs.path_msys_include }}
+
 runs:
   using: "composite"
   steps:
@@ -50,20 +51,29 @@ runs:
         include_path="/${msys_path//:}/${{ inputs.msystem }}/include"
         include_path="${include_path,,}"
         echo "path_msys_include=${include_path}" >> $GITHUB_OUTPUT
+    - name: Output path
+      id: 'output-path'
+      shell: bash
+      run: |
+        path=$(pwd)
+        path="${path}/ffmpeg-${{ inputs.link_type }}"
+        echo "output_path=${path}" >> $GITHUB_OUTPUT
     - name: Echo a config settings
       id: 'version-name'
       shell: bash
       run: |
-        echo "version" "${{ inputs.version }}"
-        echo "build_type" ${{ inputs.build_type }}
-        echo "link_type" ${{ inputs.link_type }}
-        echo "msys_path" ${{ inputs.msys_path }}
-        echo "arch" ${{ inputs.arch }}
-        echo "ffmpeg_config" ${{ inputs.ffmpeg_config }}
+        cpu="arm64"
+        if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
+          cpu="x64"
+        fi
+        version_name="ffmpeg-${{ inputs.version }}-${{ inputs.build_type }}-${{ inputs.link_type}}-win-${cpu}"
+        echo "$version_name"
     - name: Echo a config settings
       id: 'build-config'
       shell: bash
       run: |
+        temp_config="--extra-cflags=-I${{ steps.path-msys-include.outputs.path_msys_include }}"
+
         echo "ffmpeg_config ============"
         echo "$inputs.ffmpeg_config"
         # --prefix=$output_path/$version_name

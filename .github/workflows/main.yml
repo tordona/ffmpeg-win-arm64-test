@@ -164,11 +164,23 @@ jobs:
     - name: 'Verify MSYS2 Install'
       run: |
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
+    - name: "🌪️ Clone FFmpeg source repository"
+      id: 'source-code'
+      run: |
+        mkdir source
+        git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
+        cd source
+        if test -f "RELEASE"; then
+          echo "source_version=${version}" >> $GITHUB_OUTPUT
+        else
+          echo "Release Version Not Found"
+          exit 1
+        fi
     - name: Run my composite action
       id: 'composite-test'
       uses: ./.github/actions/ffmpeg 
       with:
-        version: ${{ needs.defaults.outputs.github_tag }}
+        version: ${{ steps.source-code.outputs.source_version }}
         build_type: ${{ needs.defaults.outputs.build_type }}
         link_type: ${{ needs.defaults.outputs.link_type }}
         msystem: ${{ needs.defaults.outputs.msystem }}
@@ -185,18 +197,6 @@ jobs:
         echo ${GITHUB_WORKSPACE}
         cd ..
         pwd
-  #   - name: "🌪️ Clone FFmpeg source repository"
-  #     run: |
-  #       mkdir source
-  #       git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
-  #       cd source
-  #       if test -f "RELEASE"; then
-  #         version=$(<RELEASE)
-  #         echo "source_version=$version" >> $GITHUB_ENV
-  #       else
-  #         echo "Release Version Not Found"
-  #         exit 1
-  #       fi
   #   - name: "📦 Install packages - Essentials Build"
   #     working-directory: ./config
   #     run: |
