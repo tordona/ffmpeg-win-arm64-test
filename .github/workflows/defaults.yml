@@ -43,6 +43,8 @@ on:
         value: ${{ jobs.defaults.outputs.arch }}
       package_prefix:
         value: ${{ jobs.defaults.outputs.package_prefix }}
+      major_version:
+        value: ${{ jobs.defaults.outputs.major_version }}
 
 env:
   msys_toolchain: "clang"
@@ -58,6 +60,7 @@ jobs:
       link_type: ${{ steps.input-defaults.outputs.link_type }}
       msystem: ${{ steps.input-defaults.outputs.msystem }}
       environment: ${{ steps.input-defaults.outputs.environment }}
+      major_version: ${{ steps.major-version.outputs.major_version }}
       arch: ${{ steps.msys-defaults.outputs.arch }}
       package_prefix: ${{ steps.msys-defaults.outputs.package_prefix }}
     steps:
@@ -68,9 +71,6 @@ jobs:
         shell: bash
         run: |
           # echo "Sets up default values when triggered from a push"
-          temp_github_tag="${{ inputs.github_tag || 'n8.0.1' }}"
-          echo "github_tag=${temp_github_tag}" >> $GITHUB_OUTPUT
-
           temp_build_type="${{ inputs.build_type || 'essentials' }}"
           echo "build_type=${temp_build_type}" >> $GITHUB_OUTPUT
 
@@ -82,6 +82,21 @@ jobs:
 
           temp_environment="${{ inputs.environment || 'base' }}"
           echo "environment=${temp_environment}" >> $GITHUB_OUTPUT
+
+          if [ -z "${{ inputs.github_tag }}" ]; then
+            curl -O https://raw.githubusercontent.com/FFmpeg/FFmpeg/refs/heads/master/RELEASE
+            version=$(<RELEASE)
+            echo "version from latest:" $version"
+          else
+            version="${{ inputs.github_tag }}"
+            echo "version from github_tag:" $version"
+          fi
+          if [[ "$version" =~ ([0-9]+) ]]; then
+              major_version="${BASH_REMATCH[1]}"
+              echo "Major version: $major_version"
+          fi
+          echo "github_tag=${version}" >> $GITHUB_OUTPUT
+          echo "major_version=${major_version}" >> $GITHUB_OUTPUT
       - name: '🗺️ Map Toolchain Architecture Name'
         id: msys-defaults
         shell: bash
