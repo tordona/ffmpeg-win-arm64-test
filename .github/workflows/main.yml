@@ -119,7 +119,7 @@ jobs:
       run: |
         mkdir source
         git -c advice.detachedHead=false clone ${{ env.source_repo }} ./source
-    - name: '🪡 Create FFmpeg config pieces'
+    - name: '🪡 Create FFmpeg Distribution Configuration Bits'
       id: 'ffmpeg-config-setup'
       uses: ./.github/actions/ffmpeg 
       with:
