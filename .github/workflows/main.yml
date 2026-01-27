@@ -243,12 +243,10 @@ jobs:
     - name: '🪧 Copy Support Files'
       run: |
         echo "Copy support files to output directory"
-        # ls -la
-        output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-        if ![[ -d "$output_path/$version_name" ]] then
-          echo "inner dir"
+        output_path="/c/a/ffmpeg-win-arm64-test/ffmpeg-win-arm64-test/builds/ffmpeg-shared"
+        version_name="ffmpeg-8.0.git-essentials-shared-win-arm64"
+        build_file_ref="essentials-shared.txt"
+        if [[ ! -d "$output_path/$version_name" ]] then
           mkdir -p "$output_path/$version_name"
         fi
         if [[ -f "./source/$build_file_ref" ]]; then
