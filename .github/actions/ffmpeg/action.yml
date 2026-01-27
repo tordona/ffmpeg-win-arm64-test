@@ -1,7 +1,7 @@
 name: 'FFmpeg Configuration Bits'
 description: 'Add bits to FFmpeg config setup'
 inputs:
-  version:
+  github_tag:
     description: 'FFmpeg version from checked out source'
     required: true
   build_type:
@@ -74,7 +74,7 @@ runs:
         if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
           cpu="x64"
         fi
-        version_name="ffmpeg-${{ inputs.version }}-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
+        version_name="ffmpeg-${{ inputs.github_tag }}-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
         version_name="${version_name//[[:space:]]/}"
         echo "version_name: $version_name"
         echo "version_name=${version_name}" >> $GITHUB_OUTPUT
