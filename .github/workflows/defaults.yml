@@ -83,7 +83,7 @@ jobs:
           temp_environment="${{ inputs.environment || 'base' }}"
           echo "environment=${temp_environment}" >> $GITHUB_OUTPUT
 
-          if [ -z "${{ inputs.github_tag }}" ]; then
+          if [ "${{ inputs.github_tag }}" == "" ]; then
             curl -O https://raw.githubusercontent.com/FFmpeg/FFmpeg/refs/heads/master/RELEASE
             version=$(<RELEASE)
             echo "version from latest:" $version"
