@@ -83,11 +83,14 @@ jobs:
           temp_environment="${{ inputs.environment || 'base' }}"
           echo "environment=${temp_environment}" >> $GITHUB_OUTPUT
 
-          version="${{ inputs.github_tag }}"
-          if [ "$version" == "" ]; then
+          temp_github_tag="${{ inputs.github_tag }}"
+          if [ -z "$temp_github_tag" ]; then
             curl -O https://raw.githubusercontent.com/FFmpeg/FFmpeg/refs/heads/master/RELEASE
             version=$(<RELEASE)
-            echo "version from latest:" $version"
+            echo "version from latest: $version"
+          else
+            version="${{ inputs.github_tag }}"
+            echo "version from github_tag:" $version"
           fi
           if [[ "$version" =~ ([0-9]+) ]]; then
               major_version="${BASH_REMATCH[1]}"
