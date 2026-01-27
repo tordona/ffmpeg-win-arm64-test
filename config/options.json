@@ -341,14 +341,6 @@
           "package": "twolame",
           "version": "7"
         }, {
-          "option": "libxevd",
-          "package": "xevd",
-          "version": "7"
-        }, {
-          "option": "libxeve",
-          "package": "xeve",
-          "version": "7"
-        }, {
           "option": "libzvbi",
           "package": "zvbi",
           "version": "7"
@@ -419,6 +411,14 @@
           "option": "libvvenc",
           "package": "libvvenc",
           "custom": "true",
+          "version": "7"
+        }, {
+          "option": "libxevd",
+          "package": "xevd",
+          "version": "7"
+        }, {
+          "option": "libxeve",
+          "package": "xeve",
           "version": "7"
         }, {
           "option": "vulkan",

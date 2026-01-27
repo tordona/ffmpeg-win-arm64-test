@@ -160,12 +160,17 @@ jobs:
         mkdir utilities
         gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
         cd utilities
-    - name: "⬇️ Cleanup XEVD and XEVE libs"
-      if: ${{ needs.defaults.outputs.build_type == 'full' }}
-      run: |
-        cd ${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}/../lib
-        cp ./xevd/*.a .
-        cp ./xeve/*.a .
+    # - name: "⬇️ Cleanup XEVD and XEVE libs"
+    #   if: ${{ needs.defaults.outputs.build_type == 'full' }}
+    #   run: |
+    #     cd ${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}/../lib
+    #     path=$(pwd)
+    #     if [[ -f "$path/xevd/libxevd.a" ]]; then
+    #         cp ./xevd/libxevd.a .
+    #     fi
+    #     if [[ -f "$path/xeve/libxeve.a" ]]; then
+    #         cp ./xeve/libxeve.a .
+    #     fi
     - uses: hmarr/debug-action@v3
     - name: '🔨 Configure FFmpeg Build'
       continue-on-error: true
