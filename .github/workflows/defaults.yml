@@ -75,7 +75,7 @@ jobs:
           echo "build_type=${temp_build_type}" >> $GITHUB_OUTPUT
 
           temp_link_type="${{ inputs.link_type || 'shared' }}"
-          echo "link_type=${temp_link_type} " >> $GITHUB_OUTPUT
+          echo "link_type=${temp_link_type}" >> $GITHUB_OUTPUT
 
           temp_msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "msystem=${temp_msystem}" >> $GITHUB_OUTPUT
