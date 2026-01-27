@@ -95,6 +95,7 @@ jobs:
               major_version="${BASH_REMATCH[1]}"
               echo "Major version: $major_version"
           fi
+          echo "version:" $version"
           echo "github_tag=${version}" >> $GITHUB_OUTPUT
           echo "major_version=${major_version}" >> $GITHUB_OUTPUT
       - name: '🗺️ Map Toolchain Architecture Name'
