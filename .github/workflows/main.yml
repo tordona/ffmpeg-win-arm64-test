@@ -199,16 +199,19 @@ jobs:
         if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
           echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
         fi
-    - name: Modifiy config.h
+    - name: '🥋 Modifiy Config Header and readme file'
       run: |
+        echo "Remove build distribution specifc configrations"
         path_msys_include="${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
         output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        build_type="${{ steps.ffmpeg-config-setup.outputs.build_type }}"
-        link_type="${{ steps.ffmpeg-config-setup.outputs.link_type }}"
         build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+        build_type="${{ needs.defaults.outputs.build_type }}"
+        link_type="${{ needs.defaults.outputs.link_type }}"
+        source_repo="${{ env.source_repo }}"
+        git_dist_repo="${{ env.git_dist_repo }}"
         commit=$(git rev-parse HEAD)
-        
+
         cd source
         if [[ -f "config.h" ]]; then
           find ./config.h -type f -exec sed -i "s|--extra-libs='-static -lpthread -lm -liconv'\s||gI" {} \;
@@ -230,12 +233,20 @@ jobs:
           find ./$build_file_ref -type f -exec sed -i -r "/((\w+\/)?(\w+\.\w{1,}){1,} is unchanged)/d" {} \;
           find ./$build_file_ref -type f -exec sed -i -r "/^install prefix/d" {} \;
           find ./$build_file_ref -type f -exec sed -i "1s|^|release-$build_type-$link_type build configuration\n\n|" {} \;
-          find ./$build_file_ref -type f -exec sed -i "1s|^|Source Code: ${{ env.source_repro }}/commit/$commit\n\n|" {} \;
+          find ./$build_file_ref -type f -exec sed -i "1s|^|Source Code: $source_repo/commit/$commit\n\n|" {} \;
           find ./$build_file_ref -type f -exec sed -i "1s|^|License: GPL v3\n\n|" {} \;
           find ./$build_file_ref -type f -exec sed -i "1s|^|Version: $version_name\n\n|" {} \;
-          find ./$build_file_ref -type f -exec sed -i "1s|^|FFmpeg ARM64 ${build_type^} ${link_type^} Windows Build from ${{ env.git_dist_repo }}\n\n|" {} \;
+          find ./$build_file_ref -type f -exec sed -i "1s|^|FFmpeg ARM64 ${build_type^} ${link_type^} Windows Build from $git_dist_repo\n\n|" {} \;
           echo "$(<$build_file_ref)"
         }
+    - name: '🪧 Support files'
+      run: |
+        echo "Copy over support files"
+        $output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+        cp $build_file_ref "$output_path/$version_name/readme.txt"
+        cp "copying.gplv3" "$output_path/$version_name/license"
     - name: '🖥️ Get number of CPU cores'
       uses: SimenB/github-actions-cpu-cores@v2
       id: 'cpu-cores'

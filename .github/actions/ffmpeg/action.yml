@@ -68,13 +68,15 @@ runs:
       id: 'version-name'
       shell: bash
       run: |
-        # git checkout <branch-name> -- <path/to/file>
         echo "Make a version name string for headers and arcbive file naming"
         cpu="arm64"
         if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
           cpu="x64"
         fi
-        version_name="ffmpeg-${{ inputs.github_tag }}-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
+        strip="^[[:alpha:]]*"
+        version_string="${{ inputs.github_tag }}"
+        version_string="${Sversion_string#$strip}"
+        version_name="ffmpeg-$version_string-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
         version_name="${version_name//[[:space:]]/}"
         echo "version_name: $version_name"
         echo "version_name=${version_name}" >> $GITHUB_OUTPUT
