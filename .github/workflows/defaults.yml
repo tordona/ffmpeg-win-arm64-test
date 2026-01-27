@@ -89,6 +89,7 @@ jobs:
             version=$(<RELEASE)
             echo "version from latest:" $version"
           else
+            echo "else"
             version="${{ inputs.github_tag }}"
             echo "version from github_tag:" $version"
           fi
