@@ -156,23 +156,6 @@ jobs:
         echo "Install Custom Packages from External Repo"
         cd packages
         pacman -U --disable-download-timeout --overwrite '*' --noconfirm *.pkg.tar.zst
-    - name: "⬇️ Download External Utlities"
-      run: |
-        mkdir utilities
-        gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
-        cd utilities
-    # - name: "⬇️ Cleanup XEVD and XEVE libs"
-    #   if: ${{ needs.defaults.outputs.build_type == 'full' }}
-    #   run: |
-    #     cd ${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}/../lib
-    #     path=$(pwd)
-    #     if [[ -f "$path/xevd/libxevd.a" ]]; then
-    #         cp ./xevd/libxevd.a .
-    #     fi
-    #     if [[ -f "$path/xeve/libxeve.a" ]]; then
-    #         cp ./xeve/libxeve.a .
-    #     fi
-    - uses: hmarr/debug-action@v3
     - name: '🔨 Configure FFmpeg Build'
       continue-on-error: true
       run: |
@@ -250,12 +233,13 @@ jobs:
           mkdir -p "$output_path/$version_name"
         fi
         if [[ -f "./source/$build_file_ref" ]]; then
-          echo "exists $build_file_ref"
           cp "./source/$build_file_ref" "$output_path/$version_name/readme.txt"
+          echo "copied $build_file_ref out to readme.txt"
         fi
         if [[ -f "./source/COPYING.GPLv3" ]]; then
           echo "exists COPYING.GPLv3"
           cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
+          echo "copied $build_file_ref out to license"
         fi
     - name: '🖥️ Get number of CPU cores'
       uses: SimenB/github-actions-cpu-cores@v2
@@ -277,3 +261,22 @@ jobs:
         name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
           ./builds/**/*.*
+  distro:
+    name: '💻 Distro Packager'
+    runs-on: windows-11-arm
+    needs: ['msys2']
+    steps:
+    - uses: actions/download-artifact@v5
+      with:
+        path: ./
+    - name: 'Display structure of downloaded files'
+      shell: bash
+      run: |
+        ls -la
+        pwd
+    - name: "⬇️ Download External Utlities"
+      run: |
+        mkdir utilities
+        gh release download "rcedit" -D "./utilities" -R tordona/win-arm64-binaries
+        cd utilities
+        7z x *.7z
