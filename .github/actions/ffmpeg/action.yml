@@ -74,7 +74,6 @@ runs:
         fi
         version_string="${{ inputs.github_tag }}"
         version_string="${version_string##+([[:alpha:]])}"
-        echo "version_string2: $version_string"
         version_name="ffmpeg-$version_string-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
         echo "version_name: $version_name"
         echo "version_name=${version_name}" >> $GITHUB_OUTPUT

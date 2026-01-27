@@ -243,6 +243,8 @@ jobs:
     - name: '🪧 Copy Support Files'
       run: |
         echo "Copy support files to output directory"
+        pwd
+        ls -laR
         $output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         echo $output_path
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
@@ -250,10 +252,8 @@ jobs:
         build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
         echo $build_file_ref
         cd source
-
-        if ![[ -d "$output_path/$version_name"]] then
-          echo "inner dir"
-          mkdir $output_path/$version_name
+        if [[ -d "source"]] then
+          echo "source dir"
         fi
         if [[ -f "$build_file_ref" ]]; then
           echo "exists $build_file_ref"
@@ -263,6 +263,18 @@ jobs:
           echo "exists COPYING.GPLv3"
           cp "COPYING.GPLv3" "$output_path/$version_name/license"
         fi
+        # if ![[ -d "$output_path/$version_name"]] then
+        #   echo "inner dir"
+        #   mkdir $output_path/$version_name
+        # fi
+        # if [[ -f "$build_file_ref" ]]; then
+        #   echo "exists $build_file_ref"
+        #   cp $build_file_ref "$output_path/$version_name/readme.txt"
+        # fi
+        # if [[ -f "COPYING.GPLv3" ]]; then
+        #   echo "exists COPYING.GPLv3"
+        #   cp "COPYING.GPLv3" "$output_path/$version_name/license"
+        # fi
     - name: '🖥️ Get number of CPU cores'
       uses: SimenB/github-actions-cpu-cores@v2
       id: 'cpu-cores'
