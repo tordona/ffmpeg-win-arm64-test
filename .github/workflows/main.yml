@@ -245,25 +245,28 @@ jobs:
         echo "Copy support files to output directory"
         pwd
         # ls -la
-        # # $output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        # # echo "$output_path"
-        # # version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        # # echo "$version_name"
-        # # build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-        # # echo "$build_file_ref"
+        $output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        echo "$output_path"
+        version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        echo "$version_name"
+        build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+        echo "$build_file_ref"
         # if ![[ -d "$output_path/$version_name" ]] then
         #   echo "inner dir"
         #   mkdir -p $output_path/$version_name
         # fi
         mkdir -p "$output_path/$version_name"
-        if [[ -f "./source/$build_file_ref" ]]; then
-          echo "exists $build_file_ref"
-          cp "./source/$build_file_ref" "$output_path/$version_name/readme.txt"
-        fi
-        if [[ -f "./source/COPYING.GPLv3" ]]; then
-          echo "exists COPYING.GPLv3"
-          cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
-        fi
+        ls -laR
+        # if [[ -f "./source/$build_file_ref" ]]; then
+        #   echo "exists $build_file_ref"
+        #   cp "./source/$build_file_ref" "$output_path/$version_name/readme.txt"
+        # fi
+        # ls -laR
+        # if [[ -f "./source/COPYING.GPLv3" ]]; then
+        #   echo "exists COPYING.GPLv3"
+        #   cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
+        # fi
+        # ls -laR
     - name: '🖥️ Get number of CPU cores'
       uses: SimenB/github-actions-cpu-cores@v2
       id: 'cpu-cores'
