@@ -243,14 +243,10 @@ jobs:
     - name: '🪧 Copy Support Files'
       run: |
         echo "Copy support files to output directory"
-        pwd
         # ls -la
         $output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        echo "$output_path"
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        echo "$version_name"
         build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-        echo "$build_file_ref"
         # if ![[ -d "$output_path/$version_name" ]] then
         #   echo "inner dir"
         #   mkdir -p $output_path/$version_name
