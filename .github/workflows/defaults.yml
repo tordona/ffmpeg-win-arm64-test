@@ -90,7 +90,7 @@ jobs:
             echo "version from latest: $version"
           else
             version="${{ inputs.github_tag }}"
-            echo "version from github_tag:" $version"
+            echo "version from github_tag: $version"
           fi
           if [[ "$version" =~ ([0-9]+) ]]; then
               major_version="${BASH_REMATCH[1]}"
