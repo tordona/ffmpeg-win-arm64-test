@@ -71,10 +71,7 @@ runs:
         if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
           cpu="x64"
         fi
-        strip="^[[:alpha:]]*"
-        version_string="${{ inputs.github_tag }}"
-        echo "version_string1: $version_string"
-        version_string="${Sversion_string#$strip}"
+        version_string="${${{ inputs.github_tag }}##+([[:alpha:]])}
         echo "version_string2: $version_string"
         version_name="ffmpeg-$version_string-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
         echo "version_name: $version_name"
