@@ -60,7 +60,7 @@ jobs:
       link_type: ${{ steps.input-defaults.outputs.link_type }}
       msystem: ${{ steps.input-defaults.outputs.msystem }}
       environment: ${{ steps.input-defaults.outputs.environment }}
-      major_version: ${{ steps.major-version.outputs.major_version }}
+      major_version: ${{ steps.input-defaults.outputs.major_version }}
       arch: ${{ steps.msys-defaults.outputs.arch }}
       package_prefix: ${{ steps.msys-defaults.outputs.package_prefix }}
     steps:

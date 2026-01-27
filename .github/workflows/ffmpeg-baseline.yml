@@ -57,7 +57,7 @@ jobs:
       id: 'flags'
       working-directory: ./config
       run: |
-        options=$(jq -r --arg version ${{ inputs.major_version }} '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
+        options=$(jq -r --arg version "${{ inputs.major_version }}" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
         if [[ ${{ inputs.build_type }} == "full" && "$options" == *"librav1e"* && "$options" == *"libplacebo"* ]]; then
           temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition'"
           echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
