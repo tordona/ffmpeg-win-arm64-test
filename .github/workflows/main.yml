@@ -106,11 +106,18 @@ jobs:
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
         command="clang --version"
         eval $command
-    - name: '🌪️ Clone FFmpeg source repository'
-      id: 'source-code'
+    - name: '🌪️ Clone FFmpeg source repository from Tag'
+      if: ${{ github.event.inputs.github_tag != '' }}
+      id: 'source-code-tag'
       run: |
         mkdir source
         git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} $source_repo ./source
+    - name: '🌪️ Clone FFmpeg source repository from Latest'
+      if: ${{ github.event.inputs.github_tag == '' }}
+      id: 'source-code-latest'
+      run: |
+        mkdir source
+        git -c advice.detachedHead=false clone $source_repo ./source
     - name: '🪡 Create FFmpeg config pieces'
       id: 'ffmpeg-config-setup'
       uses: ./.github/actions/ffmpeg 
@@ -163,7 +170,7 @@ jobs:
         generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ./config/options.json)
         ffmpeg_lib_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         if [[ "${{ needs.defaults.outputs.build_type }}" == "full" ]]; then
-          ffmpeg_lib_options+=" "
+          ffmpeg_lib_options+=" --extra-cflags=-DLIBTWOLAME_STATIC "
           ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
         fi
         cd source
