@@ -375,16 +375,17 @@ jobs:
     - name: '📤 Upload to Existing Package Release'
       if: steps.release-exists.outputs.release-exists == 'true' 
       run: |
-          gh release upload "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
+          gh release upload "weekly-autobuild-${{ steps.build-date.outputs.build_date }}" \
             './**/${{ needs.msys2.outputs.version_name }}.7z' \
             './**/${{ needs.msys2.outputs.version_name }}.sha256' \
             --clobber
     - name: '🔨 Create New Package Release'
       if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
-          gh release upload "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
+          gh release upload "weekly-autobuild-${{ steps.build-date.outputs.build_date }}" \
             './**/${{ needs.msys2.outputs.version_name }}.7z' \
             './**/${{ needs.msys2.outputs.version_name }}.sah256' \
-            --title ${{ inputs.project }} \
+            --title "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
             --notes-file release-notes.txt
             --draft
+            --prerelease
