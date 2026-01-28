@@ -345,7 +345,6 @@ jobs:
             if [[ -f "${ff}.ico" ]]; then
               ./rcedit.exe ${ff}.exe --set-icon ${ff}.ico
             fi
-            
           fi
         done
         rm rcedit.exe
@@ -365,9 +364,24 @@ jobs:
           ./**/${{ needs.msys2.outputs.version_name }}.7z
     - name: '📝 Create Release Notes'
       run: |
+        rm -f release-notes.txt
         printf "Test Release Notes\n\`MD stuff here on new line\`\nHello" >> release-notes.txt
+        printf "\n" >> release-notes.txt
         printf "New print line here\n\n" >> release-notes.txt
         printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> release-notes.txt
+    # - name: 'Output file versions'
+    #   shell: powershell
+    #   run: |
+    #     cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}"
+    #     $verMagicNumber = 166
+
+    #     $filePath = "d:\projects\ffmpeg-win-arm64-test\test\ffmpeg-shared\avcodec-62.dll"
+    #     $shell = New-Object -COMObject Shell.Application
+    #     $shellfolder = $shell.Namespace((Split-Path -Parent $filePath))
+    #     $shellfile = $shellfolder.ParseName((Split-Path -Leaf $filePath))
+    #     $ver = $shellfolder.GetDetailsOf($shellfile, $verMagicNumber)
+    #     $ver
+    #     echo "test"
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
     - name: '🔍 Check Build Release Exists'
@@ -385,7 +399,7 @@ jobs:
     - name: '🔨 Create New Package Release'
       if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
-          gh release upload "weekly-autobuild-${{ steps.build-date.outputs.build_date }}" \
+          gh release create "weekly-autobuild-${{ steps.build-date.outputs.build_date }}" \
             './**/${{ needs.msys2.outputs.version_name }}.7z' \
             './**/${{ needs.msys2.outputs.version_name }}.sah256' \
             --title "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
