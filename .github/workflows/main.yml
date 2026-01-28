@@ -318,6 +318,7 @@ jobs:
         fi
         ls -la
 
+        version="${{ needs.defaults.outputs.github_tag }}"
         file_version="${{ steps.build-date.outputs.build_date }}"
         copyright="Copyright © 2000-$(date '+%Y') the FFmpeg developers"
         ffmpeg_desc="A command line tool to convert multimedia files between formats"
@@ -364,7 +365,7 @@ jobs:
           ./**/${{ needs.msys2.outputs.version_name }}.7z
     - name: '📝 Create Release Notes'
       run: |
-        printf "Test Release Notes\n`MD stuff here on new line`\nHello" >> release-notes.txt
+        printf "Test Release Notes\n\`MD stuff here on new line\`\nHello" >> release-notes.txt
         printf "New print line here\n\n" >> release-notes.txt
         printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> release-notes.txt
     - name: '🛒 Checkout'
