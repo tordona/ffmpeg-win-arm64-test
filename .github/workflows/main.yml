@@ -267,6 +267,9 @@ jobs:
     name: '💻 Distro Packager'
     runs-on: windows-11-arm
     needs: ['defaults', 'msys2']
+    defaults:
+      run:
+        shell: bash
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -274,12 +277,10 @@ jobs:
       with:
         path: ./
     - name: 'Cleanup Files'
-      id: 'files'
-      shell: bash
       run: |
         root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
         version_name="${{ needs.msys2.outputs.version_name }}"
-        cd "$root_path"
+        cd "${root_path}"
         rm -rf dump
         cd "$version_name"
         find . -type f -name '*.lib' -delete
@@ -296,7 +297,6 @@ jobs:
         cd ..
         cp ./utilities/rcedit.exe "./${root_path}/${version_name}/bin"
     - name: 'Resource Versioning'
-      shell: bash
       run: |
         echo "resource_versioning"
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"        
