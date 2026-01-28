@@ -341,7 +341,7 @@ jobs:
       run: |
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}"
         ls -la
-        7z a "${{ needs.msys2.outputs.version_name }}.7z" "${{ needs.msys2.outputs.version_name }}*.*"
+        7z a "${{ needs.msys2.outputs.version_name }}.7z" *.* -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd"
         ls -la
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
