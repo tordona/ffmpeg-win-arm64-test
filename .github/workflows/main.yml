@@ -367,6 +367,8 @@ jobs:
         printf "Test Release Notes\n`MD stuff here on new line`\nHello" >> release-notes.txt
         printf "New print line here\n\n" >> release-notes.txt
         printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> release-notes.txt
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
