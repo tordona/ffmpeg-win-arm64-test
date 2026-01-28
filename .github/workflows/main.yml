@@ -280,7 +280,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - name: '🔍 Make Release Title'
+    - name: '📅 Make Build Date'
       id: 'build-date'
       run: |
         build_date=$(date '+%Y.%m.%d.0')
@@ -288,7 +288,7 @@ jobs:
     - uses: actions/download-artifact@v5
       with:
         path: ./
-    - name: 'Cleanup Files'
+    - name: '🧹 Cleanup Files'
       run: |
         root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
         version_name="${{ needs.msys2.outputs.version_name }}"
@@ -308,7 +308,7 @@ jobs:
         7z x *.7z
         cd ..
         cp ./utilities/rcedit.exe "./${root_path}/${version_name}/bin"
-    - name: 'Resource Versioning'
+    - name: '🙈 Resource Versioning'
       run: |
         echo "resource_versioning"
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
@@ -348,13 +348,13 @@ jobs:
           fi
         done
         rm rcedit.exe
-    - name: 'Package'
+    - name: '🚚 Package'
       shell: bash
       run: |
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
         ls -la
         7z a ${{ needs.msys2.outputs.version_name }}.7z * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd
-        sha256 ${{ needs.msys2.outputs.version_name }}.7z ${{ needs.msys2.outputs.version_name }}.sha256
+        sha256sum ${{ needs.msys2.outputs.version_name }}.7z > ${{ needs.msys2.outputs.version_name }}.sha256
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:
@@ -362,7 +362,7 @@ jobs:
         name: "${{ needs.msys2.outputs.version_name }}-prerelease"
         path: |
           ./**/${{ needs.msys2.outputs.version_name }}.7z
-    - name: 'Create Release Notes'
+    - name: '📝 Create Release Notes'
       run: |
         printf "Test Release Notes\n`MD stuff here on new line`\nHello" >> release-notes.txt
         printf "New print line here\n\n" >> release-notes.txt
