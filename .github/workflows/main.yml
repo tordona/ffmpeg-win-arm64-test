@@ -277,9 +277,9 @@ jobs:
       id: 'files'
       shell: bash
       run: |
-        root="ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
         version_name="${{ needs.msys2.outputs.version_name }}"
-        cd "$root"
+        cd "$root_path"
         rm -rf dump
         cd "$version_name"
         find . -type f -name '*.lib' -delete
@@ -287,14 +287,14 @@ jobs:
         rm -rf ./presets/examples
     - name: "⬇️ Download External Utlities"
       run: |
-        root="ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
         version_name="${{ needs.msys2.outputs.version_name }}"
         mkdir utilities
         cd utilities
         curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
         7z x *.7z
         cd ..
-        cp ./utilities/rcedit.exe "./${root}/${version_name}/bin"
+        cp ./utilities/rcedit.exe "./${root_path}/${version_name}/bin"
     - name: 'Resource Versioning'
       shell: bash
       run: |
