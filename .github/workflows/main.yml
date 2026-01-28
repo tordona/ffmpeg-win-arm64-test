@@ -339,10 +339,10 @@ jobs:
     - name: 'Package'
       shell: bash
       run: |
-        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}"
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}
         ls -la
-        7z a "${{ needs.msys2.outputs.version_name }}.7z" *.* -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd
-        ls -la
+        7z a "${{ needs.msys2.outputs.version_name }}.7z" * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd
+        sha256 ${{ needs.msys2.outputs.version_name }}.7z ${{ needs.msys2.outputs.version_name }}.sha256
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:
@@ -353,10 +353,10 @@ jobs:
     # - name: '🔨 Create New Package Release'
     #   if: steps.check-package-release-exists.outputs.release-exists == 'false' 
     #   run: |
-    #       gh release create "${{ inputs.project }}" \
-    #         './release/${{ env.project_directory }}/mingw*.zst' \
-    #         './release/${{ env.project_directory }}/mingw*.sig' \
-    #         './release/${{ env.project_directory }}/mingw*.7z' \
+            # build_date=$(date '+%Y.%m.%d.0')
+    #       gh release create "Weekly Autobuild - $build_date" \
+    #         './**/${{ needs.msys2.outputs.version_name }}.7z' \
+    #         './**/${{ needs.msys2.outputs.version_name }}.sah256' \
     #         --title ${{ inputs.project }} \
     #         --notes 'Package Sources are in `*.src.7z`'
     #          --draft
