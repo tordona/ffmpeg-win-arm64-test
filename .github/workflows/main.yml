@@ -82,6 +82,7 @@ jobs:
         shell: msys2 {0}
     outputs:
       version_name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
+      checkout_commit: ${{ steps.parse-commit.outputs.checkout_commit }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
@@ -121,6 +122,12 @@ jobs:
       run: |
         mkdir source
         git -c advice.detachedHead=false clone ${{ env.source_repo }} ./source
+    - name: '🌪️ Parse Commit Hash'
+      id: 'parse-commit'
+      run: |
+        cd source
+        commit=$(git rev-parse HEAD)
+        echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
     - name: '🪡 Create FFmpeg Distribution Configuration Bits'
       id: 'ffmpeg-config-setup'
       uses: ./.github/actions/ffmpeg 
@@ -195,7 +202,7 @@ jobs:
         link_type="${{ needs.defaults.outputs.link_type }}"
         source_repo="${{ env.source_repo }}"
         git_dist_repo="${{ env.git_dist_repo }}"
-        commit=$(git rev-parse HEAD)
+        commit="${{ steps.parse-commit.outputs.checkout_commit }}"
         config_file="config.h"
 
         cd source
@@ -355,22 +362,29 @@ jobs:
         name: "${{ needs.msys2.outputs.version_name }}-prerelease"
         path: |
           ./**/${{ needs.msys2.outputs.version_name }}.7z
+    - name: 'Create Release Notes'
+      run: |
+        printf "Test Release Notes\n`MD stuff here on new line`\nHello" >> release-notes.txt
+        printf "New print line here\n\n" >> release-notes.txt
+        printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> release-notes.txt
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
       with:
         release-tag: "${{ steps.build-date.outputs.build_date }}"
-    #- name: '📤 Upload to Existing Package Release'
-    #   if: steps.release-exists.outputs.release-exists == 'true' 
-    #   run: |
-    #       gh release upload "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
-    #         './**/${{ needs.msys2.outputs.version_name }}.7z' \
-    #         './**/${{ needs.msys2.outputs.version_name }}.sha256' \
-    # - name: '🔨 Create New Package Release'
-    #   if: steps.release-exists.outputs.release-exists == 'true' 
-    #   run: |
-    #       gh release upload "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
-    #         './**/${{ needs.msys2.outputs.version_name }}.7z' \
-    #         './**/${{ needs.msys2.outputs.version_name }}.sah256' \
-    #         --title ${{ inputs.project }} \
-    #         --draft
+    - name: '📤 Upload to Existing Package Release'
+      if: steps.release-exists.outputs.release-exists == 'true' 
+      run: |
+          gh release upload "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
+            './**/${{ needs.msys2.outputs.version_name }}.7z' \
+            './**/${{ needs.msys2.outputs.version_name }}.sha256' \
+            --clobber
+    - name: '🔨 Create New Package Release'
+      if: steps.release-exists.outputs.release-exists == 'false' 
+      run: |
+          gh release upload "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
+            './**/${{ needs.msys2.outputs.version_name }}.7z' \
+            './**/${{ needs.msys2.outputs.version_name }}.sah256' \
+            --title ${{ inputs.project }} \
+            --notes-file release-notes.txt
+            --draft
