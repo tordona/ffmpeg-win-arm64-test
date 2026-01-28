@@ -80,6 +80,8 @@ jobs:
     defaults:
       run:
         shell: msys2 {0}
+    outputs:
+      version_name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
@@ -226,8 +228,8 @@ jobs:
     - name: '🪧 Copy Support Files'
       run: |
         echo "Copy support files to output directory"
-        output_path="/c/a/ffmpeg-win-arm64-test/ffmpeg-win-arm64-test/builds/ffmpeg-shared"
-        version_name="ffmpeg-8.0.git-essentials-shared-win-arm64"
+        output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
         build_file_ref="essentials-shared.txt"
         if [[ ! -d "$output_path/$version_name" ]] then
           mkdir -p "$output_path/$version_name"
@@ -264,18 +266,10 @@ jobs:
   distro:
     name: '💻 Distro Packager'
     runs-on: windows-11-arm
-    needs: ['msys2']
+    needs: ['defaults', 'msys2']
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - name: "⬇️ Download External Utlities"
-      run: |
-        mkdir utilities
-        cd utilities
-        curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
-        7z x *.7z
-        pwd
-        cp rcedit.exe ../**/**/bin/*.*
     - uses: actions/download-artifact@v5
       with:
         path: ./
@@ -283,19 +277,29 @@ jobs:
       id: 'files'
       shell: bash
       run: |
-        cd **
+        root="ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        version_name="${{ needs.msys2.outputs.version_name }}"
+        cd "$root"
         rm -rf dump
-        cd **
+        cd "$version_name"
         find . -type f -name '*.lib' -delete
         find . -type f -name '*.xsd' -delete
         rm -rf ./presets/examples
-        temp_name=$(basename $(pwd))
-        echo "package_name=${temp_name}" >> $GITHUB_OUTPUT
+    - name: "⬇️ Download External Utlities"
+      run: |
+        root="ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        version_name="${{ needs.msys2.outputs.version_name }}"
+        mkdir utilities
+        cd utilities
+        curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
+        7z x *.7z
+        cd ..
+        cp ./utilities/rcedit.exe "./${root}/${version_name}/bin"
     - name: 'Resource Versioning'
       shell: bash
       run: |
         echo "resource_versioning"
-        cd **/**/bin        
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"        
         file_version=$(date '+%Y.%m.%d.0')
         copyright="Copyright © 2000-$(date '+%Y') the FFmpeg developers"
         ffmpeg_desc="A command line tool to convert multimedia files between formats"
@@ -332,22 +336,13 @@ jobs:
     - name: 'Package'
       shell: bash
       run: |
-        cd **/**
-        pwd
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}"
+        7z a "${{ needs.msys2.outputs.version_name }}.7z" "${{ needs.msys2.outputs.version_name }}"
         ls -la
-        for dir in ffmpeg**; do
-          filename=$(dir)
-          7z a $filename.7z $filename
-        done
-    - name: 'Package'
-      shell: bash
-      run: |
-        cd **/**
-        7z a $${{ steps.files.outputs.package_name }}.7z ${{ steps.files.outputs.package_name }}
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:
         if-no-files-found: error
-        name: ${{ steps.files.outputs.package_name }}
+        name: ${{ needs.msys2.outputs.version_name }}
         path: |
-          ./**/${{ steps.files.outputs.package_name }}.7z
+          ./**/${{ needs.msys2.outputs.version_name }}.7z
