@@ -271,14 +271,16 @@ jobs:
     - name: "⬇️ Download External Utlities"
       run: |
         mkdir utilities
-        curl -O https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
         cd utilities
+        curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
         7z x *.7z
+        pwd
         cp rcedit.exe ../**/**/bin/*.*
     - uses: actions/download-artifact@v5
       with:
         path: ./
-    - name: 'Display structure of downloaded files'
+    - name: 'Cleanup Files'
+      id: 'files'
       shell: bash
       run: |
         cd **
@@ -287,6 +289,8 @@ jobs:
         find . -type f -name '*.lib' -delete
         find . -type f -name '*.xsd' -delete
         rm -rf ./presets/examples
+        temp_name=$(basename $(pwd))
+        echo "package_name=${temp_name}" >> $GITHUB_OUTPUT
     - name: 'Resource Versioning'
       shell: bash
       run: |
@@ -335,3 +339,15 @@ jobs:
           filename=$(dir)
           7z a $filename.7z $filename
         done
+    - name: 'Package'
+      shell: bash
+      run: |
+        cd **/**
+        7z a $${{ steps.files.outputs.package_name }}.7z ${{ steps.files.outputs.package_name }}
+    - name: '📤 Upload artifact: package'
+      uses: actions/upload-artifact@v6
+      with:
+        if-no-files-found: error
+        name: ${{ steps.files.outputs.package_name }}
+        path: |
+          ./**/${{ steps.files.outputs.package_name }}.7z
