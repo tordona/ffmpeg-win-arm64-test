@@ -299,7 +299,13 @@ jobs:
     - name: 'Resource Versioning'
       run: |
         echo "resource_versioning"
-        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"        
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
+        if [[ ! -f "rcedit.exe" ]]; then
+          echo "rcedit not found"
+          exit 1
+        fi
+        ls -la
+
         file_version=$(date '+%Y.%m.%d.0')
         copyright="Copyright © 2000-$(date '+%Y') the FFmpeg developers"
         ffmpeg_desc="A command line tool to convert multimedia files between formats"
@@ -318,9 +324,6 @@ jobs:
           if [[ -f "${ff}.exe" ]]; then
             product_prefix=${ff:0:2}
             product_suffix=${ff:2}
-            if ![[ -f "${ff}.exe.bak" ]]; then
-              cp ${ff}.exe ${ff}.exe.bak
-            fi
             rcedit.exe ${ff}.exe --set-version-string "FileDescription" "${!desc}"
             rcedit.exe ${ff}.exe --set-file-version "${file_version}"
             rcedit.exe ${ff}.exe --set-version-string "ProductName" "${product_prefix^^}${product_suffix}"
@@ -329,10 +332,10 @@ jobs:
             if [[ -f "${ff}.ico" ]]; then
               rcedit.exe ${ff}.exe --set-icon ${ff}.ico
             fi
-            rm *.exe.bak
-            rm rcedit.exe
+            
           fi
         done
+        rm rcedit.exe
     - name: 'Package'
       shell: bash
       run: |
