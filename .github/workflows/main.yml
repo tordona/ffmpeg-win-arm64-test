@@ -324,13 +324,13 @@ jobs:
           if [[ -f "${ff}.exe" ]]; then
             product_prefix=${ff:0:2}
             product_suffix=${ff:2}
-            rcedit.exe ${ff}.exe --set-version-string "FileDescription" "${!desc}"
-            rcedit.exe ${ff}.exe --set-file-version "${file_version}"
-            rcedit.exe ${ff}.exe --set-version-string "ProductName" "${product_prefix^^}${product_suffix}"
-            rcedit.exe ${ff}.exe --set-version-string "ProductVersion" "${version}"
-            rcedit.exe ${ff}.exe --set-version-string "LegalCopyright" "${copyright}"            
+            ./rcedit.exe ${ff}.exe --set-version-string "FileDescription" "${!desc}"
+            ./rcedit.exe ${ff}.exe --set-file-version "${file_version}"
+            ./rcedit.exe ${ff}.exe --set-version-string "ProductName" "${product_prefix^^}${product_suffix}"
+            ./rcedit.exe ${ff}.exe --set-version-string "ProductVersion" "${version}"
+            ./rcedit.exe ${ff}.exe --set-version-string "LegalCopyright" "${copyright}"            
             if [[ -f "${ff}.ico" ]]; then
-              rcedit.exe ${ff}.exe --set-icon ${ff}.ico
+              ./rcedit.exe ${ff}.exe --set-icon ${ff}.ico
             fi
             
           fi
