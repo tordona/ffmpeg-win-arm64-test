@@ -347,6 +347,17 @@ jobs:
       uses: actions/upload-artifact@v6
       with:
         if-no-files-found: error
-        name: ${{ needs.msys2.outputs.version_name }}
+        name: "${{ needs.msys2.outputs.version_name }}-prerelease"
         path: |
           ./**/${{ needs.msys2.outputs.version_name }}.7z
+    # - name: '🔨 Create New Package Release'
+    #   if: steps.check-package-release-exists.outputs.release-exists == 'false' 
+    #   run: |
+    #       gh release create "${{ inputs.project }}" \
+    #         './release/${{ env.project_directory }}/mingw*.zst' \
+    #         './release/${{ env.project_directory }}/mingw*.sig' \
+    #         './release/${{ env.project_directory }}/mingw*.7z' \
+    #         --title ${{ inputs.project }} \
+    #         --notes 'Package Sources are in `*.src.7z`'
+    #   env:
+    #     GITHUB_TOKEN: ${{ github.TOKEN }}
