@@ -1,0 +1,59 @@
+name: Release Distribution
+
+on:
+  workflow_call:
+    inputs:
+      version_name:
+        type: string
+        required: true 
+      build_date:
+        type: string
+        required: true 
+
+jobs:
+  release-distro:
+    name: '💻 Release Distribution'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - uses: actions/download-artifact@v5
+      with:
+        path: ./
+    - name: '☑️ File Check'
+      run: |
+        pwd
+        ls -la
+    - name: '🔍 Check Build Release Exists'
+      id: release-exists
+      uses: insightsengineering/release-existence-action@v1.0.0
+      with:
+        release-tag: "${{ inputs.build_date }}"
+    - name: '📤 Upload to Existing Package Release'
+      if: steps.release-exists.outputs.release-exists == 'true' 
+      run: |
+          path=$(find . -type f -name "${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+          cd $path
+          gh release upload "weekly-autobuild-${{ inputs.build_date }}" \
+            '${{ inputs.version_name }}.7z' \
+            '${{ inputs.version_name }}.sha256' \
+            --clobber \
+    - name: '🔨 Create New Package Release'
+      if: steps.release-exists.outputs.release-exists == 'false' 
+      run: |
+          path=$(find . -type f -name "${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+          cd $path
+          gh release create "weekly-autobuild-${{ inputs.build_date }}" \
+            '${{ inputs.version_name }}.7z' \
+            '${{ inputs.version_name }}.sha256' \
+            --title "Weekly Autobuild - ${{ inputs.build_date }}" \
+            --notes-file release_notes.md \
+            --draft \
+            --prerelease

@@ -1,4 +1,4 @@
-name: MSYS2 Environment
+name: Prepare Distribution
 
 on:
   workflow_call:
@@ -18,7 +18,9 @@ on:
       checkout_commit:
         type: string
         required: true 
-
+    outputs:
+      root_path:
+        value: ${{ jobs.prep-distro.outputs.build_date }}
 jobs:
   prep-distro:
     name: '💻 Prepare Distribution Package'

@@ -42,9 +42,9 @@ on:
       # - '.github/**'
       - '.devcontainer/**'
   pull_request:
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
 env:
   msys_toolchain: "clang"
@@ -433,49 +433,56 @@ jobs:
   #         ./**/${{ needs.msys2.outputs.version_name }}.sha256
   #         ./**/*.md
   release-distro:
-    name: '💻 Distro Release'
-    runs-on: ubuntu-latest
-    needs: ['prep-distro', 'msys2']
-    defaults:
-      run:
-        shell: bash
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    permissions:
-      contents: write
-    steps:
-    - name: '🛒 Checkout'
-      uses: actions/checkout@v5
-    - uses: actions/download-artifact@v5
-      with:
-        path: ./
-    - name: '☑️ File Check'
-      run: |
-        pwd
-        ls -la
-    - name: '🔍 Check Build Release Exists'
-      id: release-exists
-      uses: insightsengineering/release-existence-action@v1.0.0
-      with:
-        release-tag: "${{ needs.prep-distro.outputs.build_date }}"
-    - name: '📤 Upload to Existing Package Release'
-      if: steps.release-exists.outputs.release-exists == 'true' 
-      run: |
-          path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
-          cd $path
-          gh release upload "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
-            '${{ needs.msys2.outputs.version_name }}.7z' \
-            '${{ needs.msys2.outputs.version_name }}.sha256' \
-            --clobber \
-    - name: '🔨 Create New Package Release'
-      if: steps.release-exists.outputs.release-exists == 'false' 
-      run: |
-          path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
-          cd $path
-          gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
-            '${{ needs.msys2.outputs.version_name }}.7z' \
-            '${{ needs.msys2.outputs.version_name }}.sha256' \
-            --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
-            --notes-file release_notes.md \
-            --draft \
-            --prerelease
+    name: '🎞️ Setup Default Inputs Values'
+    uses: ./.github/workflows/release.yml
+    needs: ['msys2', 'prep-distro']
+    with:
+      version_name: "${{ needs.msys2.outputs.version_name }}"
+      build_date: "${{ needs.prep-distro.outputs.build_date }}"
+  # release-distro1:
+  #   name: '💻 Distro Release'
+  #   runs-on: ubuntu-latest
+  #   needs: ['prep-distro', 'msys2']
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #   env:
+  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #   - name: '🛒 Checkout'
+  #     uses: actions/checkout@v5
+  #   - uses: actions/download-artifact@v5
+  #     with:
+  #       path: ./
+  #   - name: '☑️ File Check'
+  #     run: |
+  #       pwd
+  #       ls -la
+  #   - name: '🔍 Check Build Release Exists'
+  #     id: release-exists
+  #     uses: insightsengineering/release-existence-action@v1.0.0
+  #     with:
+  #       release-tag: "${{ needs.prep-distro.outputs.build_date }}"
+  #   - name: '📤 Upload to Existing Package Release'
+  #     if: steps.release-exists.outputs.release-exists == 'true' 
+  #     run: |
+  #         path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+  #         cd $path
+  #         gh release upload "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
+  #           '${{ needs.msys2.outputs.version_name }}.7z' \
+  #           '${{ needs.msys2.outputs.version_name }}.sha256' \
+  #           --clobber \
+  #   - name: '🔨 Create New Package Release'
+  #     if: steps.release-exists.outputs.release-exists == 'false' 
+  #     run: |
+  #         path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+  #         cd $path
+  #         gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
+  #           '${{ needs.msys2.outputs.version_name }}.7z' \
+  #           '${{ needs.msys2.outputs.version_name }}.sha256' \
+  #           --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
+  #           --notes-file release_notes.md \
+  #           --draft \
+  #           --prerelease
