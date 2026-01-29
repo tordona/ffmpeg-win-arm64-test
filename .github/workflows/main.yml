@@ -314,26 +314,26 @@ jobs:
     #         fi
     #     done
     #     printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
-    - name: '🖥️ Get number of CPU cores'
-      uses: SimenB/github-actions-cpu-cores@v2
-      id: 'cpu-cores'
-    - name: '🍳 Trigger Make Command'
-      id: 'make-ffmpeg'
-      run: |
-        cd source
-        make -j${{ steps.cpu-cores.outputs.count }}
-    - name: '🏭 Trigger Install Command'
-      id: 'install-ffmpeg'
-      run: |
-        cd source
-        make install -j${{ steps.cpu-cores.outputs.count }}
-    - name: '📤 Upload artifact: package'
-      uses: actions/upload-artifact@v6
-      with:
-        if-no-files-found: error
-        name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
-        path: |
-          ./builds/**/*.*
+    # - name: '🖥️ Get number of CPU cores'
+    #   uses: SimenB/github-actions-cpu-cores@v2
+    #   id: 'cpu-cores'
+    # - name: '🍳 Trigger Make Command'
+    #   id: 'make-ffmpeg'
+    #   run: |
+    #     cd source
+    #     make -j${{ steps.cpu-cores.outputs.count }}
+    # - name: '🏭 Trigger Install Command'
+    #   id: 'install-ffmpeg'
+    #   run: |
+    #     cd source
+    #     make install -j${{ steps.cpu-cores.outputs.count }}
+    # - name: '📤 Upload artifact: package'
+    #   uses: actions/upload-artifact@v6
+    #   with:
+    #     if-no-files-found: error
+    #     name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
+    #     path: |
+    #       ./builds/**/*.*
   # prep-distro:
   #   name: '💻 Prepare Distribution Package'
   #   runs-on: windows-11-arm
