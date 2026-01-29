@@ -13,7 +13,7 @@ if [[ -f "$config_file" ]]; then
     sed -i "s|\s--docdir=$output_path\/$version_name\/docs||gI" $config_file
     sed -i "s|\s--libdir=$output_path\/dump\/libs||gI" $config_file
     sed -i "s|\s--incdir=$output_path\/dump\/include||gI" $config_file
-    echo "$(<$config_file)"
+    echo "$(head -n 25 $config_file)"
 fi
 if [[ -f "$build_file_ref" ]]; then
     sed -i -r "/((\w+\/)?(\w+\.\w{1,}){1,} is unchanged)/d" $build_file_ref
