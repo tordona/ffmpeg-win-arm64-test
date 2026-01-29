@@ -368,6 +368,7 @@ jobs:
             $file_version="| " + $($_.Name) + " | " + $file_version.Replace(".", " | ") + " |`n"
             $output+=$file_version
         }
+        output+="`n`n"
         echo $output
         cd ../..
         $output | Out-File -FilePath $filename -Encoding UTF8
@@ -397,7 +398,7 @@ jobs:
           echo "$(<$prerelease_notes)"
         fi
         if [[ -f "$library_versions" && -f "$library_versions" ]]; then
-          cat "$library_versions" > "$prerelease_notes"
+          cat "$library_versions" "$prerelease_notes" > release_notes.md 
         fi
     - name: '🚚 Package'
       shell: bash
@@ -468,17 +469,17 @@ jobs:
       run: |
           ls -laR
           gh release upload "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
-            './${{ needs.msys2.outputs.version_name }}.7z' \
-            './${{ needs.msys2.outputs.version_name }}.sha256' \
+            './**/${{ needs.msys2.outputs.version_name }}.7z' \
+            './**/${{ needs.msys2.outputs.version_name }}.sha256' \
             --clobber
     - name: '🔨 Create New Package Release'
       if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
           ls -laR
           gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
-            './${{ needs.msys2.outputs.version_name }}.7z' \
-            './${{ needs.msys2.outputs.version_name }}.sha256' \
+            './**/${{ needs.msys2.outputs.version_name }}.7z' \
+            './**/${{ needs.msys2.outputs.version_name }}.sha256' \
             --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
-            --notes-file release_notes.md
+            --notes-file ./**/release_notes.md
             --draft
             --prerelease
