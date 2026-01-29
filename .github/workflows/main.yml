@@ -248,8 +248,11 @@ jobs:
           cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
           echo "copied $build_file_ref out to license"
         fi
-    - name: 'Get Library Versions'
+    - name: '📑 Parse Library Versions'
       run: |
+        echo "Parse out library versions into markdown file"
+        pwd
+        cd source
         output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
         ff_libs=(
@@ -377,28 +380,6 @@ jobs:
           fi
         done
         rm rcedit.exe
-    - name: '📝 Create file version notes'
-      if: needs.defaults.outputs.link_type == 'shared'
-      id: 'library-versions'
-      shell: powershell
-      run: |
-        # pwd
-        # cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
-        # $filename="library_versions.md"
-        # $output="## Windows ARM64 builds`n`n"
-        # $output+="**Library Versions**`n"
-        # $output+="| library | version | | |`n"
-        # $output+="| -- | -- | -- | -- |`n"
-        # Get-ChildItem -Path "." -Filter *.dll | ForEach-Object {
-        #     $file_version=[System.Diagnostics.FileVersionInfo]::GetVersionInfo($($_.FullName)).FileVersion
-        #     $file_version="| " + $($_.Name) + " | " + $file_version.Replace(".", " | ") + " |`n"
-        #     $output+=$file_version
-        # }
-        # $output+="`n`n"
-        # echo $output
-        # cd ../..
-        # $output | Out-File -FilePath $filename -Encoding UTF8
-        # echo library_versions=$filename >> $env:GITHUB_OUTPUT
     - name: '📝 Create Pre-release Notes'
       id: 'prerelease-notes'
       run: |
@@ -410,13 +391,12 @@ jobs:
         printf "\n" >> $filename
         printf "New print line here\n\n" >> $filename
         printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> $filename
-        echo "prerelease_notes=${filename}" >> $GITHUB_OUTPUT
     - name: '📝 Concat Release Notes'
       run: |
         pwd
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-        library_versions="${{ steps.library-versions.outputs.library_versions }}"
-        prerelease_notes="${{ steps.prerelease-notes.outputs.prerelease_notes }}"
+        library_versions="library_versions.md"
+        prerelease_notes="prerelease_notes.md"
         if [[ -f "$library_versions" ]]; then
           echo "$(<$library_versions)"
         fi
