@@ -1,4 +1,4 @@
-name: Setup FFmpeg Baseline Configuration
+name: Initialize FFmpeg Configuration
 
 on:
   workflow_call:
@@ -21,14 +21,14 @@ on:
 
 jobs:
   setup-ffmpeg-options:
-    name: '🎞️ Setup FFmpeg Baseline Configuration'
+    name: '🎞️ Initialize FFmpeg Configuration'
     runs-on: ubuntu-latest
     outputs:
       build_config: ${{ steps.config.outputs.build_config }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
-    - name: '🗺️ Setup FFmpeg Baseline Configuration'
+    - name: '🗺️ Setup Configuration'
       id: 'baseline'
       working-directory: ./config
       run: |
