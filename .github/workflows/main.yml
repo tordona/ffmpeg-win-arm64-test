@@ -270,8 +270,8 @@ jobs:
         name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
           ./builds/**/*.*
-  distro:
-    name: '💻 Distro Packager'
+  prep-distro:
+    name: '💻 Prepare Distribution Package'
     runs-on: windows-11-arm
     needs: ['defaults', 'msys2']
     defaults:
@@ -279,6 +279,8 @@ jobs:
         shell: bash
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      build_date: ${{ steps.build-date.outputs.build_date }}
     steps:
     - name: '📅 Make Build Date'
       id: 'build-date'
@@ -348,12 +350,46 @@ jobs:
           fi
         done
         rm rcedit.exe
+    - name: 'Output file versions'
+      id: 'library-versions'
+      shell: powershell
+      run: |
+        pwd
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
+        $filename="library_versions.md"
+        $output="| library | version | | |`n"
+        $output+="| -- | -- | -- | -- |`n"
+        Get-ChildItem -Path "." -Filter *.dll | ForEach-Object {
+            $file_version=[System.Diagnostics.FileVersionInfo]::GetVersionInfo($($_.FullName)).FileVersion
+            $file_version="| " + $($_.Name) + " | " + $file_version.Replace(".", " | ") + " |`n"
+            $output+=$file_version
+        }
+        echo $output
+        cd ../..
+        $output | Out-File -FilePath $filename -Encoding UTF8
+        echo "library_versions=${filename}" >> $GITHUB_OUTPUT
+    - name: '📝 Create Pre-release Notes'
+      id: 'prerelease-notes'
+      run: |
+        pwd
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        $filename="prerelease_notes.md"
+        rm -f $filename
+        printf "Test Release Notes\n\`MD stuff here on new line\`\nHello" >> $filename
+        printf "\n" >> $filename
+        printf "New print line here\n\n" >> $filename
+        printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> $filename
+        echo "prerelease_notes=${filename}" >> $GITHUB_OUTPUT
+    - name: '📝 Concat Release Notes'
+      run: |
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        cat ${{ steps.library-versions.outputs.library_versions }} > ${{ steps.prerelease-notes.outputs.prerelease_notes }}
     - name: '🚚 Package'
       shell: bash
       run: |
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
         ls -la
-        7z a ${{ needs.msys2.outputs.version_name }}.7z * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd
+        7z a ${{ needs.msys2.outputs.version_name }}.7z * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd -xr!*.md
         sha256sum ${{ needs.msys2.outputs.version_name }}.7z > ${{ needs.msys2.outputs.version_name }}.sha256
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
@@ -362,16 +398,21 @@ jobs:
         name: "${{ needs.msys2.outputs.version_name }}-prerelease"
         path: |
           ./**/${{ needs.msys2.outputs.version_name }}.7z
+          ./**/${{ needs.msys2.outputs.version_name }}.sha256
+          ./**/*.md
     - name: '📝 Create Release Notes'
       run: |
-        rm -f release-notes.txt
-        printf "Test Release Notes\n\`MD stuff here on new line\`\nHello" >> release-notes.txt
-        printf "\n" >> release-notes.txt
-        printf "New print line here\n\n" >> release-notes.txt
-        printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> release-notes.txt
+        $filename="release_notes.md"
+        rm -f $filename
+        printf "Test Release Notes\n\`MD stuff here on new line\`\nHello" >> $filename
+        printf "\n" >> $filename
+        printf "New print line here\n\n" >> $filename
+        printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> $filename
+        echo "package_prefix=${prefix}-x86_64" >> $GITHUB_OUTPUT
     - name: 'Output file versions'
       shell: powershell
       run: |
+        $filename="library_versions.md"
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}"
         $output="| library | version | | |`n"
         $output+="| -- | -- | -- | -- |`n"
@@ -381,7 +422,11 @@ jobs:
             $output+=$file_version
         }
         echo $output
-        $output | Out-File -FilePath "library_versions_md.txt" -Encoding UTF8
+        $output | Out-File -FilePath $filename -Encoding UTF8
+        echo "package_prefix=${prefix}-x86_64" >> $GITHUB_OUTPUT
+    - name: '📝 Concat Release Notes'
+      run: |
+        cat library_versions.md > release_notes.md
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
     - name: '🔍 Check Build Release Exists'
@@ -406,5 +451,48 @@ jobs:
             './**/${{ needs.msys2.outputs.version_name }}.sah256' \
             --title "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
             --notes-file release-notes.txt
+            --draft
+            --prerelease
+  release-distro:
+    name: '💻 Distro Release'
+    runs-on: windows-11-arm
+    needs: ['prep-distro', 'msys2']
+    defaults:
+      run:
+        shell: bash
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - uses: actions/download-artifact@v5
+      with:
+        path: ./
+    - name: 'File Check'
+      run: |
+        pwd
+        ls -laR
+    - name: '🔍 Check Build Release Exists'
+      id: release-exists
+      uses: insightsengineering/release-existence-action@v1.0.0
+      with:
+        release-tag: "${{ needs.prep-distro.outputs.build_date }}"
+    - name: '📤 Upload to Existing Package Release'
+      if: steps.release-exists.outputs.release-exists == 'true' 
+      run: |
+          ls -laR
+          gh release upload "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
+            './${{ needs.msys2.outputs.version_name }}.7z' \
+            './${{ needs.msys2.outputs.version_name }}.sha256' \
+            --clobber
+    - name: '🔨 Create New Package Release'
+      if: steps.release-exists.outputs.release-exists == 'false' 
+      run: |
+          ls -laR
+          gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
+            './${{ needs.msys2.outputs.version_name }}.7z' \
+            './${{ needs.msys2.outputs.version_name }}.sah256' \
+            --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
+            --notes-file release-notes.md
             --draft
             --prerelease
