@@ -386,10 +386,21 @@ jobs:
         echo "prerelease_notes=${filename}" >> $GITHUB_OUTPUT
     - name: '📝 Concat Release Notes'
       run: |
+        pwd
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-        echo "$(${{ steps.library-versions.outputs.library_versions }})"
-        echo "$(${{ steps.prerelease-notes.outputs.prerelease_notes }})"
-        cat "${{ steps.library-versions.outputs.library_versions }}" > "${{ steps.prerelease-notes.outputs.prerelease_notes }}"
+        pwd
+        ls -laR
+        $library_versions="${{ steps.library-versions.outputs.library_versions }}"
+        $prerelease_notes="${{ steps.prerelease-notes.outputs.prerelease_notes }}""
+        if [[ -f "$library_versions" ]]; then
+          echo "$(<$library_versions)"
+        fi
+        if [[ -f "$prerelease_notes=" ]]; then
+          echo "$(<$prerelease_notes)"
+        fi
+        if [[ -f "$library_versions" && -f "$library_versions" ]]; then
+          cat "$library_versions" > "$prerelease_notes"
+        fi
     - name: '🚚 Package'
       shell: bash
       run: |
