@@ -124,9 +124,8 @@ jobs:
     - name: '📑 Parse Library Versions'
       run: |
         echo "Parse out library versions into markdown file"
-        pwd
-        ls -laR
         cd source
+        ls -la
         output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
         ff_libs=(
@@ -138,6 +137,7 @@ jobs:
             "libswresample"
             "libswscale"
         )
+        echo ${ff_libs[@]}
         declare -a ff_lib_versions
         ff_lib_versions+=("| library | version | | |")
         ff_lib_versions+=("| -- | -- | -- | -- |")
