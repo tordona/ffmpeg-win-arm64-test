@@ -164,19 +164,14 @@ jobs:
         pacman -U --disable-download-timeout --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: '🔨 Configure FFmpeg Build'
       continue-on-error: true
+      env:
+        major_version: "${{ needs.defaults.outputs.major_version }}"
+        build_type: "${{ needs.defaults.outputs.build_type }}"
+        build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+        build_config: "${{ steps.ffmpeg-config-setup.outputs.build_config }}"
       run: |
         echo "Configure FFmpeg Build with Library Options"
-        major_version="${{ needs.defaults.outputs.major_version }}}"
-        generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ./config/options.json)
-        ffmpeg_lib_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
-        if [[ "${{ needs.defaults.outputs.build_type }}" == "full" ]]; then
-          ffmpeg_lib_options+=" --extra-cflags=-DLIBTWOLAME_STATIC "
-          ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
-        fi
-        cd source
-        command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
-        echo $command
-        eval "$command > ${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}" 
+        bash .github/scripts/config_ffmpeg.sh
     - name: '🔨 Log: Show FFmpeg Build Config'
       run: |
         log="./source/ffbuild/config.log"
@@ -190,6 +185,7 @@ jobs:
         fi
     - name: '🥋 Modifiy Config Header and readme file'
       env:
+        commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
         path_msys_include: "${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
@@ -198,10 +194,8 @@ jobs:
         link_type: "${{ needs.defaults.outputs.link_type }}"
         source_repo: "${{ needs.defaults.outputs.source_repo }}"
         git_dist_repo: "${{ needs.defaults.outputs.git_dist_repo }}"
-        commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
       run: |
         echo "Remove build distribution specifc configrations"
-        cd source
         bash .github/scripts/config_header.sh
     - name: '🪧 Copy Support Files'
       env:
@@ -224,8 +218,7 @@ jobs:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
       run: |
         echo "Parse out library versions into markdown file"
-        cd source
-        bash .github/scripts/librar_versions.sh
+        bash .github/scripts/library_versions.sh
     - name: '🏭 Trigger Install Command'
       id: 'install-ffmpeg'
       run: |

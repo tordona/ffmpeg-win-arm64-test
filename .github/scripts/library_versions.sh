@@ -1,3 +1,4 @@
+cd source
 ff_libs=(
     "libavcodec"
     "libavdevice"
