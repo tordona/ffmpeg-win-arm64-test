@@ -250,7 +250,7 @@ jobs:
         fi
     - name: '📑 Parse Library Versions'
       run: |
-        la -laR
+        ls -laR
         echo "Parse out library versions into markdown file"
         output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
