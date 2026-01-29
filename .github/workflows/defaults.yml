@@ -45,10 +45,16 @@ on:
         value: ${{ jobs.defaults.outputs.package_prefix }}
       major_version:
         value: ${{ jobs.defaults.outputs.major_version }}
+      source_repo:
+        value: ${{ jobs.defaults.outputs.source_repo }}
+      git_dist_repo:
+        value: ${{ jobs.defaults.outputs.source_repo }}
 
 env:
   msys_toolchain: "clang"
   msys_prefix: "mingw-w64"
+  source_repo: "https://github.com/FFmpeg/FFmpeg"
+  git_dist_repo: "https://github.com/tordona/ffmpeg-win-arm64"
 
 jobs:
   defaults:
@@ -63,6 +69,8 @@ jobs:
       major_version: ${{ steps.input-defaults.outputs.major_version }}
       arch: ${{ steps.msys-defaults.outputs.arch }}
       package_prefix: ${{ steps.msys-defaults.outputs.package_prefix }}
+      source_repo: ${{ env.source_repo }}
+      git_dist_repo: ${{ env.git_dist_repo }}
     steps:
       - name: '🛒 Checkout'
         uses: actions/checkout@v5

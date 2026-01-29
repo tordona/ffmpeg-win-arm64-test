@@ -1,0 +1,142 @@
+name: MSYS2 Environment
+
+on:
+  workflow_call:
+    inputs:
+      root_path:
+        required: true
+        type: string
+      version_name:
+        type: string
+        required: true 
+      github_tag:
+        type: string
+        required: true 
+      source_repo:
+        type: string
+        required: true 
+      checkout_commit:
+        type: string
+        required: true 
+
+jobs:
+  prep-distro:
+    name: '💻 Prepare Distribution Package'
+    runs-on: windows-11-arm
+    defaults:
+      run:
+        shell: bash
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      build_date: ${{ steps.build-date.outputs.build_date }}
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - uses: actions/download-artifact@v5
+      with:
+        path: ./
+    - name: '📅 Make Build Date'
+      id: 'build-date'
+      run: |
+        build_date=$(date '+%Y.%m.%d.0')
+        echo "build_date=${build_date}" >> $GITHUB_OUTPUT
+    - name: '🧹 Cleanup Files'
+      run: |
+        cd "${{ inputs.root_path }}"
+        rm -rf dump
+        cd "${{ inputs.version_name }}"
+        find . -type f -name '*.lib' -delete
+        find . -type f -name '*.xsd' -delete
+        rm -rf ./presets/examples
+    - name: "⬇️ Download External Utlities"
+      run: |
+        mkdir utilities
+        cd utilities
+        curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
+        7z x *.7z
+        cd ..
+        cp ./utilities/rcedit.exe "./${{ inputs.root_path }}/${{ inputs.version_name }}/bin"
+    - name: '🙈 Resource Versioning'
+      run: |
+        echo "resource_versioning"
+        cd "${{ inputs.root_path }}/${{ inputs.version_name }}/bin"
+        if [[ ! -f "rcedit.exe" ]]; then
+          echo "rcedit not found"
+          exit 1
+        fi
+        ls -la
+
+        version="${{ inputs.github_tag }}"
+        file_version="${{ steps.build-date.outputs.build_date }}"
+        copyright="Copyright © 2000-$(date '+%Y') the FFmpeg developers"
+        ffmpeg_desc="A command line tool to convert multimedia files between formats"
+        ffplay_desc="A simple media player based on SDL and the FFmpeg libraries"
+        ffprobe_desc="A simple multimedia stream analyzer"
+
+        ff_progs=(
+          "ffmpeg"
+          "ffplay"
+          "ffprobe"
+        )
+
+        for ff in "${ff_progs[@]}"; do
+          desc=$ff
+          desc+="_desc"
+          if [[ -f "${ff}.exe" ]]; then
+            product_prefix=${ff:0:2}
+            product_suffix=${ff:2}
+            ./rcedit.exe ${ff}.exe --set-version-string "FileDescription" "${!desc}"
+            ./rcedit.exe ${ff}.exe --set-file-version "${file_version}"
+            ./rcedit.exe ${ff}.exe --set-version-string "ProductName" "${product_prefix^^}${product_suffix}"
+            ./rcedit.exe ${ff}.exe --set-version-string "ProductVersion" "${version}"
+            ./rcedit.exe ${ff}.exe --set-version-string "LegalCopyright" "${copyright}"            
+            if [[ -f "${ff}.ico" ]]; then
+              ./rcedit.exe ${ff}.exe --set-icon ${ff}.ico
+            fi
+          fi
+        done
+        rm rcedit.exe
+    - name: '📝 Create Pre-release Notes'
+      id: 'prerelease-notes'
+      run: |
+        pwd
+        cd "${{ inputs.root_path }}"
+        filename="prerelease_notes.md"
+        rm -f $filename
+        printf "\n" >> $filename
+        printf "**Source**\n" >> $filename
+        printf "${{ inputs.source_repo }}${{ inputs.checkout_commit }}\n" >> $filename
+    - name: '📝 Concat Release Notes'
+      run: |
+        pwd
+        cd "${{ inputs.root_path }}"
+        library_versions="library_versions.md"
+        prerelease_notes="prerelease_notes.md"
+        if [[ -f "$library_versions" ]]; then
+          echo "$(<$library_versions)"
+        fi
+        if [[ -f "$prerelease_notes" ]]; then
+          echo "$(<$prerelease_notes)"
+        fi
+        if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
+          cat "$library_versions" "$prerelease_notes" > release_notes.md
+        elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
+          cat "$prerelease_notes" > release_notes.md 
+        fi
+    - name: '🚚 Package'
+      shell: bash
+      run: |
+        cd "${{ inputs.root_path }}"
+        ls -la
+        7z a ${{ inputs.version_name }}.7z * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd -xr!*.md
+        sha256sum ${{ inputs.version_name }}.7z > ${{ inputs.version_name }}.sha256
+    - name: '📤 Upload artifact: package'
+      uses: actions/upload-artifact@v6
+      with:
+        if-no-files-found: error
+        name: "${{ inputs.version_name }}-prerelease"
+        path: |
+          ./**/${{ inputs.version_name }}.7z
+          ./**/${{ inputs.version_name }}.sha256
+          ./**/*.md
