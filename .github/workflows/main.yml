@@ -142,14 +142,11 @@ jobs:
         ff_lib_versions+=("| -- | -- | -- | -- |")
         echo "$ff_lib_versions"
         for lib in "${ff_libs[@]}"; do
-            cd "$lib"
+            cd "${lib}"
             file="${lib}.version"
-            if [[ -f "$file" ]]; then
-              echo "file: $file"
-            fi
-            if [[ -f "${file}" ]]; then
-              echo "file2: $file"
-            fi
+            version_string="$(head -1 $file)"
+            echo "version_string";
+            echo $version_string
             cd ..
         done
         for lib in "${ff_libs[@]}"; do
