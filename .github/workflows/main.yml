@@ -199,6 +199,7 @@ jobs:
         source_repo: "${{ needs.defaults.outputs.source_repo }}"
         git_dist_repo: "${{ needs.defaults.outputs.git_dist_repo }}"
         commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
+      working-directory: ./source
       run: |
         echo "Remove build distribution specifc configrations"
         bash .github/scripts/config_header.sh
@@ -225,19 +226,20 @@ jobs:
       id: 'cpu-cores'
     - name: '🍳 Trigger Make Command'
       id: 'make-ffmpeg'
+      working-directory: ./source
       run: |
-        cd source
         make -j${{ steps.cpu-cores.outputs.count }}
     - name: '📑 Parse Library Versions'
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+      working-directory: ./source
       run: |
         echo "Parse out library versions into markdown file"
         bash .github/scripts/library_versions.sh
     - name: '🏭 Trigger Install Command'
       id: 'install-ffmpeg'
+      working-directory: ./source
       run: |
-        cd source
         make install -j${{ steps.cpu-cores.outputs.count }}
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
