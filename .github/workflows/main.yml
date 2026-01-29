@@ -189,51 +189,26 @@ jobs:
           echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
         fi
     - name: '🥋 Modifiy Config Header and readme file'
+      env:
+        path_msys_include: "${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+        build_type: "${{ needs.defaults.outputs.build_type }}"
+        link_type: "${{ needs.defaults.outputs.link_type }}"
+        source_repo: "${{ needs.defaults.outputs.source_repo }}"
+        git_dist_repo: "${{ needs.defaults.outputs.git_dist_repo }}"
+        commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
       run: |
         echo "Remove build distribution specifc configrations"
-        path_msys_include="${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
-        output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-        build_type="${{ needs.defaults.outputs.build_type }}"
-        link_type="${{ needs.defaults.outputs.link_type }}"
-        source_repo="${{ needs.defaults.outputs.source_repo }}"
-        git_dist_repo="${{ needs.defaults.outputs.git_dist_repo }}"
-        commit="${{ steps.parse-commit.outputs.checkout_commit }}"
-        config_file="config.h"
         cd source
-        if [[ -f "$config_file" ]]; then
-          sed -i "s|\s--extra-cflags=-I$path_msys_include||gI" $config_file
-          sed -i "s|\s--extra-cflags='-march=native'||gI" $config_file
-          sed -i "s|\s--extra-cflags=-DLIBTWOLAME_STATIC||gI" $config_file
-          sed -i "s|\s--extra-cflags=-DMODPLUG_STATIC||gI" $config_file
-          sed -i "s|\s--extra-ldflags='-Wl,--allow-multiple-definition'||gI" $config_file
-          sed -i "s|\s--disable-manpages||gI" $config_file
-          sed -i "s|\s--disable-podpages||gI" $config_file
-          sed -i "s|\s--disable-txtpages||gI" $config_file
-          sed -i "s|\s--datadir=$output_path\/$version_name\/presets||gI" $config_file
-          sed -i "s|\s--prefix=$output_path\/$version_name||gI" $config_file
-          sed -i "s|\s--docdir=$output_path\/$version_name\/docs||gI" $config_file
-          sed -i "s|\s--libdir=$output_path\/dump\/libs||gI" $config_file
-          sed -i "s|\s--incdir=$output_path\/dump\/include||gI" $config_file
-          echo "$(<$config_file)"
-        fi
-        if [[ -f "$build_file_ref" ]]; then
-          sed -i -r "/((\w+\/)?(\w+\.\w{1,}){1,} is unchanged)/d" $build_file_ref
-          sed -i -r "/^install prefix/d" $build_file_ref
-          sed -i "1s|^|release-$build_type-$link_type build configuration\n\n|" $build_file_ref
-          sed -i "1s|^|Source Code: $source_repo/commit/$commit\n\n|" $build_file_ref
-          sed -i "1s|^|License: GPL v3\n\n|" $build_file_ref
-          sed -i "1s|^|Version: $version_name\n\n|" $build_file_ref
-          sed -i "1s|^|FFmpeg ARM64 ${build_type^} ${link_type^} Windows Build from $git_dist_repo\n\n|" $build_file_ref
-          echo "$(<$build_file_ref)"
-        fi
+        bash .github/scripts/config_header.sh
     - name: '🪧 Copy Support Files'
       run: |
         echo "Copy support files to output directory"
         output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        build_file_ref="essentials-shared.txt"
+        build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
         if [[ ! -d "$output_path/$version_name" ]] then
           mkdir -p "$output_path/$version_name"
         fi
@@ -255,36 +230,12 @@ jobs:
         cd source
         make -j${{ steps.cpu-cores.outputs.count }}
     - name: '📑 Parse Library Versions'
+      env:
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
       run: |
         echo "Parse out library versions into markdown file"
         cd source
-        ff_libs=(
-            "libavcodec"
-            "libavdevice"
-            "libavfilter"
-            "libavformat"
-            "libavutil"
-            "libswresample"
-            "libswscale"
-        )
-        declare -a ff_lib_versions
-        ff_lib_versions+=("**Library Versions**")
-        ff_lib_versions+=("| library | version | | |")
-        ff_lib_versions+=("| -- | -- | -- | -- |")
-        for lib in "${ff_libs[@]}"; do
-          file="${lib}.version"
-          path=$(find . -type f -name "$file" -printf "%P\n")
-          if [[ -n $path ]]; then
-              version_string="$(head -1 ${path})"
-              version_string="${version_string//lib/| lib}"
-              version_string="${version_string//_VERSION=/ | }"
-              version_string="${version_string//./ | } |\n\n"
-              echo $version_string
-              ff_lib_versions+=("${version_string}")
-          fi
-        done
-        output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
+        bash .github/scripts/librar_versions.sh
     - name: '🏭 Trigger Install Command'
       id: 'install-ffmpeg'
       run: |
