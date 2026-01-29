@@ -178,7 +178,7 @@ jobs:
       run: |
         log="./source/ffbuild/config.log"
         if [ -f "$log" ]; then
-            cat ./source/ffbuild/config.log
+          cat ./source/ffbuild/config.log
         fi
     - name: '🌳 Log: Show FFmpeg Configuration Output'
       run: |

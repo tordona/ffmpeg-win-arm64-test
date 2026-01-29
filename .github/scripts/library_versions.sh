@@ -18,9 +18,10 @@ for lib in "${ff_libs[@]}"; do
         version_string="$(head -1 ${path})"
         version_string="${version_string//lib/| lib}"
         version_string="${version_string//_VERSION=/ | }"
-        version_string="${version_string//./ | } |\n\n"
+        version_string="${version_string//./ | } |"
         echo $version_string
         ff_lib_versions+=("${version_string}")
+        ff_lib_versions+=(" ")
     fi
 done
 printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
