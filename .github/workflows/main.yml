@@ -42,9 +42,9 @@ on:
       # - '.github/**'
       - '.devcontainer/**'
   pull_request:
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
 env:
   msys_toolchain: "clang"
