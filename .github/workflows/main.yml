@@ -382,23 +382,23 @@ jobs:
       id: 'library-versions'
       shell: powershell
       run: |
-        pwd
-        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
-        $filename="library_versions.md"
-        $output="## Windows ARM64 builds`n`n"
-        $output+="**Library Versions**`n"
-        $output+="| library | version | | |`n"
-        $output+="| -- | -- | -- | -- |`n"
-        Get-ChildItem -Path "." -Filter *.dll | ForEach-Object {
-            $file_version=[System.Diagnostics.FileVersionInfo]::GetVersionInfo($($_.FullName)).FileVersion
-            $file_version="| " + $($_.Name) + " | " + $file_version.Replace(".", " | ") + " |`n"
-            $output+=$file_version
-        }
-        $output+="`n`n"
-        echo $output
-        cd ../..
-        $output | Out-File -FilePath $filename -Encoding UTF8
-        echo library_versions=$filename >> $env:GITHUB_OUTPUT
+        # pwd
+        # cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
+        # $filename="library_versions.md"
+        # $output="## Windows ARM64 builds`n`n"
+        # $output+="**Library Versions**`n"
+        # $output+="| library | version | | |`n"
+        # $output+="| -- | -- | -- | -- |`n"
+        # Get-ChildItem -Path "." -Filter *.dll | ForEach-Object {
+        #     $file_version=[System.Diagnostics.FileVersionInfo]::GetVersionInfo($($_.FullName)).FileVersion
+        #     $file_version="| " + $($_.Name) + " | " + $file_version.Replace(".", " | ") + " |`n"
+        #     $output+=$file_version
+        # }
+        # $output+="`n`n"
+        # echo $output
+        # cd ../..
+        # $output | Out-File -FilePath $filename -Encoding UTF8
+        # echo library_versions=$filename >> $env:GITHUB_OUTPUT
     - name: '📝 Create Pre-release Notes'
       id: 'prerelease-notes'
       run: |
