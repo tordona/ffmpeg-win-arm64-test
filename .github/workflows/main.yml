@@ -350,7 +350,7 @@ jobs:
           fi
         done
         rm rcedit.exe
-    - name: 'Output file versions'
+    - name: '📝 Create file version notes'
       id: 'library-versions'
       shell: powershell
       run: |
@@ -373,7 +373,7 @@ jobs:
       run: |
         pwd
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-        $filename="prerelease_notes.md"
+        filename="prerelease_notes.md"
         rm -f $filename
         printf "Test Release Notes\n\`MD stuff here on new line\`\nHello" >> $filename
         printf "\n" >> $filename
@@ -383,6 +383,8 @@ jobs:
     - name: '📝 Concat Release Notes'
       run: |
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        echo "$(${{ steps.library-versions.outputs.library_versions }})"
+        echo "$(${{ steps.prerelease-notes.outputs.prerelease_notes }})"
         cat ${{ steps.library-versions.outputs.library_versions }} > ${{ steps.prerelease-notes.outputs.prerelease_notes }}
     - name: '🚚 Package'
       shell: bash
@@ -400,33 +402,6 @@ jobs:
           ./**/${{ needs.msys2.outputs.version_name }}.7z
           ./**/${{ needs.msys2.outputs.version_name }}.sha256
           ./**/*.md
-    - name: '📝 Create Release Notes'
-      run: |
-        $filename="release_notes.md"
-        rm -f $filename
-        printf "Test Release Notes\n\`MD stuff here on new line\`\nHello" >> $filename
-        printf "\n" >> $filename
-        printf "New print line here\n\n" >> $filename
-        printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> $filename
-        echo "package_prefix=${prefix}-x86_64" >> $GITHUB_OUTPUT
-    - name: 'Output file versions'
-      shell: powershell
-      run: |
-        $filename="library_versions.md"
-        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}"
-        $output="| library | version | | |`n"
-        $output+="| -- | -- | -- | -- |`n"
-        Get-ChildItem -Path "." -Filter *.dll | ForEach-Object {
-            $file_version=[System.Diagnostics.FileVersionInfo]::GetVersionInfo($($_.FullName)).FileVersion
-            $file_version="| " + $($_.Name) + " | " + $file_version.Replace(".", " | ") + " |`n"
-            $output+=$file_version
-        }
-        echo $output
-        $output | Out-File -FilePath $filename -Encoding UTF8
-        echo "package_prefix=${prefix}-x86_64" >> $GITHUB_OUTPUT
-    - name: '📝 Concat Release Notes'
-      run: |
-        cat library_versions.md > release_notes.md
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
     - name: '🔍 Check Build Release Exists'
