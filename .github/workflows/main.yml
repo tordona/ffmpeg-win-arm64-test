@@ -42,9 +42,9 @@ on:
       # - '.github/**'
       - '.devcontainer/**'
   pull_request:
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.ref }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   msys_toolchain: "clang"
@@ -94,21 +94,21 @@ jobs:
         cache: true
         release: true
         install:
-            # gcc
+            gcc
             git
-            # make
+            make
         pacboy:
-            # toolchain:p
-            # gcc-compat:p
-            # diffutils:p
-            # libssh2:p
-            # jq:p
+            toolchain:p
+            gcc-compat:p
+            diffutils:p
+            libssh2:p
+            jq:p
             github-cli:p
-    # - name: '🏃‍➡️ Verify MSYS2 Install'
-    #   run: |
-    #     echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
-    #     command="clang --version"
-    #     eval $command
+    - name: '🏃‍➡️ Verify MSYS2 Install'
+      run: |
+        echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
+        command="clang --version"
+        eval $command
     - name: '🌪️ Clone FFmpeg source repository from Tag'
       if: ${{ github.event.inputs.github_tag != '' }}
       id: 'source-code-tag'
@@ -121,13 +121,151 @@ jobs:
       run: |
         mkdir source
         git -c advice.detachedHead=false clone ${{ env.source_repo }} ./source
+    - name: '🌪️ Parse Commit Hash'
+      id: 'parse-commit'
+      run: |
+        cd source
+        commit=$(git rev-parse HEAD)
+        echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
+    - name: '🪡 Create FFmpeg Distribution Configuration Bits'
+      id: 'ffmpeg-config-setup'
+      uses: ./.github/actions/ffmpeg 
+      with:
+        github_tag: ${{ needs.defaults.outputs.github_tag }}
+        build_type: ${{ needs.defaults.outputs.build_type }}
+        link_type: ${{ needs.defaults.outputs.link_type }}
+        msystem: ${{ needs.defaults.outputs.msystem }}
+        arch: ${{ needs.msys-defaults.outputs.arch }}
+        msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
+        build_config: ${{ needs.ffmpeg-baseline.outputs.build_config }}
+    - name: "📦 Install packages - Essentials Build"
+      working-directory: ./config
+      run: |
+        echo "Install required library packages - Essentials Build"
+        major_version="${{ needs.defaults.outputs.major_version }}"
+        packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+        echo "$packages"
+        pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
+    - name: "📦 Install packages - Full Build"
+      if: ${{ needs.defaults.outputs.build_type == 'full' }}
+      working-directory: ./config
+      run: |
+        echo "Install required library packages - Full Build"
+        major_version="${{ needs.defaults.outputs.major_version }}"
+        packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+        echo "$packages"
+        pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
+    - name: "⬇️ Download External Packages"
+      run: |
+       mkdir packages
+       gh release download "${{ env.msys_toolchain }}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
+    - name: "➡️ Install External Packages"
+      run: |
+        echo "Install Custom Packages from External Repo"
+        cd packages
+        pacman -U --disable-download-timeout --overwrite '*' --noconfirm *.pkg.tar.zst
+    - name: '🔨 Configure FFmpeg Build'
+      continue-on-error: true
+      run: |
+        echo "Configure FFmpeg Build with Library Options"
+        major_version="${{ needs.defaults.outputs.major_version }}}"
+        generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ./config/options.json)
+        ffmpeg_lib_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
+        if [[ "${{ needs.defaults.outputs.build_type }}" == "full" ]]; then
+          ffmpeg_lib_options+=" --extra-cflags=-DLIBTWOLAME_STATIC "
+          ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
+        fi
+        cd source
+        command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
+        echo $command
+        eval "$command > ${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}" 
+    - name: '🔨 Log: Show FFmpeg Build Config'
+      run: |
+        log="./source/ffbuild/config.log"
+        if [ -f "$log" ]; then
+            cat ./source/ffbuild/config.log
+        fi
+    - name: '🔨 Log: Show FFmpeg Configuration Output'
+      run: |
+        if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
+          echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
+        fi
+    - name: '🥋 Modifiy Config Header and readme file'
+      run: |
+        echo "Remove build distribution specifc configrations"
+        path_msys_include="${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
+        output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+        build_type="${{ needs.defaults.outputs.build_type }}"
+        link_type="${{ needs.defaults.outputs.link_type }}"
+        source_repo="${{ env.source_repo }}"
+        git_dist_repo="${{ env.git_dist_repo }}"
+        commit="${{ steps.parse-commit.outputs.checkout_commit }}"
+        config_file="config.h"
+        cd source
+        if [[ -f "$config_file" ]]; then
+          sed -i "s|\s--extra-cflags=-I$path_msys_include||gI" $config_file
+          sed -i "s|\s--extra-cflags='-march=native'||gI" $config_file
+          sed -i "s|\s--extra-cflags=-DLIBTWOLAME_STATIC||gI" $config_file
+          sed -i "s|\s--extra-cflags=-DMODPLUG_STATIC||gI" $config_file
+          sed -i "s|\s--extra-ldflags='-Wl,--allow-multiple-definition'||gI" $config_file
+          sed -i "s|\s--disable-manpages||gI" $config_file
+          sed -i "s|\s--disable-podpages||gI" $config_file
+          sed -i "s|\s--disable-txtpages||gI" $config_file
+          sed -i "s|\s--datadir=$output_path\/$version_name\/presets||gI" $config_file
+          sed -i "s|\s--prefix=$output_path\/$version_name||gI" $config_file
+          sed -i "s|\s--docdir=$output_path\/$version_name\/docs||gI" $config_file
+          sed -i "s|\s--libdir=$output_path\/dump\/libs||gI" $config_file
+          sed -i "s|\s--incdir=$output_path\/dump\/include||gI" $config_file
+          echo "$(<$config_file)"
+        fi
+        if [[ -f "$build_file_ref" ]]; then
+          sed -i -r "/((\w+\/)?(\w+\.\w{1,}){1,} is unchanged)/d" $build_file_ref
+          sed -i -r "/^install prefix/d" $build_file_ref
+          sed -i "1s|^|release-$build_type-$link_type build configuration\n\n|" $build_file_ref
+          sed -i "1s|^|Source Code: $source_repo/commit/$commit\n\n|" $build_file_ref
+          sed -i "1s|^|License: GPL v3\n\n|" $build_file_ref
+          sed -i "1s|^|Version: $version_name\n\n|" $build_file_ref
+          sed -i "1s|^|FFmpeg ARM64 ${build_type^} ${link_type^} Windows Build from $git_dist_repo\n\n|" $build_file_ref
+          echo "$(<$build_file_ref)"
+        fi
+    - name: '🪧 Copy Support Files'
+      run: |
+        echo "Copy support files to output directory"
+        output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        build_file_ref="essentials-shared.txt"
+        if [[ ! -d "$output_path/$version_name" ]] then
+          mkdir -p "$output_path/$version_name"
+        fi
+        if [[ -f "./source/$build_file_ref" ]]; then
+          cp "./source/$build_file_ref" "$output_path/$version_name/readme.txt"
+          echo "copied $build_file_ref out to readme.txt"
+        fi
+        if [[ -f "./source/COPYING.GPLv3" ]]; then
+          echo "exists COPYING.GPLv3"
+          cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
+          echo "copied $build_file_ref out to license"
+        fi
+    - name: '🖥️ Get number of CPU cores'
+      uses: SimenB/github-actions-cpu-cores@v2
+      id: 'cpu-cores'
+    - name: '🍳 Trigger Make Command'
+      id: 'make-ffmpeg'
+      run: |
+        cd source
+        make -j${{ steps.cpu-cores.outputs.count }}
+    - name: '🏭 Trigger Install Command'
+      id: 'install-ffmpeg'
+      run: |
+        cd source
+        make install -j${{ steps.cpu-cores.outputs.count }}
     - name: '📑 Parse Library Versions'
       run: |
         echo "Parse out library versions into markdown file"
-        cd source
-        ls -la
-        # output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        # version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
         ff_libs=(
             "libavcodec"
             "libavdevice"
@@ -137,401 +275,219 @@ jobs:
             "libswresample"
             "libswscale"
         )
-        echo "test1"
+        declare -a ff_lib_versions
         ff_lib_versions+=("| library | version | | |")
         ff_lib_versions+=("| -- | -- | -- | -- |")
-        echo "$ff_lib_versions"
-
         for lib in "${ff_libs[@]}"; do
-            path=$(find . -type f -name "${lib}.version" -printf "%P\n")
-            echo "path: $path
-            version_string="$(head -1 $path)"
+            if [[ -d "${lib}" && -f "${lib}/${lib}.version" ]]; then
+            version_string="$(head -1 ${lib}/${lib}.version)"
+            version_string="${version_string//lib/| lib}"
+            version_string="${version_string//_VERSION=/ | }"
+            version_string="${version_string//./ | } |"
             echo $version_string
-        done
-
-
-        for lib in "${ff_libs[@]}"; do
-            pwd
-            cd "${lib}"
-            file="${lib}.version"
-            pwd
-            version_string="$(head -1 $file)"
-            echo "version_string";
-            echo $version_string
-            cd ..
-        done
-        for lib in "${ff_libs[@]}"; do
-            echo "test out"
-            file="${lib}.version"
-            if [[ -d "${lib}" && -f "$file" ]]; then
-              echo "test out 2"
-              version_string="$(head -1 ${lib}/$file)"
-              version_string="${version_string//lib/| lib}"
-              version_string="${version_string//_VERSION=/ | }"
-              version_string="${version_string//./ | } |"
-              echo $version_string
-              ff_lib_versions+=("${version_string}")
-            echo "test out 3"
+            ff_lib_versions+=("${version_string}")
             fi
         done
-        for lib in "${ff_libs[@]}"; do
-            pwd
-            echo "test out3"
-            cd "$lib"
-            pwd
-            version_string="$(head -1 ${lib}.version)"
-            echo "version_string";
-            echo $version_string
-            cd ..
+        printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
+    - name: '📤 Upload artifact: package'
+      uses: actions/upload-artifact@v6
+      with:
+        if-no-files-found: error
+        name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
+        path: |
+          ./builds/**/*.*
+  prep-distro:
+    name: '💻 Prepare Distribution Package'
+    runs-on: windows-11-arm
+    needs: ['defaults', 'msys2']
+    defaults:
+      run:
+        shell: bash
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      build_date: ${{ steps.build-date.outputs.build_date }}
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - uses: actions/download-artifact@v5
+      with:
+        path: ./
+    - name: '📅 Make Build Date'
+      id: 'build-date'
+      run: |
+        build_date=$(date '+%Y.%m.%d.0')
+        echo "build_date=${build_date}" >> $GITHUB_OUTPUT
+    - name: '🧹 Cleanup Files'
+      run: |
+        root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        version_name="${{ needs.msys2.outputs.version_name }}"
+        cd "${root_path}"
+        rm -rf dump
+        cd "$version_name"
+        find . -type f -name '*.lib' -delete
+        find . -type f -name '*.xsd' -delete
+        rm -rf ./presets/examples
+    - name: "⬇️ Download External Utlities"
+      run: |
+        root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        version_name="${{ needs.msys2.outputs.version_name }}"
+        mkdir utilities
+        cd utilities
+        curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
+        7z x *.7z
+        cd ..
+        cp ./utilities/rcedit.exe "./${root_path}/${version_name}/bin"
+    - name: '🙈 Resource Versioning'
+      run: |
+        echo "resource_versioning"
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
+        if [[ ! -f "rcedit.exe" ]]; then
+          echo "rcedit not found"
+          exit 1
+        fi
+        ls -la
+
+        version="${{ needs.defaults.outputs.github_tag }}"
+        file_version="${{ steps.build-date.outputs.build_date }}"
+        copyright="Copyright © 2000-$(date '+%Y') the FFmpeg developers"
+        ffmpeg_desc="A command line tool to convert multimedia files between formats"
+        ffplay_desc="A simple media player based on SDL and the FFmpeg libraries"
+        ffprobe_desc="A simple multimedia stream analyzer"
+
+        ff_progs=(
+          "ffmpeg"
+          "ffplay"
+          "ffprobe"
+        )
+
+        for ff in "${ff_progs[@]}"; do
+          desc=$ff
+          desc+="_desc"
+          if [[ -f "${ff}.exe" ]]; then
+            product_prefix=${ff:0:2}
+            product_suffix=${ff:2}
+            ./rcedit.exe ${ff}.exe --set-version-string "FileDescription" "${!desc}"
+            ./rcedit.exe ${ff}.exe --set-file-version "${file_version}"
+            ./rcedit.exe ${ff}.exe --set-version-string "ProductName" "${product_prefix^^}${product_suffix}"
+            ./rcedit.exe ${ff}.exe --set-version-string "ProductVersion" "${version}"
+            ./rcedit.exe ${ff}.exe --set-version-string "LegalCopyright" "${copyright}"            
+            if [[ -f "${ff}.ico" ]]; then
+              ./rcedit.exe ${ff}.exe --set-icon ${ff}.ico
+            fi
+          fi
         done
-                # printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
-    # - name: '🌪️ Parse Commit Hash'
-    #   id: 'parse-commit'
-    #   run: |
-    #     cd source
-    #     commit=$(git rev-parse HEAD)
-    #     echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
-    # - name: '🪡 Create FFmpeg Distribution Configuration Bits'
-    #   id: 'ffmpeg-config-setup'
-    #   uses: ./.github/actions/ffmpeg 
-    #   with:
-    #     github_tag: ${{ needs.defaults.outputs.github_tag }}
-    #     build_type: ${{ needs.defaults.outputs.build_type }}
-    #     link_type: ${{ needs.defaults.outputs.link_type }}
-    #     msystem: ${{ needs.defaults.outputs.msystem }}
-    #     arch: ${{ needs.msys-defaults.outputs.arch }}
-    #     msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
-    #     build_config: ${{ needs.ffmpeg-baseline.outputs.build_config }}
-    # - name: "📦 Install packages - Essentials Build"
-    #   working-directory: ./config
-    #   run: |
-    #     echo "Install required library packages - Essentials Build"
-    #     major_version="${{ needs.defaults.outputs.major_version }}"
-    #     packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-    #     echo "$packages"
-    #     pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
-    # - name: "📦 Install packages - Full Build"
-    #   if: ${{ needs.defaults.outputs.build_type == 'full' }}
-    #   working-directory: ./config
-    #   run: |
-    #     echo "Install required library packages - Full Build"
-    #     major_version="${{ needs.defaults.outputs.major_version }}"
-    #     packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-    #     echo "$packages"
-    #     pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
-    # - name: "⬇️ Download External Packages"
-    #   run: |
-    #    mkdir packages
-    #    gh release download "${{ env.msys_toolchain }}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
-    # - name: "➡️ Install External Packages"
-    #   run: |
-    #     echo "Install Custom Packages from External Repo"
-    #     cd packages
-    #     pacman -U --disable-download-timeout --overwrite '*' --noconfirm *.pkg.tar.zst
-    # - name: '🔨 Configure FFmpeg Build'
-    #   continue-on-error: true
-    #   run: |
-    #     echo "Configure FFmpeg Build with Library Options"
-    #     major_version="${{ needs.defaults.outputs.major_version }}}"
-    #     generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ./config/options.json)
-    #     ffmpeg_lib_options=$(jq -r --arg version "$major_version" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
-    #     if [[ "${{ needs.defaults.outputs.build_type }}" == "full" ]]; then
-    #       ffmpeg_lib_options+=" --extra-cflags=-DLIBTWOLAME_STATIC "
-    #       ffmpeg_lib_options+=$(jq -r --arg version "$major_version" '[.options.full[] | .[] | select(.version <= $version) | "--enable-" + .option] | join(" ")' ./config/options.json)
-    #     fi
-    #     cd source
-    #     command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
-    #     echo $command
-    #     eval "$command > ${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}" 
-    # - name: '🔨 Log: Show FFmpeg Build Config'
-    #   run: |
-    #     log="./source/ffbuild/config.log"
-    #     if [ -f "$log" ]; then
-    #         cat ./source/ffbuild/config.log
-    #     fi
-    # - name: '🔨 Log: Show FFmpeg Configuration Output'
-    #   run: |
-    #     if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
-    #       echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
-    #     fi
-    # - name: '🥋 Modifiy Config Header and readme file'
-    #   run: |
-    #     echo "Remove build distribution specifc configrations"
-    #     path_msys_include="${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
-    #     output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-    #     version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-    #     build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-    #     build_type="${{ needs.defaults.outputs.build_type }}"
-    #     link_type="${{ needs.defaults.outputs.link_type }}"
-    #     source_repo="${{ env.source_repo }}"
-    #     git_dist_repo="${{ env.git_dist_repo }}"
-    #     commit="${{ steps.parse-commit.outputs.checkout_commit }}"
-    #     config_file="config.h"
-    #     cd source
-    #     if [[ -f "$config_file" ]]; then
-    #       sed -i "s|\s--extra-cflags=-I$path_msys_include||gI" $config_file
-    #       sed -i "s|\s--extra-cflags='-march=native'||gI" $config_file
-    #       sed -i "s|\s--extra-cflags=-DLIBTWOLAME_STATIC||gI" $config_file
-    #       sed -i "s|\s--extra-cflags=-DMODPLUG_STATIC||gI" $config_file
-    #       sed -i "s|\s--extra-ldflags='-Wl,--allow-multiple-definition'||gI" $config_file
-    #       sed -i "s|\s--disable-manpages||gI" $config_file
-    #       sed -i "s|\s--disable-podpages||gI" $config_file
-    #       sed -i "s|\s--disable-txtpages||gI" $config_file
-    #       sed -i "s|\s--datadir=$output_path\/$version_name\/presets||gI" $config_file
-    #       sed -i "s|\s--prefix=$output_path\/$version_name||gI" $config_file
-    #       sed -i "s|\s--docdir=$output_path\/$version_name\/docs||gI" $config_file
-    #       sed -i "s|\s--libdir=$output_path\/dump\/libs||gI" $config_file
-    #       sed -i "s|\s--incdir=$output_path\/dump\/include||gI" $config_file
-    #       echo "$(<$config_file)"
-    #     fi
-    #     if [[ -f "$build_file_ref" ]]; then
-    #       sed -i -r "/((\w+\/)?(\w+\.\w{1,}){1,} is unchanged)/d" $build_file_ref
-    #       sed -i -r "/^install prefix/d" $build_file_ref
-    #       sed -i "1s|^|release-$build_type-$link_type build configuration\n\n|" $build_file_ref
-    #       sed -i "1s|^|Source Code: $source_repo/commit/$commit\n\n|" $build_file_ref
-    #       sed -i "1s|^|License: GPL v3\n\n|" $build_file_ref
-    #       sed -i "1s|^|Version: $version_name\n\n|" $build_file_ref
-    #       sed -i "1s|^|FFmpeg ARM64 ${build_type^} ${link_type^} Windows Build from $git_dist_repo\n\n|" $build_file_ref
-    #       echo "$(<$build_file_ref)"
-    #     fi
-    # - name: '🪧 Copy Support Files'
-    #   run: |
-    #     echo "Copy support files to output directory"
-    #     output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-    #     version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-    #     build_file_ref="essentials-shared.txt"
-    #     if [[ ! -d "$output_path/$version_name" ]] then
-    #       mkdir -p "$output_path/$version_name"
-    #     fi
-    #     if [[ -f "./source/$build_file_ref" ]]; then
-    #       cp "./source/$build_file_ref" "$output_path/$version_name/readme.txt"
-    #       echo "copied $build_file_ref out to readme.txt"
-    #     fi
-    #     if [[ -f "./source/COPYING.GPLv3" ]]; then
-    #       echo "exists COPYING.GPLv3"
-    #       cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
-    #       echo "copied $build_file_ref out to license"
-    #     fi
-    # - name: '📑 Parse Library Versions'
-    #   run: |
-    #     echo "Parse out library versions into markdown file"
-    #     pwd
-    #     cd source
-    #     output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-    #     version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-    #     ff_libs=(
-    #         "libavcodec"
-    #         "libavdevice"
-    #         "libavfilter"
-    #         "libavformat"
-    #         "libavutil"
-    #         "libswresample"
-    #         "libswscale"
-    #     )
-    #     declare -a ff_lib_versions
-    #     ff_lib_versions+=("| library | version | | |")
-    #     ff_lib_versions+=("| -- | -- | -- | -- |")
-    #     for lib in "${ff_libs[@]}"; do
-    #         if [[ -d "${lib}" && -f "${lib}/${lib}.version" ]]; then
-    #         version_string="$(head -1 ${lib}/${lib}.version)"
-    #         version_string="${version_string//lib/| lib}"
-    #         version_string="${version_string//_VERSION=/ | }"
-    #         version_string="${version_string//./ | } |"
-    #         echo $version_string
-    #         ff_lib_versions+=("${version_string}")
-    #         fi
-    #     done
-    #     printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
-    # - name: '🖥️ Get number of CPU cores'
-    #   uses: SimenB/github-actions-cpu-cores@v2
-    #   id: 'cpu-cores'
-    # - name: '🍳 Trigger Make Command'
-    #   id: 'make-ffmpeg'
-    #   run: |
-    #     cd source
-    #     make -j${{ steps.cpu-cores.outputs.count }}
-    # - name: '🏭 Trigger Install Command'
-    #   id: 'install-ffmpeg'
-    #   run: |
-    #     cd source
-    #     make install -j${{ steps.cpu-cores.outputs.count }}
-    # - name: '📤 Upload artifact: package'
-    #   uses: actions/upload-artifact@v6
-    #   with:
-    #     if-no-files-found: error
-    #     name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
-    #     path: |
-    #       ./builds/**/*.*
-  # prep-distro:
-  #   name: '💻 Prepare Distribution Package'
-  #   runs-on: windows-11-arm
-  #   needs: ['defaults', 'msys2']
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #   env:
-  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #   outputs:
-  #     build_date: ${{ steps.build-date.outputs.build_date }}
-  #   steps:
-  #   - name: '🛒 Checkout'
-  #     uses: actions/checkout@v5
-  #   - uses: actions/download-artifact@v5
-  #     with:
-  #       path: ./
-  #   - name: '📅 Make Build Date'
-  #     id: 'build-date'
-  #     run: |
-  #       build_date=$(date '+%Y.%m.%d.0')
-  #       echo "build_date=${build_date}" >> $GITHUB_OUTPUT
-  #   - name: '🧹 Cleanup Files'
-  #     run: |
-  #       root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       version_name="${{ needs.msys2.outputs.version_name }}"
-  #       cd "${root_path}"
-  #       rm -rf dump
-  #       cd "$version_name"
-  #       find . -type f -name '*.lib' -delete
-  #       find . -type f -name '*.xsd' -delete
-  #       rm -rf ./presets/examples
-  #   - name: "⬇️ Download External Utlities"
-  #     run: |
-  #       root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       version_name="${{ needs.msys2.outputs.version_name }}"
-  #       mkdir utilities
-  #       cd utilities
-  #       curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
-  #       7z x *.7z
-  #       cd ..
-  #       cp ./utilities/rcedit.exe "./${root_path}/${version_name}/bin"
-  #   - name: '🙈 Resource Versioning'
-  #     run: |
-  #       echo "resource_versioning"
-  #       cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
-  #       if [[ ! -f "rcedit.exe" ]]; then
-  #         echo "rcedit not found"
-  #         exit 1
-  #       fi
-  #       ls -la
-
-  #       version="${{ needs.defaults.outputs.github_tag }}"
-  #       file_version="${{ steps.build-date.outputs.build_date }}"
-  #       copyright="Copyright © 2000-$(date '+%Y') the FFmpeg developers"
-  #       ffmpeg_desc="A command line tool to convert multimedia files between formats"
-  #       ffplay_desc="A simple media player based on SDL and the FFmpeg libraries"
-  #       ffprobe_desc="A simple multimedia stream analyzer"
-
-  #       ff_progs=(
-  #         "ffmpeg"
-  #         "ffplay"
-  #         "ffprobe"
-  #       )
-
-  #       for ff in "${ff_progs[@]}"; do
-  #         desc=$ff
-  #         desc+="_desc"
-  #         if [[ -f "${ff}.exe" ]]; then
-  #           product_prefix=${ff:0:2}
-  #           product_suffix=${ff:2}
-  #           ./rcedit.exe ${ff}.exe --set-version-string "FileDescription" "${!desc}"
-  #           ./rcedit.exe ${ff}.exe --set-file-version "${file_version}"
-  #           ./rcedit.exe ${ff}.exe --set-version-string "ProductName" "${product_prefix^^}${product_suffix}"
-  #           ./rcedit.exe ${ff}.exe --set-version-string "ProductVersion" "${version}"
-  #           ./rcedit.exe ${ff}.exe --set-version-string "LegalCopyright" "${copyright}"            
-  #           if [[ -f "${ff}.ico" ]]; then
-  #             ./rcedit.exe ${ff}.exe --set-icon ${ff}.ico
-  #           fi
-  #         fi
-  #       done
-  #       rm rcedit.exe
-  #   - name: '📝 Create Pre-release Notes'
-  #     id: 'prerelease-notes'
-  #     run: |
-  #       pwd
-  #       cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       filename="prerelease_notes.md"
-  #       rm -f $filename
-  #       printf "Test Release Notes\n\`MD stuff here on new line\`\nHello" >> $filename
-  #       printf "\n" >> $filename
-  #       printf "New print line here\n\n" >> $filename
-  #       printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> $filename
-  #   - name: '📝 Concat Release Notes'
-  #     run: |
-  #       pwd
-  #       cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       library_versions="library_versions.md"
-  #       prerelease_notes="prerelease_notes.md"
-  #       if [[ -f "$library_versions" ]]; then
-  #         echo "$(<$library_versions)"
-  #       fi
-  #       if [[ -f "$prerelease_notes" ]]; then
-  #         echo "$(<$prerelease_notes)"
-  #       fi
-  #       if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
-  #         cat "$library_versions" "$prerelease_notes" > release_notes.md
-  #       elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
-  #         cat "$prerelease_notes" > release_notes.md 
-  #       fi
-  #   - name: '🚚 Package'
-  #     shell: bash
-  #     run: |
-  #       cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       ls -la
-  #       7z a ${{ needs.msys2.outputs.version_name }}.7z * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd -xr!*.md
-  #       sha256sum ${{ needs.msys2.outputs.version_name }}.7z > ${{ needs.msys2.outputs.version_name }}.sha256
-  #   - name: '📤 Upload artifact: package'
-  #     uses: actions/upload-artifact@v6
-  #     with:
-  #       if-no-files-found: error
-  #       name: "${{ needs.msys2.outputs.version_name }}-prerelease"
-  #       path: |
-  #         ./**/${{ needs.msys2.outputs.version_name }}.7z
-  #         ./**/${{ needs.msys2.outputs.version_name }}.sha256
-  #         ./**/*.md
-  # release-distro:
-  #   name: '💻 Distro Release'
-  #   runs-on: ubuntu-latest
-  #   needs: ['prep-distro', 'msys2']
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #   env:
-  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #   permissions:
-  #     contents: write
-  #   steps:
-  #   - name: '🛒 Checkout'
-  #     uses: actions/checkout@v5
-  #   - uses: actions/download-artifact@v5
-  #     with:
-  #       path: ./
-  #   - name: '☑️ File Check'
-  #     run: |
-  #       pwd
-  #       ls -laR
-  #   - name: '🔍 Check Build Release Exists'
-  #     id: release-exists
-  #     uses: insightsengineering/release-existence-action@v1.0.0
-  #     with:
-  #       release-tag: "${{ needs.prep-distro.outputs.build_date }}"
-  #   - name: '📤 Upload to Existing Package Release'
-  #     if: steps.release-exists.outputs.release-exists == 'true' 
-  #     run: |
-  #         path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
-  #         cd $path
-  #         gh release upload "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
-  #           '${{ needs.msys2.outputs.version_name }}.7z' \
-  #           '${{ needs.msys2.outputs.version_name }}.sha256' \
-  #           --clobber \
-  #   - name: '🔨 Create New Package Release'
-  #     if: steps.release-exists.outputs.release-exists == 'false' 
-  #     run: |
-  #         path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
-  #         cd $path
-  #         gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
-  #           '${{ needs.msys2.outputs.version_name }}.7z' \
-  #           '${{ needs.msys2.outputs.version_name }}.sha256' \
-  #           --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
-  #           --notes-file release_notes.md \
-  #           --draft \
-  #           --prerelease
+        rm rcedit.exe
+    - name: '📝 Create file version notes'
+      if: needs.defaults.outputs.link_type == 'shared'
+      id: 'library-versions'
+      shell: powershell
+      run: |
+        # pwd
+        # cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
+        # $filename="library_versions.md"
+        # $output="## Windows ARM64 builds`n`n"
+        # $output+="**Library Versions**`n"
+        # $output+="| library | version | | |`n"
+        # $output+="| -- | -- | -- | -- |`n"
+        # Get-ChildItem -Path "." -Filter *.dll | ForEach-Object {
+        #     $file_version=[System.Diagnostics.FileVersionInfo]::GetVersionInfo($($_.FullName)).FileVersion
+        #     $file_version="| " + $($_.Name) + " | " + $file_version.Replace(".", " | ") + " |`n"
+        #     $output+=$file_version
+        # }
+        # $output+="`n`n"
+        # echo $output
+        # cd ../..
+        # $output | Out-File -FilePath $filename -Encoding UTF8
+        # echo library_versions=$filename >> $env:GITHUB_OUTPUT
+    - name: '📝 Create Pre-release Notes'
+      id: 'prerelease-notes'
+      run: |
+        pwd
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        filename="prerelease_notes.md"
+        rm -f $filename
+        printf "Test Release Notes\n\`MD stuff here on new line\`\nHello" >> $filename
+        printf "\n" >> $filename
+        printf "New print line here\n\n" >> $filename
+        printf "Commit: ${{ needs.msys2.outputs.checkout_commit }}" >> $filename
+    - name: '📝 Concat Release Notes'
+      run: |
+        pwd
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        library_versions="library_versions.md"
+        prerelease_notes="prerelease_notes.md"
+        if [[ -f "$library_versions" ]]; then
+          echo "$(<$library_versions)"
+        fi
+        if [[ -f "$prerelease_notes" ]]; then
+          echo "$(<$prerelease_notes)"
+        fi
+        if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
+          cat "$library_versions" "$prerelease_notes" > release_notes.md
+        elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
+          cat "$prerelease_notes" > release_notes.md 
+        fi
+    - name: '🚚 Package'
+      shell: bash
+      run: |
+        cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
+        ls -la
+        7z a ${{ needs.msys2.outputs.version_name }}.7z * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd -xr!*.md
+        sha256sum ${{ needs.msys2.outputs.version_name }}.7z > ${{ needs.msys2.outputs.version_name }}.sha256
+    - name: '📤 Upload artifact: package'
+      uses: actions/upload-artifact@v6
+      with:
+        if-no-files-found: error
+        name: "${{ needs.msys2.outputs.version_name }}-prerelease"
+        path: |
+          ./**/${{ needs.msys2.outputs.version_name }}.7z
+          ./**/${{ needs.msys2.outputs.version_name }}.sha256
+          ./**/*.md
+  release-distro:
+    name: '💻 Distro Release'
+    runs-on: ubuntu-latest
+    needs: ['prep-distro', 'msys2']
+    defaults:
+      run:
+        shell: bash
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - uses: actions/download-artifact@v5
+      with:
+        path: ./
+    - name: '☑️ File Check'
+      run: |
+        pwd
+        ls -laR
+    - name: '🔍 Check Build Release Exists'
+      id: release-exists
+      uses: insightsengineering/release-existence-action@v1.0.0
+      with:
+        release-tag: "${{ needs.prep-distro.outputs.build_date }}"
+    - name: '📤 Upload to Existing Package Release'
+      if: steps.release-exists.outputs.release-exists == 'true' 
+      run: |
+          path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+          cd $path
+          gh release upload "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
+            '${{ needs.msys2.outputs.version_name }}.7z' \
+            '${{ needs.msys2.outputs.version_name }}.sha256' \
+            --clobber \
+    - name: '🔨 Create New Package Release'
+      if: steps.release-exists.outputs.release-exists == 'false' 
+      run: |
+          path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+          cd $path
+          gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
+            '${{ needs.msys2.outputs.version_name }}.7z' \
+            '${{ needs.msys2.outputs.version_name }}.sha256' \
+            --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
+            --notes-file release_notes.md \
+            --draft \
+            --prerelease
