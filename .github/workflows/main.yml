@@ -445,21 +445,21 @@ jobs:
     - name: '📤 Upload to Existing Package Release'
       if: steps.release-exists.outputs.release-exists == 'true' 
       run: |
-          path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7" -printf "%P\n" | xargs -I {} dirname {})
+          path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
           cd $path
           gh release upload "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
             '${{ needs.msys2.outputs.version_name }}.7z' \
             '${{ needs.msys2.outputs.version_name }}.sha256' \
-            --clobber
+            --clobber \
     - name: '🔨 Create New Package Release'
       if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
-          path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7" -printf "%P\n" | xargs -I {} dirname {})
+          path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
           cd $path
           gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
             '${{ needs.msys2.outputs.version_name }}.7z' \
             '${{ needs.msys2.outputs.version_name }}.sha256' \
             --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
-            --notes-file release_notes.md
-            --draft
+            --notes-file release_notes.md \
+            --draft \
             --prerelease
