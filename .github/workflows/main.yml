@@ -144,10 +144,11 @@ jobs:
         for lib in "${ff_libs[@]}"; do
             echo "$lib"
             echo "${lib}/${lib}.version"
-            if [[ -f "./${lib}/${lib}.version" ]]; then
+            cd "${lib}"
+            if [[ -f "${lib}.version" ]]; then
               echo "test"
             fi
-            if [[ -d "${lib}" && -f "./${lib}/${lib}.version" ]]; then
+            if [[ -d "${lib}" && -f "${lib}.version" ]]; then
               version_string="$(head -1 ${lib}/${lib}.version)"
               version_string="${version_string//lib/| lib}"
               version_string="${version_string//_VERSION=/ | }"
@@ -155,6 +156,7 @@ jobs:
               echo $version_string
               ff_lib_versions+=("${version_string}")
             fi
+            cd ..
         done
         printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
     # - name: '🌪️ Parse Commit Hash'
