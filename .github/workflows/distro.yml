@@ -19,7 +19,7 @@ on:
         type: string
         required: true 
     outputs:
-      root_path:
+      build_date:
         value: ${{ jobs.prep-distro.outputs.build_date }}
 jobs:
   prep-distro:
