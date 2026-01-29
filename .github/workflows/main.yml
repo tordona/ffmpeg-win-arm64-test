@@ -142,8 +142,10 @@ jobs:
         ff_lib_versions+=("| -- | -- | -- | -- |")
         echo "$ff_lib_versions"
         for lib in "${ff_libs[@]}"; do
+            pwd
             cd "${lib}"
             file="${lib}.version"
+            pwd
             version_string="$(head -1 $file)"
             echo "version_string";
             echo $version_string
@@ -164,8 +166,10 @@ jobs:
             fi
         done
         for lib in "${ff_libs[@]}"; do
+            pwd
             echo "test out3"
             cd "$lib"
+            pwd
             version_string="$(head -1 ${lib}.version)"
             echo "version_string";
             echo $version_string
