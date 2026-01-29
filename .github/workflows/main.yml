@@ -360,7 +360,7 @@ jobs:
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
         $filename="library_versions.md"
         $output="## Windows ARM64 builds`n`n"
-        $output="**Library Versions**`n"
+        $output+="**Library Versions**`n"
         $output+="| library | version | | |`n"
         $output+="| -- | -- | -- | -- |`n"
         Get-ChildItem -Path "." -Filter *.dll | ForEach-Object {
@@ -371,7 +371,7 @@ jobs:
         echo $output
         cd ../..
         $output | Out-File -FilePath $filename -Encoding UTF8
-        echo "library_versions=${filename}" >> $GITHUB_OUTPUT
+        echo library_versions=$filename >> $env:GITHUB_OUTPUT
     - name: '📝 Create Pre-release Notes'
       id: 'prerelease-notes'
       run: |
@@ -389,7 +389,7 @@ jobs:
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
         echo "$(${{ steps.library-versions.outputs.library_versions }})"
         echo "$(${{ steps.prerelease-notes.outputs.prerelease_notes }})"
-        cat ${{ steps.library-versions.outputs.library_versions }} > ${{ steps.prerelease-notes.outputs.prerelease_notes }}
+        cat "${{ steps.library-versions.outputs.library_versions }}" > "${{ steps.prerelease-notes.outputs.prerelease_notes }}"
     - name: '🚚 Package'
       shell: bash
       run: |
@@ -406,30 +406,30 @@ jobs:
           ./**/${{ needs.msys2.outputs.version_name }}.7z
           ./**/${{ needs.msys2.outputs.version_name }}.sha256
           ./**/*.md
-    - name: '🔍 Check Build Release Exists'
-      id: release-exists
-      uses: insightsengineering/release-existence-action@v1.0.0
-      with:
-        release-tag: "${{ steps.build-date.outputs.build_date }}"
-    - name: '📤 Upload to Existing Package Release'
-      if: steps.release-exists.outputs.release-exists == 'true' 
-      run: |
-          ls -laR
-          gh release upload "weekly-autobuild-${{ steps.build-date.outputs.build_date }}" \
-            './**/${{ needs.msys2.outputs.version_name }}.7z' \
-            './**/${{ needs.msys2.outputs.version_name }}.sha256' \
-            --clobber
-    - name: '🔨 Create New Package Release'
-      if: steps.release-exists.outputs.release-exists == 'false' 
-      run: |
-          ls -laR
-          gh release create "weekly-autobuild-${{ steps.build-date.outputs.build_date }}" \
-            './**/${{ needs.msys2.outputs.version_name }}.7z' \
-            './**/${{ needs.msys2.outputs.version_name }}.sah256' \
-            --title "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
-            --notes-file release-notes.txt
-            --draft
-            --prerelease
+    # - name: '🔍 Check Build Release Exists'
+    #   id: release-exists
+    #   uses: insightsengineering/release-existence-action@v1.0.0
+    #   with:
+    #     release-tag: "${{ steps.build-date.outputs.build_date }}"
+    # - name: '📤 Upload to Existing Package Release'
+    #   if: steps.release-exists.outputs.release-exists == 'true' 
+    #   run: |
+    #       ls -laR
+    #       gh release upload "weekly-autobuild-${{ steps.build-date.outputs.build_date }}" \
+    #         './**/${{ needs.msys2.outputs.version_name }}.7z' \
+    #         './**/${{ needs.msys2.outputs.version_name }}.sha256' \
+    #         --clobber
+    # - name: '🔨 Create New Package Release'
+    #   if: steps.release-exists.outputs.release-exists == 'false' 
+    #   run: |
+    #       ls -laR
+    #       gh release create "weekly-autobuild-${{ steps.build-date.outputs.build_date }}" \
+    #         './**/${{ needs.msys2.outputs.version_name }}.7z' \
+    #         './**/${{ needs.msys2.outputs.version_name }}.sha256' \
+    #         --title "Weekly Autobuild - ${{ steps.build-date.outputs.build_date }}" \
+    #         --notes-file prerelease_notes.md
+    #         --draft
+    #         --prerelease
   release-distro:
     name: '💻 Distro Release'
     runs-on: ubuntu-latest
@@ -468,8 +468,8 @@ jobs:
           ls -laR
           gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
             './${{ needs.msys2.outputs.version_name }}.7z' \
-            './${{ needs.msys2.outputs.version_name }}.sah256' \
+            './${{ needs.msys2.outputs.version_name }}.sha256' \
             --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
-            --notes-file release-notes.md
+            --notes-file release_notes.md
             --draft
             --prerelease
