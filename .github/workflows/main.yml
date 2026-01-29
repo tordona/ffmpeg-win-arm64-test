@@ -43,9 +43,9 @@ on:
       # - '.github/**'
       - '.devcontainer/**'
   pull_request:
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
 env:
   msys_toolchain: "clang"
@@ -431,7 +431,7 @@ jobs:
     - uses: actions/download-artifact@v5
       with:
         path: ./
-    - name: 'File Check'
+    - name: '☑️ File Check'
       run: |
         pwd
         ls -laR
@@ -451,7 +451,11 @@ jobs:
     - name: '🔨 Create New Package Release'
       if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
+          pwd
+          ls -la
           cd **prerelease
+          pwd
+          ls -laR
           gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
             '${{ needs.msys2.outputs.version_name }}.7z' \
             '${{ needs.msys2.outputs.version_name }}.sha256' \
