@@ -141,6 +141,15 @@ jobs:
         ff_lib_versions+=("| library | version | | |")
         ff_lib_versions+=("| -- | -- | -- | -- |")
         echo "$ff_lib_versions"
+
+        for lib in "${ff_libs[@]}"; do
+            path=$(find . -type f -name "${lib}.version" -printf "%P\n")
+            echo "path: $path
+            version_string="$(head -1 $path)"
+            echo $version_string
+        done
+
+
         for lib in "${ff_libs[@]}"; do
             pwd
             cd "${lib}"
