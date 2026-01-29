@@ -284,6 +284,7 @@ jobs:
               ff_lib_versions+=("${version_string}")
           fi
         done
+        ff_lib_versions+=("\n\n")
         output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
     - name: '🏭 Trigger Install Command'
