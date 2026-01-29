@@ -94,15 +94,15 @@ jobs:
         cache: true
         release: true
         install:
-            gcc
+            # gcc
             git
-            make
+            # make
         pacboy:
-            toolchain:p
-            gcc-compat:p
-            diffutils:p
-            libssh2:p
-            jq:p
+            # toolchain:p
+            # gcc-compat:p
+            # diffutils:p
+            # libssh2:p
+            # jq:p
             github-cli:p
     - name: '🏃‍➡️ Verify MSYS2 Install'
       run: |
