@@ -282,14 +282,16 @@ jobs:
     outputs:
       build_date: ${{ steps.build-date.outputs.build_date }}
     steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v5
+    - uses: actions/download-artifact@v5
+      with:
+        path: ./
     - name: '📅 Make Build Date'
       id: 'build-date'
       run: |
         build_date=$(date '+%Y.%m.%d.0')
         echo "build_date=${build_date}" >> $GITHUB_OUTPUT
-    - uses: actions/download-artifact@v5
-      with:
-        path: ./
     - name: '🧹 Cleanup Files'
       run: |
         root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
@@ -357,7 +359,9 @@ jobs:
         pwd
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
         $filename="library_versions.md"
-        $output="| library | version | | |`n"
+        $output="## Windows ARM64 builds`n`n"
+        $output="**Library Versions**`n"
+        $output+="| library | version | | |`n"
         $output+="| -- | -- | -- | -- |`n"
         Get-ChildItem -Path "." -Filter *.dll | ForEach-Object {
             $file_version=[System.Diagnostics.FileVersionInfo]::GetVersionInfo($($_.FullName)).FileVersion
@@ -402,8 +406,6 @@ jobs:
           ./**/${{ needs.msys2.outputs.version_name }}.7z
           ./**/${{ needs.msys2.outputs.version_name }}.sha256
           ./**/*.md
-    - name: '🛒 Checkout'
-      uses: actions/checkout@v5
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
@@ -430,7 +432,7 @@ jobs:
             --prerelease
   release-distro:
     name: '💻 Distro Release'
-    runs-on: windows-11-arm
+    runs-on: ubuntu-latest
     needs: ['prep-distro', 'msys2']
     defaults:
       run:
