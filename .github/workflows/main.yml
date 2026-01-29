@@ -167,11 +167,12 @@ jobs:
             fi
         done
         for lib in "${ff_libs[@]}"; do
-            echo "test out"
-            file="${lib}.version"
-            if [[ -d "$lib" && -f "$file" ]]; then
-              echo "test out 3"
-            fi
+            echo "test out3"
+            cd "$lib"
+            version_string="$(head -1 ${lib}.version)"
+            echo "version_string";
+            echo $version_string
+            cd ..
         done
                 # printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
     # - name: '🌪️ Parse Commit Hash'
