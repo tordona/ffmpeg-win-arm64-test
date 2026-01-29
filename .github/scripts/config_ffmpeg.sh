@@ -7,4 +7,4 @@ if [[ "${ build_type }" == "full" ]]; then
 fi
 command="./configure ${build_config} ${generic_options} ${ffmpeg_lib_options}"
 echo $command
-eval "$command > ${build_file_ref}" 
+eval "$command > ${build_file_ref}"
