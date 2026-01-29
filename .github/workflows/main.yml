@@ -453,7 +453,7 @@ jobs:
       run: |
           pwd
           ls -la
-          cd **prerelease
+          cd "${{ needs.msys2.outputs.version_name }}-prerelease"
           pwd
           ls -laR
           gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
