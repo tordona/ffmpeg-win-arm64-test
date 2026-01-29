@@ -248,21 +248,9 @@ jobs:
           cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
           echo "copied $build_file_ref out to license"
         fi
-    - name: '🖥️ Get number of CPU cores'
-      uses: SimenB/github-actions-cpu-cores@v2
-      id: 'cpu-cores'
-    - name: '🍳 Trigger Make Command'
-      id: 'make-ffmpeg'
-      run: |
-        cd source
-        make -j${{ steps.cpu-cores.outputs.count }}
-    - name: '🏭 Trigger Install Command'
-      id: 'install-ffmpeg'
-      run: |
-        cd source
-        make install -j${{ steps.cpu-cores.outputs.count }}
     - name: '📑 Parse Library Versions'
       run: |
+        la -laR
         echo "Parse out library versions into markdown file"
         output_path="${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
@@ -279,7 +267,9 @@ jobs:
         ff_lib_versions+=("| library | version | | |")
         ff_lib_versions+=("| -- | -- | -- | -- |")
         for lib in "${ff_libs[@]}"; do
+            echo "in1"
             if [[ -d "${lib}" && -f "${lib}/${lib}.version" ]]; then
+            echo "in2"
             version_string="$(head -1 ${lib}/${lib}.version)"
             version_string="${version_string//lib/| lib}"
             version_string="${version_string//_VERSION=/ | }"
@@ -289,6 +279,19 @@ jobs:
             fi
         done
         printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
+    - name: '🖥️ Get number of CPU cores'
+      uses: SimenB/github-actions-cpu-cores@v2
+      id: 'cpu-cores'
+    - name: '🍳 Trigger Make Command'
+      id: 'make-ffmpeg'
+      run: |
+        cd source
+        make -j${{ steps.cpu-cores.outputs.count }}
+    - name: '🏭 Trigger Install Command'
+      id: 'install-ffmpeg'
+      run: |
+        cd source
+        make install -j${{ steps.cpu-cores.outputs.count }}
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:
