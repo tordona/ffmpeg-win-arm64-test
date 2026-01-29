@@ -248,6 +248,14 @@ jobs:
           cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
           echo "copied $build_file_ref out to license"
         fi
+    - name: '🖥️ Get number of CPU cores'
+      uses: SimenB/github-actions-cpu-cores@v2
+      id: 'cpu-cores'
+    - name: '🍳 Trigger Make Command'
+      id: 'make-ffmpeg'
+      run: |
+        cd source
+        make -j${{ steps.cpu-cores.outputs.count }}
     - name: '📑 Parse Library Versions'
       run: |
         ls -laR
@@ -279,14 +287,6 @@ jobs:
             fi
         done
         printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"
-    - name: '🖥️ Get number of CPU cores'
-      uses: SimenB/github-actions-cpu-cores@v2
-      id: 'cpu-cores'
-    - name: '🍳 Trigger Make Command'
-      id: 'make-ffmpeg'
-      run: |
-        cd source
-        make -j${{ steps.cpu-cores.outputs.count }}
     - name: '🏭 Trigger Install Command'
       id: 'install-ffmpeg'
       run: |
