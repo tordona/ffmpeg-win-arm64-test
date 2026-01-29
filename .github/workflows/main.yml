@@ -298,7 +298,7 @@ jobs:
         path: |
           ./builds/**/*.*
   prep-distro:
-    name: '🎞️ Setup Default Inputs Values'
+    name: '🎞️ Prepare Distribution'
     uses: ./.github/workflows/distro.yml
     needs: ['defaults', 'msys2']
     with:
@@ -308,9 +308,9 @@ jobs:
       source_repo: "${{ needs.defaults.outputs.source_repo }}"
       checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
   release-distro:
-    name: '🎞️ Setup Default Inputs Values'
+    name: '🎞️ Release Distribution'
     uses: ./.github/workflows/distro.yml
-    needs: ['defaults', 'msys2']
+    needs: ['defaults', 'msys2', 'prep-distro']
     with:
       root_path: "ffmpeg-${{ needs.defaults.outputs.link_type }}"
       version_name: "${{ needs.msys2.outputs.version_name }}"
