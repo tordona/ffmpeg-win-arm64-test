@@ -388,10 +388,8 @@ jobs:
       run: |
         pwd
         cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-        pwd
-        ls -laR
-        $library_versions="${{ steps.library-versions.outputs.library_versions }}"
-        $prerelease_notes="${{ steps.prerelease-notes.outputs.prerelease_notes }}""
+        library_versions="${{ steps.library-versions.outputs.library_versions }}"
+        prerelease_notes="${{ steps.prerelease-notes.outputs.prerelease_notes }}"
         if [[ -f "$library_versions" ]]; then
           echo "$(<$library_versions)"
         fi
