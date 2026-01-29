@@ -197,8 +197,8 @@ jobs:
         build_file_ref="${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
         build_type="${{ needs.defaults.outputs.build_type }}"
         link_type="${{ needs.defaults.outputs.link_type }}"
-        source_repo="${{ env.source_repo }}"
-        git_dist_repo="${{ env.git_dist_repo }}"
+        source_repo="${{ needs.defaults.outputs.source_repo }}"
+        git_dist_repo="${{ needs.defaults.outputs.git_dist_repo }}"
         commit="${{ steps.parse-commit.outputs.checkout_commit }}"
         config_file="config.h"
         cd source
@@ -307,131 +307,6 @@ jobs:
       github_tag: "${{ needs.defaults.outputs.github_tag }}"
       source_repo: "${{ needs.defaults.outputs.source_repo }}"
       checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
-  # prep-distro1:
-  #   name: '💻 Prepare Distribution Package'
-  #   runs-on: windows-11-arm
-  #   needs: ['defaults', 'msys2']
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #   env:
-  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #   outputs:
-  #     build_date: ${{ steps.build-date.outputs.build_date }}
-  #   steps:
-  #   - name: '🛒 Checkout'
-  #     uses: actions/checkout@v5
-  #   - uses: actions/download-artifact@v5
-  #     with:
-  #       path: ./
-  #   - name: '📅 Make Build Date'
-  #     id: 'build-date'
-  #     run: |
-  #       build_date=$(date '+%Y.%m.%d.0')
-  #       echo "build_date=${build_date}" >> $GITHUB_OUTPUT
-  #   - name: '🧹 Cleanup Files'
-  #     run: |
-  #       root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       version_name="${{ needs.msys2.outputs.version_name }}"
-  #       cd "${root_path}"
-  #       rm -rf dump
-  #       cd "$version_name"
-  #       find . -type f -name '*.lib' -delete
-  #       find . -type f -name '*.xsd' -delete
-  #       rm -rf ./presets/examples
-  #   - name: "⬇️ Download External Utlities"
-  #     run: |
-  #       root_path="ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       version_name="${{ needs.msys2.outputs.version_name }}"
-  #       mkdir utilities
-  #       cd utilities
-  #       curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
-  #       7z x *.7z
-  #       cd ..
-  #       cp ./utilities/rcedit.exe "./${root_path}/${version_name}/bin"
-  #   - name: '🙈 Resource Versioning'
-  #     run: |
-  #       echo "resource_versioning"
-  #       cd "ffmpeg-${{ needs.defaults.outputs.link_type }}/${{ needs.msys2.outputs.version_name }}/bin"
-  #       if [[ ! -f "rcedit.exe" ]]; then
-  #         echo "rcedit not found"
-  #         exit 1
-  #       fi
-  #       ls -la
-
-  #       version="${{ needs.defaults.outputs.github_tag }}"
-  #       file_version="${{ steps.build-date.outputs.build_date }}"
-  #       copyright="Copyright © 2000-$(date '+%Y') the FFmpeg developers"
-  #       ffmpeg_desc="A command line tool to convert multimedia files between formats"
-  #       ffplay_desc="A simple media player based on SDL and the FFmpeg libraries"
-  #       ffprobe_desc="A simple multimedia stream analyzer"
-
-  #       ff_progs=(
-  #         "ffmpeg"
-  #         "ffplay"
-  #         "ffprobe"
-  #       )
-
-  #       for ff in "${ff_progs[@]}"; do
-  #         desc=$ff
-  #         desc+="_desc"
-  #         if [[ -f "${ff}.exe" ]]; then
-  #           product_prefix=${ff:0:2}
-  #           product_suffix=${ff:2}
-  #           ./rcedit.exe ${ff}.exe --set-version-string "FileDescription" "${!desc}"
-  #           ./rcedit.exe ${ff}.exe --set-file-version "${file_version}"
-  #           ./rcedit.exe ${ff}.exe --set-version-string "ProductName" "${product_prefix^^}${product_suffix}"
-  #           ./rcedit.exe ${ff}.exe --set-version-string "ProductVersion" "${version}"
-  #           ./rcedit.exe ${ff}.exe --set-version-string "LegalCopyright" "${copyright}"            
-  #           if [[ -f "${ff}.ico" ]]; then
-  #             ./rcedit.exe ${ff}.exe --set-icon ${ff}.ico
-  #           fi
-  #         fi
-  #       done
-  #       rm rcedit.exe
-  #   - name: '📝 Create Pre-release Notes'
-  #     id: 'prerelease-notes'
-  #     run: |
-  #       pwd
-  #       cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       filename="prerelease_notes.md"
-  #       rm -f $filename
-  #       printf "\n" >> $filename
-  #       printf "**Source**\n" >> $filename
-  #       printf "${{ env.source_repo }}${{ needs.msys2.outputs.checkout_commit }}\n" >> $filename
-  #   - name: '📝 Concat Release Notes'
-  #     run: |
-  #       pwd
-  #       cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       library_versions="library_versions.md"
-  #       prerelease_notes="prerelease_notes.md"
-  #       if [[ -f "$library_versions" ]]; then
-  #         echo "$(<$library_versions)"
-  #       fi
-  #       if [[ -f "$prerelease_notes" ]]; then
-  #         echo "$(<$prerelease_notes)"
-  #       fi
-  #       if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
-  #         cat "$library_versions" "$prerelease_notes" > release_notes.md
-  #       elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
-  #         cat "$prerelease_notes" > release_notes.md 
-  #       fi
-  #   - name: '🚚 Package'
-  #     shell: bash
-  #     run: |
-  #       cd "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #       ls -la
-  #       7z a ${{ needs.msys2.outputs.version_name }}.7z * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd -xr!*.md
-  #       sha256sum ${{ needs.msys2.outputs.version_name }}.7z > ${{ needs.msys2.outputs.version_name }}.sha256
-  #   - name: '📤 Upload artifact: package'
-  #     uses: actions/upload-artifact@v6
-  #     with:
-  #       if-no-files-found: error
-  #       name: "${{ needs.msys2.outputs.version_name }}-prerelease"
-  #       path: |
-  #         ./**/${{ needs.msys2.outputs.version_name }}.7z
-  #         ./**/${{ needs.msys2.outputs.version_name }}.sha256
-  #         ./**/*.md
   release-distro:
     name: '🎞️ Setup Default Inputs Values'
     uses: ./.github/workflows/release.yml
@@ -441,50 +316,4 @@ jobs:
       build_date: "${{ needs.prep-distro.outputs.build_date }}"
     permissions:
       contents: write
-  # release-distro1:
-  #   name: '💻 Distro Release'
-  #   runs-on: ubuntu-latest
-  #   needs: ['prep-distro', 'msys2']
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #   env:
-  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #   permissions:
-  #     contents: write
-  #   steps:
-  #   - name: '🛒 Checkout'
-  #     uses: actions/checkout@v5
-  #   - uses: actions/download-artifact@v5
-  #     with:
-  #       path: ./
-  #   - name: '☑️ File Check'
-  #     run: |
-  #       pwd
-  #       ls -la
-  #   - name: '🔍 Check Build Release Exists'
-  #     id: release-exists
-  #     uses: insightsengineering/release-existence-action@v1.0.0
-  #     with:
-  #       release-tag: "${{ needs.prep-distro.outputs.build_date }}"
-  #   - name: '📤 Upload to Existing Package Release'
-  #     if: steps.release-exists.outputs.release-exists == 'true' 
-  #     run: |
-  #         path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
-  #         cd $path
-  #         gh release upload "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
-  #           '${{ needs.msys2.outputs.version_name }}.7z' \
-  #           '${{ needs.msys2.outputs.version_name }}.sha256' \
-  #           --clobber \
-  #   - name: '🔨 Create New Package Release'
-  #     if: steps.release-exists.outputs.release-exists == 'false' 
-  #     run: |
-  #         path=$(find . -type f -name "${{ needs.msys2.outputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
-  #         cd $path
-  #         gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
-  #           '${{ needs.msys2.outputs.version_name }}.7z' \
-  #           '${{ needs.msys2.outputs.version_name }}.sha256' \
-  #           --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
-  #           --notes-file release_notes.md \
-  #           --draft \
-  #           --prerelease
+ 
