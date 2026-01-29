@@ -143,7 +143,11 @@ jobs:
         echo "$ff_lib_versions"
         for lib in "${ff_libs[@]}"; do
             echo "$lib"
-            # cd "$lib"
+            pwd
+            ls -la
+            cd "$lib"
+            pwd
+            ls -la
             # if [[ -f "${lib}.version" ]]; then
             #   version_string="$(head -1 ${lib}.version)"
             #   version_string="${version_string//lib/| lib}"
