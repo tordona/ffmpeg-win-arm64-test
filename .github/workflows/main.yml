@@ -368,7 +368,7 @@ jobs:
             $file_version="| " + $($_.Name) + " | " + $file_version.Replace(".", " | ") + " |`n"
             $output+=$file_version
         }
-        output+="`n`n"
+        $output+="`n`n"
         echo $output
         cd ../..
         $output | Out-File -FilePath $filename -Encoding UTF8
