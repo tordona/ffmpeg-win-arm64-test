@@ -454,13 +454,12 @@ jobs:
           pwd
           ls -la
           cd "${{ needs.msys2.outputs.version_name }}-prerelease"
-          cd ffmpeg**
           pwd
           ls -laR
           gh release create "weekly-autobuild-${{ needs.prep-distro.outputs.build_date }}" \
-            '${{ needs.msys2.outputs.version_name }}.7z' \
-            '${{ needs.msys2.outputs.version_name }}.sha256' \
+            './**/${{ needs.msys2.outputs.version_name }}.7z' \
+            './**/${{ needs.msys2.outputs.version_name }}.sha256' \
             --title "Weekly Autobuild - ${{ needs.prep-distro.outputs.build_date }}" \
-            --notes-file release_notes.md
+            --notes-file ./**/release_notes.md
             --draft
             --prerelease
