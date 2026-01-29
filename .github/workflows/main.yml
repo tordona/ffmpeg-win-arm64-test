@@ -51,7 +51,7 @@ env:
 
 jobs:
   defaults:
-    name: '🎞️ Setup Default Inputs Values'
+    name: '🥡 Setup Default Inputs Values'
     uses: ./.github/workflows/defaults.yml
     with:
       github_tag: ${{ inputs.github_tag }}
@@ -60,7 +60,7 @@ jobs:
       msystem: ${{ inputs.msystem }}
       environment: ${{ inputs.environment }}
   ffmpeg-baseline:
-    name: '🎞️ FFmpeg Baseline Configuration'
+    name: '⚡️ Initialize FFmpeg Configuration'
     needs: ['defaults']
     uses: ./.github/workflows/ffmpeg.yml
     with:
@@ -177,13 +177,13 @@ jobs:
         command="./configure ${{ steps.ffmpeg-config-setup.outputs.build_config }} ${generic_options} ${ffmpeg_lib_options}"
         echo $command
         eval "$command > ${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}" 
-    - name: '🔨 Log: Show FFmpeg Build Config'
+    - name: '🪵 Log: Show FFmpeg Build Config'
       run: |
         log="./source/ffbuild/config.log"
         if [ -f "$log" ]; then
             cat ./source/ffbuild/config.log
         fi
-    - name: '🔨 Log: Show FFmpeg Configuration Output'
+    - name: '🌳 Log: Show FFmpeg Configuration Output'
       run: |
         if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
           echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
@@ -202,7 +202,7 @@ jobs:
       working-directory: ./source
       run: |
         echo "Remove build distribution specifc configrations"
-        bash .github/scripts/config_header.sh
+        bash ../.github/scripts/config_header.sh
     - name: '🪧 Copy Support Files'
       run: |
         echo "Copy support files to output directory"
@@ -235,7 +235,7 @@ jobs:
       working-directory: ./source
       run: |
         echo "Parse out library versions into markdown file"
-        bash .github/scripts/library_versions.sh
+        bash ../.github/scripts/library_versions.sh
     - name: '🏭 Trigger Install Command'
       id: 'install-ffmpeg'
       working-directory: ./source
