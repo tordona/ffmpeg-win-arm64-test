@@ -16,5 +16,9 @@ if [[ -d "./assets/icons" ]]; then
     cp "assets/icons/*.ico" "$output_path/$version_name/bin/*.*"
     cp "./assets/icons/*.ico" "$output_path/$version_name/bin/*"
     cp "assets/icons/*.ico" "$output_path/$version_name/bin/*"
+    cp "./assets/icons/**" "$output_path/$version_name/bin"
+    cp "assets/icons/**" "$output_path/$version_name/bin"
+    cp "./assets/icons/*" "$output_path/$version_name/bin"
+    cp "assets/icons/*" "$output_path/$version_name/bin"
     echo "copied icons out to bin directory"
 fi
