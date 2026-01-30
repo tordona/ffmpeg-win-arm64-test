@@ -116,7 +116,7 @@ jobs:
       id: 'build-file-ref'
       shell: bash
       run: |
-        echo "Direct console stdout to a text file."
+        echo "Direct configure command stdout to a text file."
         echo "Use text file as readme.txt inside distribution package."
         echo "Make a temporary file name for later copying."
         build_file_ref="${{ inputs.build_type}}-${{ inputs.link_type }}.txt"
@@ -126,7 +126,7 @@ jobs:
       id: 'build-config'
       shell: bash
       run: |
-        Echo "Update FFmpeg build config with distribution specific settings"
+        echo "Update FFmpeg build config with distribution specific settings"
         temp_config="${{ inputs.build_config }}"
         temp_config+=" --prefix=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}"
         temp_config+=" --datadir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/presets"
