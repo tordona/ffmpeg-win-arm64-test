@@ -150,6 +150,6 @@ jobs:
         if-no-files-found: error
         name: "${{ inputs.version_name }}-prerelease"
         path: |
-          ./**/${{ inputs.version_name }}.7z
-          ./**/${{ inputs.version_name }}.sha256
-          ./**/*.md
+          /**/${{ inputs.version_name }}.7z
+          /**/${{ inputs.version_name }}.sha256
+          /**/*.md
