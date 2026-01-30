@@ -95,6 +95,5 @@ runs:
         temp_config+=" --docdir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/docs"
         temp_config+=" --libdir=${{ steps.output-path.outputs.output_path }}/dump/libs"
         temp_config+=" --incdir=${{ steps.output-path.outputs.output_path }}/dump/include"
-        temp_config+=" --extra-cflags=-I${{ steps.path-msys-include.outputs.path_msys_include }}"
         echo "temp_config: $temp_config"
         echo "build_config=${temp_config}" >> $GITHUB_OUTPUT
