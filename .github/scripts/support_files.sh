@@ -10,8 +10,8 @@ if [[ -f "./source/COPYING.GPLv3" ]]; then
     cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
     echo "copied COPYING.GPLv3 out to license"
 fi
-if [[ -d "./assests/icons" ]]; then
-    cp "./assests/icons/*.*" "$output_path/$version_name/bin"
+if [[ -d "./assets/icons" ]]; then
+    cp "./assets/icons/*.*" "$output_path/$version_name/bin"
     echo "copied icons out to bin directory"
 else
     echo "no icons"
