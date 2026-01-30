@@ -183,20 +183,20 @@ jobs:
     #       echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
     #     fi
     # - name: '🥋 Modifiy Config Header and readme file'
-      env:
-        path_msys_include: "${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
-        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-        build_type: "${{ needs.defaults.outputs.build_type }}"
-        link_type: "${{ needs.defaults.outputs.link_type }}"
-        source_repo: "${{ needs.defaults.outputs.source_repo }}"
-        git_dist_repo: "${{ needs.defaults.outputs.git_dist_repo }}"
-        commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
-      working-directory: ./source
-      run: |
-        echo "Remove build distribution specifc configrations"
-        bash ../.github/scripts/config_header.sh
+      # env:
+      #   path_msys_include: "${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
+      #   output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+      #   version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+      #   build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+      #   build_type: "${{ needs.defaults.outputs.build_type }}"
+      #   link_type: "${{ needs.defaults.outputs.link_type }}"
+      #   source_repo: "${{ needs.defaults.outputs.source_repo }}"
+      #   git_dist_repo: "${{ needs.defaults.outputs.git_dist_repo }}"
+      #   commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
+      # working-directory: ./source
+      # run: |
+      #   echo "Remove build distribution specifc configrations"
+      #   bash ../.github/scripts/config_header.sh
     - name: '🪧 Copy Support Files'
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
