@@ -1,8 +1,6 @@
 name: FFmpeg Win-ARM64 Auto-Builds
 
 on:
-  # schedule:
-  #   - cron: '0 11 * * *'
   workflow_dispatch:
     inputs:
       release_tag:
@@ -41,6 +39,12 @@ on:
         required: true
         default: 'base'
         type: environment
+  push:
+    paths-ignore:
+      - '**.md'
+      - '.vscode/**'
+      # - '.github/**'
+      - '.devcontainer/**'
 
 # concurrency:
 #   group: ${{ github.workflow }}-${{ github.ref }}
@@ -72,10 +76,6 @@ jobs:
     name: '💻 MSYS2 Environment'
     runs-on: windows-11-arm
     needs: ['defaults', 'ffmpeg-init']
-    strategy:
-      matrix:
-        build_type: ['essentials', 'full']
-        link_type: ['static', 'shared']
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     defaults:
