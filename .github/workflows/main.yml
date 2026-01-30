@@ -1,6 +1,8 @@
 name: FFmpeg Win-ARM64 Auto-Builds
 
 on:
+  # schedule:
+  #   - cron: '0 11 * * *'
   workflow_dispatch:
     inputs:
       release_tag:
@@ -45,7 +47,6 @@ on:
       - '.vscode/**'
       # - '.github/**'
       - '.devcontainer/**'
-
 # concurrency:
 #   group: ${{ github.workflow }}-${{ github.ref }}
 #   cancel-in-progress: true
@@ -57,10 +58,14 @@ jobs:
   defaults:
     name: '🥡 Setup Default Values'
     uses: ./.github/workflows/defaults.yml
+    strategy:
+      matrix:
+        build_type: ['essentials', 'full']
+        link_type: ['static', 'shared']
     with:
       github_tag: ${{ inputs.github_tag }}
-      build_type: ${{ inputs.build_type }}
-      link_type: ${{ inputs.link_type }}
+      build_type: ${{ matrix.build_type }}
+      link_type: ${{ matrix.link_type }}
       msystem: ${{ inputs.msystem }}
       environment: ${{ inputs.environment }}
   ffmpeg-init:
