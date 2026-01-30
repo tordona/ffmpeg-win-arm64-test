@@ -22,5 +22,5 @@ if [[ -f "$build_file_ref" ]]; then
     sed -i "1s|^|License: GPL v3\n\n|" $build_file_ref
     sed -i "1s|^|Version: $version_name\n\n|" $build_file_ref
     sed -i "1s|^|FFmpeg ARM64 ${build_type^} ${link_type^} Windows Build from $git_dist_repo\n\n|" $build_file_ref
-    echo "$(head -n 25 $$build_file_ref)"
+    echo "$(head -n 25 $build_file_ref)"
 fi

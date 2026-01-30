@@ -232,6 +232,11 @@ jobs:
       working-directory: ./source
       run: |
         make install -j${{ steps.cpu-cores.outputs.count }}
+    - name: 'Test Path'
+      id: 'install-ffmpeg2'
+      run: |
+        pwd
+        ls -laR
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:
