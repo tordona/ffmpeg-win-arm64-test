@@ -1,3 +1,4 @@
+pwd
 if [[ ! -d "$output_path/$version_name" ]] then
     mkdir -p "$output_path/$version_name"
 fi
