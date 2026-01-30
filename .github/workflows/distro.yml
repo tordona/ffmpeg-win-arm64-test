@@ -81,7 +81,7 @@ jobs:
           "ffplay"
           "ffprobe"
         )
-
+        pwd
         for ff in "${ff_progs[@]}"; do
           desc=$ff
           desc+="_desc"
@@ -123,6 +123,7 @@ jobs:
       run: |
         pwd
         cd "${{ inputs.root_path }}"
+        header_notes="header_notes.md"
         library_versions="library_versions.md"
         prerelease_notes="prerelease_notes.md"
         if [[ -f "$library_versions" ]]; then
@@ -132,7 +133,7 @@ jobs:
           echo "$(<$prerelease_notes)"
         fi
         if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
-          cat "$header_notes.md" "$library_versions" "$prerelease_notes" > release_notes.md
+          cat "$header_notes" "$library_versions" "$prerelease_notes" > release_notes.md
         elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
           cat "$prerelease_notes" > release_notes.md 
         fi
