@@ -41,7 +41,6 @@ on:
       - '.vscode/**'
       # - '.github/**'
       - '.devcontainer/**'
-  pull_request:
 
 # concurrency:
 #   group: ${{ github.workflow }}-${{ github.ref }}
