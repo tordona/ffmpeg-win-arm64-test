@@ -123,7 +123,7 @@ jobs:
         unix_path="/home/runner/work/"
         msys_path="/c/a/"
         temp_build_config="${{ needs.ffmpeg-init.outputs.build_config }}"
-        temp_build_config="${temp_build_config/$unix_path/$msys_path}"
+        temp_build_config="${temp_build_config//$unix_path/$msys_path}"
         echo $temp_build_config
         echo "build_config=${temp_build_config}" >> $GITHUB_OUTPUT
     - name: '🌪️ Clone FFmpeg source repository from Tag'
