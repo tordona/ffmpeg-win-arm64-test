@@ -12,4 +12,6 @@ fi
 if [[ -d "./assests/icons" ]]; then
     cp "./assests/icons/*.*" "$output_path/$version_name/bin"
     echo "copied icons out to bin directory"
+else
+    echo "no icons"
 fi
