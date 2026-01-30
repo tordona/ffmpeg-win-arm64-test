@@ -34,6 +34,8 @@ jobs:
       run: |
         pwd
         ls -la
+        cd **prerelease
+        ls -laR
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
