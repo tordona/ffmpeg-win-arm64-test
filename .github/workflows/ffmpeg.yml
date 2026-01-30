@@ -97,7 +97,8 @@ jobs:
       shell: bash
       run: |
         echo "Define path for build output (prefix)"
-        path="./builds/ffmpeg-${{ inputs.link_type }}"
+        path=$(pwd)
+        path="${path}/builds/ffmpeg-${{ inputs.link_type }}"
         echo "output_path: $path"
         echo "output_path=${path}" >> $GITHUB_OUTPUT
     - name: Make version name string

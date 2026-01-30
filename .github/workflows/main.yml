@@ -128,13 +128,14 @@ jobs:
         mkdir source
         git -c advice.detachedHead=false clone ${{ needs.defaults.outputs.source_repo }} ./source
     - name: 'Translate Unix Path to MSYS'
+      id: 'msys-build-config'
       run: |
-        # pwd
-        # echo "/home/runner/work/"
-        # echo "/c/a/"
-        # text="apple banana apple"
-        # echo "${text/apple/orange}"   # output: orange banana apple
-        # echo "${text//apple/orange}
+        # pw
+        unix_path="/home/runner/work/"
+        msys_path="/c/a/"
+        build_config="${{ needs.ffmpeg-init.outputs.build_config }}"
+        build_config="${build_config/$unix_path/$msys_path}"
+        echo $build_config
     - name: '🌪️ Parse Commit Hash'
       id: 'parse-commit'
       run: |
