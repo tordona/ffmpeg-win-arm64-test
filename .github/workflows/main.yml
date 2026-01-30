@@ -71,9 +71,10 @@ jobs:
     needs: ['defaults']
     uses: ./.github/workflows/ffmpeg.yml
     with:
-      msystem: ${{ needs.defaults.outputs.msystem }}
+      github_tag: ${{ needs.defaults.outputs.github_tag }}
       build_type: ${{ needs.defaults.outputs.build_type }}
       link_type: ${{ needs.defaults.outputs.link_type }}
+      msystem: ${{ needs.defaults.outputs.msystem }}
       major_version: ${{ needs.defaults.outputs.major_version }}
   msys2:
     name: '💻 MSYS2 Environment'
