@@ -99,13 +99,23 @@ jobs:
           fi
         done
         rm rcedit.exe
-    - name: '📝 Create Pre-release Notes'
+    - name: '📝 Create Header Notes'
+      id: 'header-notes'
+      run: |
+        pwd
+        cd "${{ inputs.root_path }}"
+        filename="header_notes.md"
+        rm -f $filename
+        printf "## Windows ARM64 builds\n" >> $filename
+        printf "\n" >> $filename
+    - name: '📝 Create Prerelease Notes'
       id: 'prerelease-notes'
       run: |
         pwd
         cd "${{ inputs.root_path }}"
         filename="prerelease_notes.md"
         rm -f $filename
+        printf "\n" >> $filename
         printf "\n" >> $filename
         printf "**Source**\n" >> $filename
         printf "${{ inputs.source_repo }}/${{ inputs.checkout_commit }}\n" >> $filename
@@ -122,7 +132,7 @@ jobs:
           echo "$(<$prerelease_notes)"
         fi
         if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
-          cat "$library_versions" "$prerelease_notes" > release_notes.md
+          cat "$header_notes.md" "$library_versions" "$prerelease_notes" > release_notes.md
         elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
           cat "$prerelease_notes" > release_notes.md 
         fi

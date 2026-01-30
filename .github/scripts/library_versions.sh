@@ -21,7 +21,6 @@ for lib in "${ff_libs[@]}"; do
         version_string="${version_string//./ | } |"
         echo $version_string
         ff_lib_versions+=("${version_string}")
-        ff_lib_versions+=(" ")
     fi
 done
 printf "%s\n" "${ff_lib_versions[@]}" > "$output_path/library_versions.md"

@@ -52,7 +52,7 @@ env:
 
 jobs:
   defaults:
-    name: '🥡 Setup Default Inputs Values'
+    name: '🥡 Setup Default Values'
     uses: ./.github/workflows/defaults.yml
     with:
       github_tag: ${{ inputs.github_tag }}
@@ -143,7 +143,6 @@ jobs:
         echo "Install required library packages - Essentials Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-        echo "$packages"
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
     - name: "📦 Install packages - Full Build"
       if: ${{ needs.defaults.outputs.build_type == 'full' }}
@@ -152,7 +151,6 @@ jobs:
         echo "Install required library packages - Full Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-        echo "$packages"
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
     - name: "⬇️ Download External Packages"
       run: |
