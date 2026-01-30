@@ -64,23 +64,14 @@ jobs:
         link_type: ['static', 'shared']
     with:
       github_tag: ${{ inputs.github_tag }}
-      build_type: ${{ matrix.build_type }}
-      link_type: ${{ matrix.link_type }}
+      build_type: ${{ inputs.build_type }}
+      link_type: ${{ inputs.link_type }}
       msystem: ${{ inputs.msystem }}
       environment: ${{ inputs.environment }}
-  ffmpeg-init:
-    name: '⚡️ Initialize FFmpeg Configuration'
-    needs: ['defaults']
-    uses: ./.github/workflows/ffmpeg.yml
-    with:
-      msystem: ${{ needs.defaults.outputs.msystem }}
-      build_type: ${{ needs.defaults.outputs.build_type }}
-      link_type: ${{ needs.defaults.outputs.link_type }}
-      major_version: ${{ needs.defaults.outputs.major_version }}
   msys2:
     name: '💻 MSYS2 Environment'
     runs-on: windows-11-arm
-    needs: ['defaults', 'ffmpeg-init']
+    needs: ['defaults']
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     defaults:
@@ -144,7 +135,6 @@ jobs:
         msystem: ${{ needs.defaults.outputs.msystem }}
         arch: ${{ needs.defaults.outputs.arch }}
         msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
-        build_config: ${{ needs.ffmpeg-init.outputs.build_config }}
     - name: "📦 Install packages - Essentials Build"
       working-directory: ./config
       run: |
