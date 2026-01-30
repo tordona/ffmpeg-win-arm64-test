@@ -3,6 +3,11 @@ name: Setup Workflow Defaults
 on:
   workflow_call:
     inputs:
+      release_tag:
+        description: 'Tag Name for Release'
+        required: false
+        default: "n8.0.1"
+        type: string
       github_tag:
         description: 'Version Tag to build'
         required: false
@@ -29,6 +34,8 @@ on:
         default: 'base'
         type: string
     outputs:
+      release_tag:
+        value: ${{ jobs.defaults.outputs.release_tag }}
       github_tag:
         value: ${{ jobs.defaults.outputs.github_tag }}
       build_type:
@@ -61,14 +68,15 @@ jobs:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
     outputs:
+      release_tag: ${{ steps.input-defaults.outputs.release_tag }}
       github_tag: ${{ steps.input-defaults.outputs.github_tag }}
       build_type: ${{ steps.input-defaults.outputs.build_type }}
       link_type: ${{ steps.input-defaults.outputs.link_type }}
       msystem: ${{ steps.input-defaults.outputs.msystem }}
       environment: ${{ steps.input-defaults.outputs.environment }}
-      major_version: ${{ steps.input-defaults.outputs.major_version }}
       arch: ${{ steps.msys-defaults.outputs.arch }}
       package_prefix: ${{ steps.msys-defaults.outputs.package_prefix }}
+      major_version: ${{ steps.input-defaults.outputs.major_version }}
       source_repo: ${{ env.source_repo }}
       git_dist_repo: ${{ env.git_dist_repo }}
     steps:
@@ -78,7 +86,10 @@ jobs:
         id: input-defaults
         shell: bash
         run: |
-          # echo "Sets up default values when triggered from a push"
+          # echo "Set up default values when not triggered from a workflow_dispatch"
+          temp_release_tag="${{ inputs.release_tag || 'weekly-autobuild' }}"
+          echo "release_tagt=${temp_release_tag}" >> $GITHUB_OUTPUT
+
           temp_build_type="${{ inputs.build_type || 'essentials' }}"
           echo "build_type=${temp_build_type}" >> $GITHUB_OUTPUT
 

@@ -32,9 +32,6 @@ outputs:
   version_name:
     description: 'Version header string'
     value: ${{ steps.version-name.outputs.version_name }}
-  path_msys_include:
-    description: "MSYS Path to lib includes"
-    value: ${{ steps.path-msys-include.outputs.path_msys_include }}
   build_config:
     description: 'Updated build configuration'
     value: ${{ steps.build-config.outputs.build_config }}
@@ -42,17 +39,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Include path
-      id: 'path-msys-include'
-      shell: bash
-      run: |
-        echo "Make a path string for using as include"
-        msys_path="${{ inputs.msys_path }}"
-        msys_path="${msys_path//\\//}"
-        include_path="/${msys_path//:}/${{ inputs.msystem }}/include"
-        include_path="${include_path,,}"
-        echo "path_msys_include: $include_path"
-        echo "path_msys_include=${include_path}" >> $GITHUB_OUTPUT
     - name: Build output path
       id: 'output-path'
       shell: bash
@@ -66,8 +52,8 @@ runs:
       id: 'version-name'
       shell: bash
       run: |
-        shopt -s extglob
         echo "Make a version name string for headers and arcbive file naming"
+        shopt -s extglob
         cpu="arm64"
         if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
           cpu="x64"
@@ -77,10 +63,13 @@ runs:
         version_name="ffmpeg-$version_string-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
         echo "version_name: $version_name"
         echo "version_name=${version_name}" >> $GITHUB_OUTPUT
-    - name: Make readme.txt filename
+    - name: Make temporary readme.txt filename
       id: 'build-file-ref'
       shell: bash
       run: |
+        echo "Direct console stdout to a text file."
+        echo "Use text file as readme.txt inside distribution package."
+        echo "Make a temporary file name for later copying."
         build_file_ref="${{ inputs.build_type}}-${{ inputs.link_type }}.txt"
         echo "build_file_ref: $build_file_ref"
         echo "build_file_ref=${build_file_ref}" >> $GITHUB_OUTPUT

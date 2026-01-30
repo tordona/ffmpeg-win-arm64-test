@@ -3,28 +3,52 @@ name: Initialize FFmpeg Configuration
 on:
   workflow_call:
     inputs:
-      msystem:
+      github_tag:
+        description: 'FFmpeg version from checked out source'
         required: true
         type: string
       build_type:
+        description: 'Build type of included libraries'
         required: true
         type: string
       link_type:
+        description: 'Link type of libraries'
+        required: true
+        type: string
+      msystem:
+        description: 'MSYS Environment'
         required: true
         type: string
       major_version:
+        description: 'Version'
+        required: true
+        type: string
+      arch:
+        description: 'CPU Architecture'
         required: true
         type: string
     outputs:
+      output_path:
+        description: 'Add bits to FFmpeg config setup'
+        value: ${{ jobs.setup-ffmpeg-options.outputs.output_path }}
+      build_file_ref:
+        description: 'Filename of readme file included with generated build archive'
+        value: ${{ jobs.setup-ffmpeg-options.outputs.build_file_ref }}
+      version_name:
+        description: 'Version header string'
+        value: ${{ jobs.setup-ffmpeg-options.outputs.version_name }}
       build_config:
+        description: 'Updated build configuration'
         value: ${{ jobs.setup-ffmpeg-options.outputs.build_config }}
-
 jobs:
   setup-ffmpeg-options:
     name: '🎞️ Initialize FFmpeg Configuration'
     runs-on: ubuntu-latest
     outputs:
-      build_config: ${{ steps.config.outputs.build_config }}
+      output_path: ${{ steps.output-path.outputs.output_path }}
+      build_file_ref: ${{ steps.build-file-ref.outputs.build_file_ref }}
+      version_name: ${{ steps.version-name.outputs.version_name }}
+      build_config: ${{ steps.build-config.outputs.build_config }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
@@ -68,3 +92,50 @@ jobs:
       run: |
         echo "build_config: $build_config"
         echo "build_config=$build_config" >> $GITHUB_OUTPUT
+    - name: Build output path
+      id: 'output-path'
+      shell: bash
+      run: |
+        echo "Define path for build output (prefix)"
+        path=$(pwd)
+        path="${path}/builds/ffmpeg-${{ inputs.link_type }}"
+        echo "output_path: $path"
+        echo "output_path=${path}" >> $GITHUB_OUTPUT
+    - name: Make version name string
+      id: 'version-name'
+      shell: bash
+      run: |
+        echo "Make a version name string for headers and archive file naming"
+        shopt -s extglob
+        cpu="arm64"
+        if [[ ${{ inputs.msystem }} == "CLANG64" ]]; then
+          cpu="x64"
+        fi
+        version_string="${{ inputs.github_tag }}"
+        version_string="${version_string##+([[:alpha:]])}"
+        version_name="ffmpeg-$version_string-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
+        echo "version_name: $version_name"
+        echo "version_name=${version_name}" >> $GITHUB_OUTPUT
+    - name: Make temporary readme.txt filename
+      id: 'build-file-ref'
+      shell: bash
+      run: |
+        echo "Direct console stdout to a text file."
+        echo "Use text file as readme.txt inside distribution package."
+        echo "Make a temporary file name for later copying."
+        build_file_ref="${{ inputs.build_type}}-${{ inputs.link_type }}.txt"
+        echo "build_file_ref: $build_file_ref"
+        echo "build_file_ref=${build_file_ref}" >> $GITHUB_OUTPUT
+    - name: Echo a config settings
+      id: 'build-config'
+      shell: bash
+      run: |
+        Echo "Update FFmpeg build config with distribution specific settings"
+        temp_config="${{ inputs.build_config }}"
+        temp_config+=" --prefix=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}"
+        temp_config+=" --datadir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/presets"
+        temp_config+=" --docdir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/docs"
+        temp_config+=" --libdir=${{ steps.output-path.outputs.output_path }}/dump/libs"
+        temp_config+=" --incdir=${{ steps.output-path.outputs.output_path }}/dump/include"
+        echo "temp_config: $temp_config"
+        echo "build_config=${temp_config}" >> $GITHUB_OUTPUT

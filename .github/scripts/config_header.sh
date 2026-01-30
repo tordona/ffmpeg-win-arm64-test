@@ -1,6 +1,5 @@
 config_file="config.h"
 if [[ -f "$config_file" ]]; then
-    sed -i "s|\s--extra-cflags=-I$path_msys_include||gI" $config_file
     sed -i "s|\s--extra-cflags='-march=native'||gI" $config_file
     sed -i "s|\s--extra-cflags=-DLIBTWOLAME_STATIC||gI" $config_file
     sed -i "s|\s--extra-cflags=-DMODPLUG_STATIC||gI" $config_file
