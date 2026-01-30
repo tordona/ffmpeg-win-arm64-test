@@ -88,6 +88,7 @@ jobs:
     outputs:
       version_name: ${{ needs.ffmpeg-init.outputs.version_name }}
       checkout_commit: ${{ steps.parse-commit.outputs.checkout_commit }}
+      build_config: ${{ steps.build-config.outputs.build_config }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
@@ -115,6 +116,16 @@ jobs:
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
         command="clang --version"
         eval $command
+    - name: 'Translate Unix Path to MSYS'
+      id: 'build-config'
+      run: |
+        # pw
+        unix_path="/home/runner/work/"
+        msys_path="/c/a/"
+        temp_build_config="${{ needs.ffmpeg-init.outputs.build_config }}"
+        temp_build_config="${temp_build_config/$unix_path/$msys_path}"
+        echo $temp_build_config
+        echo "build_config=${temp_build_config}" >> $GITHUB_OUTPUT
     - name: '🌪️ Clone FFmpeg source repository from Tag'
       if: ${{ github.event.inputs.github_tag != '' }}
       id: 'source-code-tag'
@@ -127,15 +138,6 @@ jobs:
       run: |
         mkdir source
         git -c advice.detachedHead=false clone ${{ needs.defaults.outputs.source_repo }} ./source
-    - name: 'Translate Unix Path to MSYS'
-      id: 'msys-build-config'
-      run: |
-        # pw
-        unix_path="/home/runner/work/"
-        msys_path="/c/a/"
-        build_config="${{ needs.ffmpeg-init.outputs.build_config }}"
-        build_config="${build_config/$unix_path/$msys_path}"
-        echo $build_config
     - name: '🌪️ Parse Commit Hash'
       id: 'parse-commit'
       run: |
@@ -181,7 +183,7 @@ jobs:
       env:
         major_version: "${{ needs.defaults.outputs.major_version }}"
         build_type: "${{ needs.defaults.outputs.build_type }}"
-        build_config: "${{ needs.ffmpeg-init.outputs.build_config }}"
+        build_config: "${{ steps.build-config.outputs.build_config }}"
         build_file_ref: "${{ needs.ffmpeg-init.outputs.build_file_ref }}"
       continue-on-error: true
       working-directory: ./source
