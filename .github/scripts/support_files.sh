@@ -6,7 +6,10 @@ if [[ -f "./source/$build_file_ref" ]]; then
     echo "copied $build_file_ref out to readme.txt"
 fi
 if [[ -f "./source/COPYING.GPLv3" ]]; then
-    echo "exists COPYING.GPLv3"
     cp "./source/COPYING.GPLv3" "$output_path/$version_name/license"
     echo "copied $build_file_ref out to license"
+fi
+if [[ -d "./assests/icons" ]]; then
+    cp "./assests/icons/*.*" "$output_path/$version_name/bin"
+    echo "copied icons out to bin directory"
 fi
