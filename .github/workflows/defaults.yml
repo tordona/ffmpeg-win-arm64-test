@@ -48,7 +48,7 @@ on:
       source_repo:
         value: ${{ jobs.defaults.outputs.source_repo }}
       git_dist_repo:
-        value: ${{ jobs.defaults.outputs.source_repo }}
+        value: ${{ jobs.defaults.outputs.git_dist_repo }}
 
 env:
   msys_toolchain: "clang"

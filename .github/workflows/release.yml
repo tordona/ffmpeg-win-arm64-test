@@ -10,6 +10,9 @@ on:
         type: string
         required: true 
 
+env:
+  release-prefix: "weekly-autobuild"
+
 jobs:
   release-distro:
     name: '💻 Release Distribution'
@@ -35,11 +38,11 @@ jobs:
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
       with:
-        release-tag: "${{ inputs.build_date }}"
+        release-tag: "${{ env.release-prefix }}-${{ inputs.build_date }}"
     - name: '📤 Upload to Existing Package Release'
       if: steps.release-exists.outputs.release-exists == 'true' 
       run: |
-          path=$(find . -type f -name "${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+          path=$(find . -type f -name "${{ env.release-prefix }}-${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
           cd $path
           gh release upload "weekly-autobuild-${{ inputs.build_date }}" \
             '${{ inputs.version_name }}.7z' \
@@ -48,7 +51,7 @@ jobs:
     - name: '🔨 Create New Package Release'
       if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
-          path=$(find . -type f -name "${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+          path=$(find . -type f -name "${{ env.release-prefix }}-${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
           cd $path
           gh release create "weekly-autobuild-${{ inputs.build_date }}" \
             '${{ inputs.version_name }}.7z' \
