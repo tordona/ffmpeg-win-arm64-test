@@ -251,7 +251,7 @@ jobs:
         if-no-files-found: error
         name: ${{ needs.ffmpeg-init.outputs.version_name }}
         path: |
-          /builds/**/*.*
+          ./builds/**/*.*
   prep-distro:
     name: '🎞️ Prepare Distribution'
     uses: ./.github/workflows/distro.yml
