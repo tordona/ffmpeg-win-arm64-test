@@ -36,6 +36,10 @@ on:
       build_config:
         description: 'Updated build configuration'
         value: ${{ jobs.setup-ffmpeg-options.outputs.build_config }}
+
+env:
+  build_config: ""
+
 jobs:
   setup-ffmpeg-options:
     name: '🎞️ Initialize FFmpeg Configuration'
@@ -127,7 +131,7 @@ jobs:
       shell: bash
       run: |
         echo "Update FFmpeg build config with distribution specific settings"
-        temp_config="${{ inputs.build_config }}"
+        temp_config="${{ env.build_config }}"
         temp_config+=" --prefix=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}"
         temp_config+=" --datadir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/presets"
         temp_config+=" --docdir=${{ steps.output-path.outputs.output_path }}/${{ steps.version-name.outputs.version_name }}/docs"
