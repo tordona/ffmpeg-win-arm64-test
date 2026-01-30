@@ -1,4 +1,4 @@
-name: FFmpeg Windows ARM64 Automated Builds
+name: FFmpeg Win-ARM64 Auto-Builds
 
 on:
   workflow_dispatch:
