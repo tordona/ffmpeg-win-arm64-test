@@ -1,8 +1,8 @@
 name: FFmpeg Win-ARM64 Auto-Builds
 
 on:
-  schedule:
-    - cron: '0 11 * * *'
+  # schedule:
+  #   - cron: '0 11 * * *'
   workflow_dispatch:
     inputs:
       release_tag:
