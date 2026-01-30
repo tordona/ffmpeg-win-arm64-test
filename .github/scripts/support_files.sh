@@ -1,5 +1,5 @@
 pwd
-ls -laR
+ls -la
 if [[ ! -d "$output_path/$version_name/bin" ]] then
     mkdir -p "$output_path/$version_name/bin"
 fi
@@ -12,13 +12,13 @@ if [[ -f "./source/COPYING.GPLv3" ]]; then
     echo "copied COPYING.GPLv3 out to license"
 fi
 if [[ -d "./assets/icons" ]]; then
-    cp ./assets/icons/*.ico "$output_path/$version_name/bin/*.ico"
-    cp assets/icons/*.ico "$output_path/$version_name/bin/*.*"
-    cp ./assets/icons/*.ico "$output_path/$version_name/bin/*"
-    cp assets/icons/*.ico "$output_path/$version_name/bin/*"
-    cp ./assets/icons/** "$output_path/$version_name/bin"
-    cp assets/icons/** "$output_path/$version_name/bin"
-    cp ./assets/icons/* "$output_path/$version_name/bin"
-    cp assets/icons/* "$output_path/$version_name/bin"
+    cp ./assets/icons/*.ico "$output_path/$version_name/bin"
+    # cp assets/icons/*.ico "$output_path/$version_name/bin/*.*"
+    # cp ./assets/icons/*.ico "$output_path/$version_name/bin/*"
+    # cp assets/icons/*.ico "$output_path/$version_name/bin/*"
+    # cp ./assets/icons/** "$output_path/$version_name/bin"
+    # cp assets/icons/** "$output_path/$version_name/bin"
+    # cp ./assets/icons/* "$output_path/$version_name/bin"
+    # cp assets/icons/* "$output_path/$version_name/bin"
     echo "copied icons out to bin directory"
 fi
