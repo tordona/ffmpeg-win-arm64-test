@@ -44,18 +44,18 @@ jobs:
     - name: '📤 Upload to Existing Package Release'
       if: steps.release-exists.outputs.release-exists == 'true' 
       run: |
-          path=$(find . -type f -name "${{ env.release-prefix }}-${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+          path=$(find . -type f -name "${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
           cd $path
-          gh release upload "weekly-autobuild-${{ inputs.build_date }}" \
+          gh release upload "${{ env.release-prefix }}-${{ inputs.build_date }}" \
             '${{ inputs.version_name }}.7z' \
             '${{ inputs.version_name }}.sha256' \
             --clobber \
     - name: '🔨 Create New Package Release'
       if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
-          path=$(find . -type f -name "${{ env.release-prefix }}-${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
+          path=$(find . -type f -name "${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
           cd $path
-          gh release create "weekly-autobuild-${{ inputs.build_date }}" \
+          gh release create "${{ env.release-prefix }}-${{ inputs.build_date }}" \
             '${{ inputs.version_name }}.7z' \
             '${{ inputs.version_name }}.sha256' \
             --title "Weekly Autobuild - ${{ inputs.build_date }}" \
