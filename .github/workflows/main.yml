@@ -107,35 +107,35 @@ jobs:
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
         command="clang --version"
         eval $command
-    # - name: '🌪️ Clone FFmpeg source repository from Tag'
-    #   if: ${{ github.event.inputs.github_tag != '' }}
-    #   id: 'source-code-tag'
-    #   run: |
-    #     mkdir source
-    #     git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} ${{ needs.defaults.outputs.source_repo }} ./source
-    # - name: '🌪️ Clone FFmpeg source repository from Latest'
-    #   if: ${{ github.event.inputs.github_tag == '' }}
-    #   id: 'source-code-latest'
-    #   run: |
-    #     mkdir source
-    #     git -c advice.detachedHead=false clone ${{ needs.defaults.outputs.source_repo }} ./source
-    # - name: '🌪️ Parse Commit Hash'
-    #   id: 'parse-commit'
-    #   run: |
-    #     cd source
-    #     commit=$(git rev-parse HEAD)
-    #     echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
-    # - name: '🪡 Create FFmpeg Distribution Configuration Bits'
-    #   id: 'ffmpeg-config-setup'
-    #   uses: ./.github/actions/ffmpeg 
-    #   with:
-    #     github_tag: ${{ needs.defaults.outputs.github_tag }}
-    #     build_type: ${{ needs.defaults.outputs.build_type }}
-    #     link_type: ${{ needs.defaults.outputs.link_type }}
-    #     msystem: ${{ needs.defaults.outputs.msystem }}
-    #     arch: ${{ needs.msys-defaults.outputs.arch }}
-    #     msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
-    #     build_config: ${{ needs.ffmpeg-init.outputs.build_config }}
+    - name: '🌪️ Clone FFmpeg source repository from Tag'
+      if: ${{ github.event.inputs.github_tag != '' }}
+      id: 'source-code-tag'
+      run: |
+        mkdir source
+        git -c advice.detachedHead=false clone --branch ${{ needs.defaults.outputs.github_tag }} ${{ needs.defaults.outputs.source_repo }} ./source
+    - name: '🌪️ Clone FFmpeg source repository from Latest'
+      if: ${{ github.event.inputs.github_tag == '' }}
+      id: 'source-code-latest'
+      run: |
+        mkdir source
+        git -c advice.detachedHead=false clone ${{ needs.defaults.outputs.source_repo }} ./source
+    - name: '🌪️ Parse Commit Hash'
+      id: 'parse-commit'
+      run: |
+        cd source
+        commit=$(git rev-parse HEAD)
+        echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
+    - name: '🪡 Create FFmpeg Distribution Configuration Bits'
+      id: 'ffmpeg-config-setup'
+      uses: ./.github/actions/ffmpeg 
+      with:
+        github_tag: ${{ needs.defaults.outputs.github_tag }}
+        build_type: ${{ needs.defaults.outputs.build_type }}
+        link_type: ${{ needs.defaults.outputs.link_type }}
+        msystem: ${{ needs.defaults.outputs.msystem }}
+        arch: ${{ needs.defaults.outputs.arch }}
+        msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
+        build_config: ${{ needs.ffmpeg-init.outputs.build_config }}
     # - name: "📦 Install packages - Essentials Build"
     #   working-directory: ./config
     #   run: |
@@ -183,20 +183,20 @@ jobs:
     #       echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
     #     fi
     # - name: '🥋 Modifiy Config Header and readme file'
-      # env:
-      #   path_msys_include: "${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
-      #   output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-      #   version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-      #   build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-      #   build_type: "${{ needs.defaults.outputs.build_type }}"
-      #   link_type: "${{ needs.defaults.outputs.link_type }}"
-      #   source_repo: "${{ needs.defaults.outputs.source_repo }}"
-      #   git_dist_repo: "${{ needs.defaults.outputs.git_dist_repo }}"
-      #   commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
-      # working-directory: ./source
-      # run: |
-      #   echo "Remove build distribution specifc configrations"
-      #   bash ../.github/scripts/config_header.sh
+    #   env:
+    #     path_msys_include: "${{ steps.ffmpeg-config-setup.outputs.path_msys_include }}"
+    #     output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+    #     version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+    #     build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+    #     build_type: "${{ needs.defaults.outputs.build_type }}"
+    #     link_type: "${{ needs.defaults.outputs.link_type }}"
+    #     source_repo: "${{ needs.defaults.outputs.source_repo }}"
+    #     git_dist_repo: "${{ needs.defaults.outputs.git_dist_repo }}"
+    #     commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
+    #   working-directory: ./source
+    #   run: |
+    #     echo "Remove build distribution specifc configrations"
+    #     bash ../.github/scripts/config_header.sh
     - name: '🪧 Copy Support Files'
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
@@ -232,22 +232,22 @@ jobs:
         name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
           ./builds/**/*.*
-  # prep-distro:
-  #   name: '🎞️ Prepare Distribution'
-  #   uses: ./.github/workflows/distro.yml
-  #   needs: ['defaults', 'msys2']
-  #   with:
-  #     root_path: "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #     version_name: "${{ needs.msys2.outputs.version_name }}"
-  #     github_tag: "${{ needs.defaults.outputs.github_tag }}"
-  #     source_repo: "${{ needs.defaults.outputs.source_repo }}"
-  #     checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
-  # release-distro:
-  #   name: '🎞️ Release Distribution'
-  #   uses: ./.github/workflows/release.yml
-  #   needs: ['defaults', 'msys2', 'prep-distro']
-  #   permissions:
-  #     contents: write
-  #   with:
-  #     version_name: "${{ needs.msys2.outputs.version_name }}"
-  #     build_date: "${{ needs.prep-distro.outputs.build_date }}"
+  prep-distro:
+    name: '🎞️ Prepare Distribution'
+    uses: ./.github/workflows/distro.yml
+    needs: ['defaults', 'msys2']
+    with:
+      root_path: "ffmpeg-${{ needs.defaults.outputs.link_type }}"
+      version_name: "${{ needs.msys2.outputs.version_name }}"
+      github_tag: "${{ needs.defaults.outputs.github_tag }}"
+      source_repo: "${{ needs.defaults.outputs.source_repo }}"
+      checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
+  release-distro:
+    name: '🎞️ Release Distribution'
+    uses: ./.github/workflows/release.yml
+    needs: ['defaults', 'msys2', 'prep-distro']
+    permissions:
+      contents: write
+    with:
+      version_name: "${{ needs.msys2.outputs.version_name }}"
+      build_date: "${{ needs.prep-distro.outputs.build_date }}"
