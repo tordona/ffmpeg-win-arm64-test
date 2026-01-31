@@ -97,7 +97,6 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ needs.defaults.outputs.msystem }}
-        location: 'd:\'
         update: true
         cache: true
         release: true
