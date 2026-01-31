@@ -235,13 +235,6 @@ jobs:
       working-directory: ./source
       run: |
         make -j${{ steps.cpu-cores.outputs.count }}
-    - name: '📑 Parse Library Versions'
-      env:
-        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-      working-directory: ./source
-      run: |
-        echo "Parse out library versions into markdown file"
-        bash ../.github/scripts/library_versions.sh
     - name: '🏭 Trigger Install Command'
       id: 'install-ffmpeg'
       working-directory: ./source
@@ -253,6 +246,13 @@ jobs:
         pwd
         cd ./builds
         ls -la
+    - name: '📑 Parse Library Versions'
+      env:
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+      working-directory: ./source
+      run: |
+        echo "Parse out library versions into markdown file"
+        bash ../.github/scripts/library_versions.sh
     - name: '🙈 Resource Versioning'
       env:
         root_path: "ffmpeg-${{ matrix.link_type }}"
