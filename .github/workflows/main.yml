@@ -97,6 +97,7 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ needs.defaults.outputs.msystem }}
+        location: 'd:\'
         update: true
         cache: true
         release: true
@@ -244,7 +245,7 @@ jobs:
       run: |
         make install -j${{ steps.cpu-cores.outputs.count }}
     - name: '☑️ Verify Build Output'
-      id: 'install-ffmpeg2'
+      id: 'verify-build-output'
       run: |
         pwd
         cd ./builds
