@@ -1,6 +1,6 @@
 echo "Resource Edit FF*"
 pwd
-if [[ -z "$root_path" && -z "$version_name" ]]; then
+if [[ -z $root_path && -z $version_name ]]; then
     if [[ -d "$root_path/$version_name/bin" ]]; then
         cd "$root_path/$version_name/bin"
     else
