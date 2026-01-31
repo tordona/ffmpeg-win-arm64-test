@@ -43,7 +43,10 @@ env:
 jobs:
   setup-ffmpeg-options:
     name: '🎞️ Initialize FFmpeg Configuration'
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
     outputs:
       output_path: ${{ steps.output-path.outputs.output_path }}
       build_file_ref: ${{ steps.build-file-ref.outputs.build_file_ref }}
