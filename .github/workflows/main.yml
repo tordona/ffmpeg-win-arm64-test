@@ -197,6 +197,7 @@ jobs:
           cat ./source/ffbuild/config.log
         fi
     - name: '🌳 Log: Show FFmpeg Configuration Output'
+      working-directory: ./source
       run: |
         if test -f "${{ needs.ffmpeg-init.outputs.build_file_ref }}"; then
           echo "$(<${{ needs.ffmpeg-init.outputs.build_file_ref }})"

@@ -118,7 +118,7 @@ jobs:
         printf "\n" >> $filename
         printf "\n" >> $filename
         printf "**Source**\n" >> $filename
-        printf "${{ inputs.source_repo }}/${{ inputs.checkout_commit }}\n" >> $filename
+        printf "${{ inputs.source_repo }}/commit/${{ inputs.checkout_commit }}\n" >> $filename
     - name: '📝 Concat Release Notes'
       run: |
         pwd
