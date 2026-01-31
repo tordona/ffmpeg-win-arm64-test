@@ -180,6 +180,7 @@ jobs:
         cd packages
         pacman -U --disable-download-timeout --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: '🔨 Configure FFmpeg Build'
+      id: 'configure-ffmpeg'
       env:
         major_version: "${{ needs.defaults.outputs.major_version }}"
         build_type: "${{ needs.defaults.outputs.build_type }}"
@@ -191,6 +192,7 @@ jobs:
         echo "Configure FFmpeg Build with Library Options"
         bash ../.github/scripts/config_ffmpeg.sh
     - name: '🪵 Log: Show FFmpeg Build Config'
+      if: steps.configure-ffmpeg.outcome == 'failure'
       run: |
         log="./source/ffbuild/config.log"
         if [ -f "$log" ]; then
