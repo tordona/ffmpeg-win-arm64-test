@@ -1,5 +1,8 @@
 echo "Resource Edit FF*"
-if [[ -v $root_path && -v $version_name ]]; then
+pwd
+echo "$root_path"
+echo "$version_name"
+if [[ -v "$root_path" && -v "$version_name" ]]; then
     if [[ -d "$root_path/$version_name/bin" ]]; then
         cd "$root_path/$version_name/bin"
     else
