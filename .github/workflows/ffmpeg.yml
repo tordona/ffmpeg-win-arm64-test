@@ -95,7 +95,7 @@ jobs:
       run: |
         echo "build_config: $build_config"
         echo "build_config=$build_config" >> $GITHUB_OUTPUT
-    - name: Build output path
+    - name: '🧭 Build output path'
       id: 'output-path'
       shell: bash
       run: |
@@ -107,7 +107,7 @@ jobs:
         path="${path//$runner_path/$msys_path}"
         echo "output_path: $path"
         echo "output_path=${path}" >> $GITHUB_OUTPUT
-    - name: Make version name string
+    - name: '🪢 Make Version Name String'
       id: 'version-name'
       shell: bash
       run: |
@@ -122,7 +122,7 @@ jobs:
         version_name="ffmpeg-$version_string-${{ inputs.build_type }}-${{ inputs.link_type }}-win-${cpu}"
         echo "version_name: $version_name"
         echo "version_name=${version_name}" >> $GITHUB_OUTPUT
-    - name: Make temporary readme.txt filename
+    - name: '📃 Make Temporary Readme Filename'
       id: 'build-file-ref'
       shell: bash
       run: |
@@ -132,7 +132,7 @@ jobs:
         build_file_ref="${{ inputs.build_type}}-${{ inputs.link_type }}.txt"
         echo "build_file_ref: $build_file_ref"
         echo "build_file_ref=${build_file_ref}" >> $GITHUB_OUTPUT
-    - name: Echo a config settings
+    - name: '☑️ Verify Config Settings'
       id: 'build-config'
       shell: bash
       run: |
