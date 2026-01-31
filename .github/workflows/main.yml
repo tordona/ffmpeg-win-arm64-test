@@ -119,6 +119,14 @@ jobs:
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
         command="clang --version"
         eval $command
+    - name: "⬇️ Download External Utlities"
+      run: |
+        mkdir utilities
+        cd utilities
+        curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
+        7z x *.7z
+        # cd ..
+        # cp ./utilities/rcedit.exe "./${{ inputs.root_path }}/${{ inputs.version_name }}/bin"
     - name: '🪡 Create FFmpeg Distribution Configuration Bits'
       id: 'ffmpeg-config-setup'
       uses: ./.github/actions/ffmpeg 
@@ -243,7 +251,24 @@ jobs:
       run: |
         pwd
         cd ./builds
-        ls -laR
+        ls -la
+    - name: '🙈 Resource Versioning'
+      env:
+        root_path: "ffmpeg-${{ matrix.link_type }}"
+        github_tag: ${{ needs.defaults.outputs.github_tag }}
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+      run: |
+        echo "Copy support files to output directory"
+        bash .github/scripts/resource_edit.sh
+    - name: '🧹 Cleanup Files for Distribution'
+      working-directory: ./builds
+      run: |
+        find . -type d -iname "dump" -exec rm -r {} +
+        find . -type d -iname "examples" -exec rm -r {} +
+        find . -type f -iname '*.lib' -delete
+        find . -type f -iname '*.xsd' -delete
+        find . -type f -iname '*.ico' -delete
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:
@@ -251,22 +276,22 @@ jobs:
         name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
           ./builds/**/*.*
-  prep-distro:
-    name: '🎞️ Prepare Distribution'
-    uses: ./.github/workflows/distro.yml
-    needs: ['defaults', 'msys2']
-    with:
-      root_path: "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-      version_name: "${{ needs.msys2.outputs.version_name }}"
-      github_tag: "${{ needs.defaults.outputs.github_tag }}"
-      source_repo: "${{ needs.defaults.outputs.source_repo }}"
-      checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
-  release-distro:
-    name: '🎞️ Release Distribution'
-    uses: ./.github/workflows/release.yml
-    needs: ['defaults', 'msys2', 'prep-distro']
-    permissions:
-      contents: write
-    with:
-      version_name: "${{ needs.msys2.outputs.version_name }}"
-      build_date: "${{ needs.prep-distro.outputs.build_date }}"
+  # prep-distro:
+  #   name: '🎞️ Prepare Distribution'
+  #   uses: ./.github/workflows/distro.yml
+  #   needs: ['defaults', 'msys2']
+  #   with:
+  #     root_path: "ffmpeg-${{ needs.defaults.outputs.link_type }}"
+  #     version_name: "${{ needs.msys2.outputs.version_name }}"
+  #     github_tag: "${{ needs.defaults.outputs.github_tag }}"
+  #     source_repo: "${{ needs.defaults.outputs.source_repo }}"
+  #     checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
+  # release-distro:
+  #   name: '🎞️ Release Distribution'
+  #   uses: ./.github/workflows/release.yml
+  #   needs: ['defaults', 'msys2', 'prep-distro']
+  #   permissions:
+  #     contents: write
+  #   with:
+  #     version_name: "${{ needs.msys2.outputs.version_name }}"
+  #     build_date: "${{ needs.prep-distro.outputs.build_date }}"
