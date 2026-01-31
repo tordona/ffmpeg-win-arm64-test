@@ -116,10 +116,10 @@ jobs:
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
         command="clang --version"
         eval $command
-    - name: 'Translate Unix Path to MSYS'
+    - name: '🐧 Translate Unix Path to MSYS2 Windows'
       id: 'build-config'
       run: |
-        # pw
+        echo "Change absolute path from ubuntu runner to msys windows style path"
         unix_path="/home/runner/work/"
         msys_path="/c/a/"
         temp_build_config="${{ needs.ffmpeg-init.outputs.build_config }}"
@@ -215,7 +215,7 @@ jobs:
       run: |
         echo "Remove build distribution specifc configrations"
         bash ../.github/scripts/config_header.sh
-    - name: '🪧 Copy Support Files'
+    - name: '🔄 Copy Support Files'
       env:
         output_path: "${{ needs.ffmpeg-init.outputs.output_path }}"
         version_name: "${{ needs.ffmpeg-init.outputs.version_name }}"
@@ -243,10 +243,11 @@ jobs:
       working-directory: ./source
       run: |
         make install -j${{ steps.cpu-cores.outputs.count }}
-    - name: 'Test Path'
+    - name: 'Verify Build Output'
       id: 'install-ffmpeg2'
       run: |
         pwd
+        cd ./builds
         ls -laR
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
