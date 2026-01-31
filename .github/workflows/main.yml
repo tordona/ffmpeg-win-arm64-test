@@ -66,27 +66,31 @@ jobs:
       link_type: ${{ inputs.link_type }}
       msystem: ${{ inputs.msystem }}
       environment: ${{ inputs.environment }}
-  ffmpeg-init:
-    name: '⚡️ Initialize FFmpeg Configuration'
-    needs: ['defaults']
-    uses: ./.github/workflows/ffmpeg.yml
-    with:
-      github_tag: ${{ needs.defaults.outputs.github_tag }}
-      build_type: ${{ needs.defaults.outputs.build_type }}
-      link_type: ${{ needs.defaults.outputs.link_type }}
-      msystem: ${{ needs.defaults.outputs.msystem }}
-      major_version: ${{ needs.defaults.outputs.major_version }}
+  # ffmpeg-init:
+  #   name: '⚡️ Initialize FFmpeg Configuration'
+  #   needs: ['defaults']
+  #   uses: ./.github/workflows/ffmpeg.yml
+  #   with:
+  #     github_tag: ${{ needs.defaults.outputs.github_tag }}
+  #     build_type: ${{ needs.defaults.outputs.build_type }}
+  #     link_type: ${{ needs.defaults.outputs.link_type }}
+  #     msystem: ${{ needs.defaults.outputs.msystem }}
+  #     major_version: ${{ needs.defaults.outputs.major_version }}
   msys2:
     name: '💻 MSYS2 Environment'
     runs-on: windows-11-arm
-    needs: ['defaults', 'ffmpeg-init']
+    needs: ['defaults']
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      matrix:
+        build_type: ['essentials', 'full']
+        link_type: ['shared', 'static']
     defaults:
       run:
         shell: msys2 {0}
     outputs:
-      version_name: ${{ needs.ffmpeg-init.outputs.version_name }}
+      #version_name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
       checkout_commit: ${{ steps.parse-commit.outputs.checkout_commit }}
       build_config: ${{ steps.build-config.outputs.build_config }}
     steps:
@@ -116,16 +120,26 @@ jobs:
         echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
         command="clang --version"
         eval $command
-    - name: '🐧 Translate Unix Path to MSYS2 Windows'
-      id: 'build-config'
-      run: |
-        echo "Change absolute path from ubuntu runner to msys windows style path"
-        unix_path="/home/runner/work/"
-        msys_path="/c/a/"
-        temp_build_config="${{ needs.ffmpeg-init.outputs.build_config }}"
-        temp_build_config="${temp_build_config//$unix_path/$msys_path}"
-        echo $temp_build_config
-        echo "build_config=${temp_build_config}" >> $GITHUB_OUTPUT
+    - name: '🪡 Create FFmpeg Distribution Configuration Bits'
+      id: 'ffmpeg-config-setup'
+      uses: ./.github/actions/ffmpeg 
+      with:
+        github_tag: ${{ needs.defaults.outputs.github_tag }}
+        build_type: ${{ matrix.build_type }}
+        link_type: ${{ matrix.link_type }}
+        msystem: ${{ needs.defaults.outputs.msystem }}
+        arch: ${{ needs.defaults.outputs.arch }}
+        msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
+    # - name: '🐧 Translate Unix Path to MSYS2 Windows'
+    #   id: 'build-config'
+    #   run: |
+    #     echo "Change absolute path from ubuntu runner to msys windows style path"
+    #     unix_path="/home/runner/work/"
+    #     msys_path="/c/a/"
+    #     temp_build_config="${{ steps.ffmpeg-config-setup.outputs.build_config }}"
+    #     temp_build_config="${temp_build_config//$unix_path/$msys_path}"
+    #     echo $temp_build_config
+    #     echo "build_config=${temp_build_config}" >> $GITHUB_OUTPUT
     - name: '🌪️ Clone FFmpeg source repository from Tag'
       if: ${{ github.event.inputs.github_tag != '' }}
       id: 'source-code-tag'
@@ -144,17 +158,6 @@ jobs:
         cd source
         commit=$(git rev-parse HEAD)
         echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
-    # - name: '🪡 Create FFmpeg Distribution Configuration Bits'
-    #   id: 'ffmpeg-config-setup'
-    #   uses: ./.github/actions/ffmpeg 
-    #   with:
-    #     github_tag: ${{ needs.defaults.outputs.github_tag }}
-    #     build_type: ${{ needs.defaults.outputs.build_type }}
-    #     link_type: ${{ needs.defaults.outputs.link_type }}
-    #     msystem: ${{ needs.defaults.outputs.msystem }}
-    #     arch: ${{ needs.defaults.outputs.arch }}
-    #     msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
-    #     build_config: ${{ needs.ffmpeg-init.outputs.build_config }}
     - name: "📦 Install packages - Essentials Build"
       working-directory: ./config
       run: |
@@ -185,7 +188,7 @@ jobs:
         major_version: "${{ needs.defaults.outputs.major_version }}"
         build_type: "${{ needs.defaults.outputs.build_type }}"
         build_config: "${{ steps.build-config.outputs.build_config }}"
-        build_file_ref: "${{ needs.ffmpeg-init.outputs.build_file_ref }}"
+        build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
       continue-on-error: true
       working-directory: ./source
       run: |
@@ -201,14 +204,14 @@ jobs:
     - name: '🌳 Log: Show FFmpeg Configuration Output'
       working-directory: ./source
       run: |
-        if test -f "${{ needs.ffmpeg-init.outputs.build_file_ref }}"; then
-          echo "$(<${{ needs.ffmpeg-init.outputs.build_file_ref }})"
+        if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
+          echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
         fi
     - name: '🥋 Modifiy Config Header and readme file'
       env:
-        output_path: "${{ needs.ffmpeg-init.outputs.output_path }}"
-        version_name: "${{ needs.ffmpeg-init.outputs.version_name }}"
-        build_file_ref: "${{ needs.ffmpeg-init.outputs.build_file_ref }}"
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
         build_type: "${{ needs.defaults.outputs.build_type }}"
         link_type: "${{ needs.defaults.outputs.link_type }}"
         source_repo: "${{ needs.defaults.outputs.source_repo }}"
@@ -220,9 +223,9 @@ jobs:
         bash ../.github/scripts/config_header.sh
     - name: '🔄 Copy Support Files'
       env:
-        output_path: "${{ needs.ffmpeg-init.outputs.output_path }}"
-        version_name: "${{ needs.ffmpeg-init.outputs.version_name }}"
-        build_file_ref: "${{ needs.ffmpeg-init.outputs.build_file_ref }}"
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
       run: |
         echo "Copy support files to output directory"
         bash .github/scripts/support_files.sh
@@ -236,7 +239,7 @@ jobs:
         make -j${{ steps.cpu-cores.outputs.count }}
     - name: '📑 Parse Library Versions'
       env:
-        output_path: "${{ needs.ffmpeg-init.outputs.output_path }}"
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
       working-directory: ./source
       run: |
         echo "Parse out library versions into markdown file"
@@ -256,7 +259,7 @@ jobs:
       uses: actions/upload-artifact@v6
       with:
         if-no-files-found: error
-        name: ${{ needs.ffmpeg-init.outputs.version_name }}
+        name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
           ./builds/**/*.*
   prep-distro:
