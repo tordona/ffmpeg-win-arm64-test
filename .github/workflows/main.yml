@@ -90,9 +90,8 @@ jobs:
       run:
         shell: msys2 {0}
     outputs:
-      #version_name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
+      version_name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
       checkout_commit: ${{ steps.parse-commit.outputs.checkout_commit }}
-      build_config: ${{ steps.build-config.outputs.build_config }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
@@ -130,16 +129,6 @@ jobs:
         msystem: ${{ needs.defaults.outputs.msystem }}
         arch: ${{ needs.defaults.outputs.arch }}
         msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
-    # - name: '🐧 Translate Unix Path to MSYS2 Windows'
-    #   id: 'build-config'
-    #   run: |
-    #     echo "Change absolute path from ubuntu runner to msys windows style path"
-    #     unix_path="/home/runner/work/"
-    #     msys_path="/c/a/"
-    #     temp_build_config="${{ steps.ffmpeg-config-setup.outputs.build_config }}"
-    #     temp_build_config="${temp_build_config//$unix_path/$msys_path}"
-    #     echo $temp_build_config
-    #     echo "build_config=${temp_build_config}" >> $GITHUB_OUTPUT
     - name: '🌪️ Clone FFmpeg source repository from Tag'
       if: ${{ github.event.inputs.github_tag != '' }}
       id: 'source-code-tag'
@@ -166,7 +155,7 @@ jobs:
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
     - name: "📦 Install packages - Full Build"
-      if: ${{ needs.defaults.outputs.build_type == 'full' }}
+      if: ${{ matrix.build_type == 'full' }}
       working-directory: ./config
       run: |
         echo "Install required library packages - Full Build"
@@ -186,8 +175,8 @@ jobs:
       id: 'configure-ffmpeg'
       env:
         major_version: "${{ needs.defaults.outputs.major_version }}"
-        build_type: "${{ needs.defaults.outputs.build_type }}"
-        build_config: "${{ steps.build-config.outputs.build_config }}"
+        build_type: "${{ matrix.build_type }}"
+        build_config: "${{ steps.ffmpeg-config-setup.outputs.build_config }}"
         build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
       continue-on-error: true
       working-directory: ./source
@@ -212,8 +201,8 @@ jobs:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
         build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-        build_type: "${{ needs.defaults.outputs.build_type }}"
-        link_type: "${{ needs.defaults.outputs.link_type }}"
+        build_type: "${{ matrix.build_type }}"
+        link_type: "${{ matrix.link_type }}"
         source_repo: "${{ needs.defaults.outputs.source_repo }}"
         git_dist_repo: "${{ needs.defaults.outputs.git_dist_repo }}"
         commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
