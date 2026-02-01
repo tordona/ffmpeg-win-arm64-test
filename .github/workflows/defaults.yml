@@ -91,10 +91,18 @@ jobs:
           echo "release_tagt=${temp_release_tag}" >> $GITHUB_OUTPUT
 
           temp_build_type="${{ inputs.build_type || 'essentials' }}"
-          echo "build_type=${temp_build_type}" >> $GITHUB_OUTPUT
+          if [[${{ github.event_name }} == 'schedule' ]]; then
+            echo "build_type=['essentials', 'full']" >> $GITHUB_OUTPUT
+          else
+            echo "build_type=['${temp_build_type}']" >> $GITHUB_OUTPUT
+          fi
 
           temp_link_type="${{ inputs.link_type || 'shared' }}"
-          echo "link_type=${temp_link_type}" >> $GITHUB_OUTPUT
+          if [[${{ github.event_name }} == 'schedule' ]]; then
+            echo "build_type=['shared', 'static']" >> $GITHUB_OUTPUT
+          else
+            echo "build_type=['${temp_link_type}']" >> $GITHUB_OUTPUT
+          fi
 
           temp_msystem="${{ inputs.msystem || 'CLANGARM64' }}"
           echo "msystem=${temp_msystem}" >> $GITHUB_OUTPUT
