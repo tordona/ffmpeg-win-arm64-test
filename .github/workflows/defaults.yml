@@ -67,6 +67,7 @@ jobs:
   defaults:
     name: '🌐 Setup Environment Variables'
     runs-on: ubuntu-latest
+    environment: base
     outputs:
       release_tag: ${{ steps.input-defaults.outputs.release_tag }}
       github_tag: ${{ steps.input-defaults.outputs.github_tag }}
