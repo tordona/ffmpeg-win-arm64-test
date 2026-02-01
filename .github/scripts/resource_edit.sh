@@ -1,16 +1,10 @@
 echo "Resource Edit FF*"
+
 pwd
-if [[ -n $root_path && -n $version_name ]]; then
-    if [[ -d "$root_path/$version_name/bin" ]]; then
-        cd "$root_path/$version_name/bin"
-    else
-        echo "no path available"
-        exit 1
-    fi
-else
-    echo "no path or version"
-    exit 1
-fi
+
+cd "$root_path/$version_name/bin"
+
+ls -la
 
 if [[ ! -f "./utilities/rcedit.exe" ]]; then
     echo "rcedit not found"
