@@ -94,7 +94,7 @@ jobs:
           if [[${{ github.event_name }} == 'schedule' ]]; then
             echo "build_type={'include': ['essentials', 'static']}]" >> $GITHUB_OUTPUT
           else
-            echo "build_type=[{'include': ['essentials', 'static']}']" >> $GITHUB_OUTPUT
+            echo "build_type={'include': ['essentials', 'static']}'" >> $GITHUB_OUTPUT
           fi
   
           temp_link_type="${{ inputs.link_type || 'shared' }}"
