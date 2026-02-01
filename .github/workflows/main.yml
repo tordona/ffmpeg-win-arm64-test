@@ -151,7 +151,7 @@ jobs:
       run: |
         mkdir source
         git -c advice.detachedHead=false clone ${{ needs.defaults.outputs.source_repo }} ./source
-    - name: '🌪️ Parse Commit Hash'
+    - name: '🔦 Parse Commit Hash'
       id: 'parse-commit'
       run: |
         cd source
@@ -166,7 +166,7 @@ jobs:
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
-    - name: "Parse Essentials Package Versions"
+    - name: "🔦 Parse Essentials Package Versions"
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
@@ -184,7 +184,7 @@ jobs:
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
-    - name: "Parse Full Package Versions"
+    - name: "🔦 Parse Full Package Versions"
       if: ${{ matrix.build_type == 'full' }}
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
@@ -268,7 +268,7 @@ jobs:
         pwd
         cd ./builds
         ls -la
-    - name: '📑 Parse Library Versions'
+    - name: '🔦 Parse Library Versions'
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
       working-directory: ./source

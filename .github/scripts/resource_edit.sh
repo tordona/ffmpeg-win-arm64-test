@@ -23,7 +23,7 @@ for ff in "${ff_progs[@]}"; do
     desc=$ff
     desc+="_desc"
     file=$(find . -name "${ff}.exe" ! -path '*/source/*' -exec realpath {} \;)
-    icon=$(find . -name "${ff}.ico" ! -path '*/source/*' -exec realpath {} \;)
+    icon=$(find . -name "${ff}.ico" ! -path '*/assets/*' -exec realpath {} \;)
     if [[ -n "$file" ]]; then
         product_prefix=${ff:0:2}
         product_suffix=${ff:2}
