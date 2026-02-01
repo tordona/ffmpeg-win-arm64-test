@@ -176,7 +176,6 @@ jobs:
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
-
     - name: "⬇️ Download External Packages"
       run: |
        mkdir packages
@@ -246,12 +245,6 @@ jobs:
       working-directory: ./source
       run: |
         make install -j${{ steps.cpu-cores.outputs.count }}
-    - name: '☑️ Verify Build Output'
-      id: 'verify-build-output'
-      run: |
-        pwd
-        cd ./builds
-        ls -la
     - name: '🔦 Parse Library Versions'
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
@@ -263,7 +256,7 @@ jobs:
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        packages: ${{ steps.full-packages.outputs.packages }}
+        packages: ${{ steps.essentials-packages.outputs.packages }}
         package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
       run: |
         echo "Parse Essentials Package Versions"
@@ -295,6 +288,12 @@ jobs:
         find . -type f -iname '*.lib' -delete
         find . -type f -iname '*.xsd' -delete
         find . -type f -iname '*.ico' -delete
+    - name: '☑️ Verify Build Output'
+      id: 'verify-build-output'
+      run: |
+        pwd
+        cd ./builds
+        ls -la
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:

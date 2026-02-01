@@ -1,5 +1,9 @@
 path="$output_path/$version_name"
-file="$path/packages.txt"
+file="$path/readme.txt"
+echo >> $file
+echo "--------------------" >> $file
+echo "External Libraries:">> $file
+echo >> $file
 for package in $packages; do
     pkg_info=$(pacman -Qi "$package" 2>&1 | head -n 3)
     if [[ $pkg_info != "error"* ]]; then
@@ -8,3 +12,4 @@ for package in $packages; do
         echo >> $file
     fi
 done
+echo "$(<$file)"
