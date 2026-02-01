@@ -92,11 +92,11 @@ jobs:
 
           temp_build_type="${{ inputs.build_type || 'essentials' }}"
           if [[${{ github.event_name }} == 'schedule' ]]; then
-            echo "build_type=['essentials', 'full']" >> $GITHUB_OUTPUT
+            echo "build_type={'include': ['essentials', 'static']}]" >> $GITHUB_OUTPUT
           else
-            echo "build_type=['${temp_build_type}']" >> $GITHUB_OUTPUT
+            echo "build_type=[{'include': ['essentials', 'static']}']" >> $GITHUB_OUTPUT
           fi
-
+  
           temp_link_type="${{ inputs.link_type || 'shared' }}"
           if [[${{ github.event_name }} == 'schedule' ]]; then
             echo "build_type=['shared', 'static']" >> $GITHUB_OUTPUT
