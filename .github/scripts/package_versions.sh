@@ -1,7 +1,8 @@
 path="$output_path/$version_name"
 file="$path/readme.txt"
 echo >> $file
-echo "--------------------" >> $file
+echo >> $file
+echo "----------------------------------------" >> $file
 echo "External Libraries:">> $file
 echo >> $file
 for package in $packages; do
