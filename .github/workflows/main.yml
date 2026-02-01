@@ -159,11 +159,12 @@ jobs:
         echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
     - name: "📦 Install packages - Essentials Build"
       id: 'essentials-packages'
+      if: ${{ matrix.build_type == 'essentials' }}
       working-directory: ./config
       run: |
         echo "Install required library packages - Essentials Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
-        packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+        packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version and .custom != "true") | $prefix + "-" +.package] | sort | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
     - name: "📦 Install packages - Full Build"
@@ -173,7 +174,7 @@ jobs:
       run: |
         echo "Install required library packages - Full Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
-        packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+        packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version and .custom != "true") | $prefix + "-" +.package] | sort | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
     - name: "⬇️ Download External Packages"
@@ -253,6 +254,7 @@ jobs:
         echo "Parse out library versions into markdown file"
         bash ../.github/scripts/library_versions.sh
     - name: "🔦 Parse Essentials Package Versions"
+      if: ${{ matrix.build_type == 'essentials' }}
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
