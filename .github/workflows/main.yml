@@ -75,7 +75,7 @@ jobs:
     strategy:
       matrix:
         build_type: ${{ fromJSON(needs.defaults.outputs.build_type) }}
-        link_type: ['shared', 'static']
+        link_type: ${{ fromJSON(needs.defaults.outputs.link_type) }}
       # matrix:
       #   build_type: ['essentials', 'full']
       #   link_type: ['shared', 'static']
