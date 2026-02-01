@@ -1,17 +1,4 @@
 echo "Resource Edit FF*"
-pwd
-if [[ -n $root_path && -n $version_name ]]; then
-    if [[ -d "$root_path/$version_name/bin" ]]; then
-        cd "$root_path/$version_name/bin"
-    else
-        echo "no path available"
-        exit 1
-    fi
-else
-    echo "no path or version"
-    exit 1
-fi
-
 if [[ ! -f "./utilities/rcedit.exe" ]]; then
     echo "rcedit not found"
     exit 1
@@ -34,16 +21,18 @@ ff_progs=(
 for ff in "${ff_progs[@]}"; do
     desc=$ff
     desc+="_desc"
-    if [[ -f "${ff}.exe" ]]; then
+    file=$(find . -name "${ff}.exe" -exec realpath {} \;)
+    icon=$(find . -name "${ff}.ico" -exec realpath {} \;)
+    if [[ -n "$path" ]]; then
         product_prefix=${ff:0:2}
         product_suffix=${ff:2}
-        ./utilities/rcedit.exe ${ff}.exe --set-version-string "FileDescription" "${!desc}"
-        ./utilities/rcedit.exe ${ff}.exe --set-file-version "${file_version}"
-        ./utilities/rcedit.exe ${ff}.exe --set-version-string "ProductName" "${product_prefix^^}${product_suffix}"
-        ./utilities/rcedit.exe ${ff}.exe --set-version-string "ProductVersion" "${version}"
-        ./utilities/rcedit.exe ${ff}.exe --set-version-string "LegalCopyright" "${copyright}"
-        if [[ -f "${ff}.ico" ]]; then
-            ./rcedit.exe ${ff}.exe --set-icon ${ff}.ico
+        ./utilities/rcedit.exe $file --set-version-string "FileDescription" "${!desc}"
+        ./utilities/rcedit.exe $file --set-file-version "${file_version}"
+        ./utilities/rcedit.exe $file --set-version-string "ProductName" "${product_prefix^^}${product_suffix}"
+        ./utilities/rcedit.exe $path --set-version-string "ProductVersion" "${version}"
+        ./utilities/rcedit.exe $file --set-version-string "LegalCopyright" "${copyright}"
+        if [[ -n "$icon" ]]; then
+            ./rcedit.exe $path --set-icon $icon
         fi
     fi
 done
