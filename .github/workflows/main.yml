@@ -162,6 +162,7 @@ jobs:
         echo "Install required library packages - Essentials Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+        echo $packages
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
     - name: "📦 Install packages - Full Build"
       if: ${{ matrix.build_type == 'full' }}
@@ -170,6 +171,7 @@ jobs:
         echo "Install required library packages - Full Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
+        echo $packages
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
     - name: "⬇️ Download External Packages"
       run: |
@@ -254,6 +256,7 @@ jobs:
         echo "Parse out library versions into markdown file"
         bash ../.github/scripts/library_versions.sh
     - name: '🙈 Resource Versioning'
+      working-directory: ./builds
       env:
         root_path: "ffmpeg-${{ matrix.link_type }}"
         github_tag: ${{ needs.defaults.outputs.github_tag }}
