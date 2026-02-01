@@ -170,10 +170,10 @@ jobs:
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
         version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
       run: |
-        echo "output_path $output_path"
-        echo "version_name: $version_name"
-        echo ${{ steps.essentials-packages.outputs.packages }}
+        echo "Parse Essentials Package Versions"
+        bash .github/scripts/package_versions.sh
     - name: "📦 Install packages - Full Build"
       id: 'full-packages'
       if: ${{ matrix.build_type == 'full' }}
@@ -282,7 +282,7 @@ jobs:
         version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
         build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
       run: |
-        echo "Copy support files to output directory"
+        echo "Update resource properties on executables"
         bash .github/scripts/resource_edit.sh
     - name: '🧹 Cleanup Files for Distribution'
       working-directory: ./builds
