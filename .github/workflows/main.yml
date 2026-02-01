@@ -264,7 +264,7 @@ jobs:
         build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
       run: |
         echo "Copy support files to output directory"
-        bash .github/scripts/resource_edit.sh
+        bash ../.github/scripts/resource_edit.sh
     - name: '🧹 Cleanup Files for Distribution'
       working-directory: ./builds
       run: |
