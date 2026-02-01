@@ -136,8 +136,6 @@ jobs:
         build_type: ${{ matrix.build_type }}
         link_type: ${{ matrix.link_type }}
         msystem: ${{ needs.defaults.outputs.msystem }}
-        arch: ${{ needs.defaults.outputs.arch }}
-        msys_path: ${{ steps.msys2-env.outputs.msys2-location }}
     - name: '🌪️ Clone FFmpeg source repository from Tag'
       if: ${{ github.event.inputs.github_tag != '' }}
       id: 'source-code-tag'
@@ -256,9 +254,8 @@ jobs:
         echo "Parse out library versions into markdown file"
         bash ../.github/scripts/library_versions.sh
     - name: '🙈 Resource Versioning'
-      working-directory: ./builds
       env:
-        root_path: "ffmpeg-${{ matrix.link_type }}"
+        root_path: "builds/ffmpeg-${{ matrix.link_type }}"
         github_tag: ${{ needs.defaults.outputs.github_tag }}
         version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
         build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
