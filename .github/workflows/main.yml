@@ -83,9 +83,12 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
+      # matrix:
+      #   build_type: ['essentials', 'full']
+      #   link_type: ['shared', 'static']
       matrix:
-        build_type: ['essentials', 'full']
-        link_type: ['shared', 'static']
+        build_type: ['essentials']
+        link_type: ['shared']
     defaults:
       run:
         shell: msys2 {0}
