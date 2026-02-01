@@ -164,7 +164,12 @@ jobs:
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
     - name: "Parse Essentials Package Versions"
+      env:
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
       run: |
+        echo "output_path $output_path"
+        echo "version_name: $version_name"
         echo ${{ steps.essentials-packages.outputs.packages }}
     - name: "📦 Install packages - Full Build"
       id: 'full-packages'
@@ -178,7 +183,12 @@ jobs:
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
     - name: "Parse Full Package Versions"
       if: ${{ matrix.build_type == 'full' }}
+      env:
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
       run: |
+        echo "output_path $output_path"
+        echo "version_name: $version_name"
         echo ${{ steps.full-packages.outputs.packages }}
     - name: "⬇️ Download External Packages"
       run: |
