@@ -155,22 +155,31 @@ jobs:
         commit=$(git rev-parse HEAD)
         echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
     - name: "📦 Install packages - Essentials Build"
+      id: 'essentials-packages'
       working-directory: ./config
       run: |
         echo "Install required library packages - Essentials Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-        echo $packages
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
+        echo "packages=$packages" >> "$GITHUB_OUTPUT"
+    - name: "Parse Essentials Package Versions"
+      run: |
+        echo ${{ steps.essentials-packages.outputs.packages }}
     - name: "📦 Install packages - Full Build"
+      id: 'full-packages'
       if: ${{ matrix.build_type == 'full' }}
       working-directory: ./config
       run: |
         echo "Install required library packages - Full Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
-        echo $packages
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
+        echo "packages=$packages" >> "$GITHUB_OUTPUT"
+    - name: "Parse Full Package Versions"
+      if: ${{ matrix.build_type == 'full' }}
+      run: |
+        echo ${{ steps.full-packages.outputs.packages }}
     - name: "⬇️ Download External Packages"
       run: |
        mkdir packages
