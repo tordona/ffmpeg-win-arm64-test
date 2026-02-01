@@ -166,14 +166,6 @@ jobs:
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
-    - name: "🔦 Parse Essentials Package Versions"
-      env:
-        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
-      run: |
-        echo "Parse Essentials Package Versions"
-        bash .github/scripts/package_versions.sh
     - name: "📦 Install packages - Full Build"
       id: 'full-packages'
       if: ${{ matrix.build_type == 'full' }}
@@ -184,15 +176,7 @@ jobs:
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}"  '[.options.full[] | .[] | select(.version <= $version) | select(.custom != "true") | $prefix + "-" + .package] | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
-    - name: "🔦 Parse Full Package Versions"
-      if: ${{ matrix.build_type == 'full' }}
-      env:
-        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-      run: |
-        echo "output_path $output_path"
-        echo "version_name: $version_name"
-        echo ${{ steps.full-packages.outputs.packages }}
+
     - name: "⬇️ Download External Packages"
       run: |
        mkdir packages
@@ -275,6 +259,25 @@ jobs:
       run: |
         echo "Parse out library versions into markdown file"
         bash ../.github/scripts/library_versions.sh
+    - name: "🔦 Parse Essentials Package Versions"
+      env:
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        packages: ${{ steps.full-packages.outputs.packages }}
+        package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
+      run: |
+        echo "Parse Essentials Package Versions"
+        bash .github/scripts/package_versions.sh
+    - name: "🔦 Parse Full Package Versions"
+      if: ${{ matrix.build_type == 'full' }}
+      env:
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        packages: ${{ steps.full-packages.outputs.packages }}
+        package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
+      run: |
+        echo "Parse Full Package Versions"
+        bash .github/scripts/package_versions.sh
     - name: '🙈 Resource Versioning'
       env:
         root_path: "builds/ffmpeg-${{ matrix.link_type }}"
