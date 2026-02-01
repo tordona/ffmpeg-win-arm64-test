@@ -102,10 +102,10 @@ jobs:
           temp_link_type="${{ inputs.link_type || 'shared' }}"
           if [[${{ github.event_name }} == 'schedule' ]]; then
             echo "link_type schedule"
-            echo "build_type=['shared', 'static']" >> $GITHUB_OUTPUT
+            echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
           else
             echo "link_type not schedule"
-            echo "build_type=['${temp_link_type}']" >> $GITHUB_OUTPUT
+            echo "link_type=['${temp_link_type}']" >> $GITHUB_OUTPUT
           fi
 
           temp_msystem="${{ inputs.msystem || 'CLANGARM64' }}"
