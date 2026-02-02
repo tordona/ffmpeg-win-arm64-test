@@ -110,7 +110,7 @@ jobs:
           fi
   
           temp_link_type="${{ inputs.link_type || 'shared' }}"
-          if [[ "${{ github.event_name }}"" == 'schedule' ]]; then
+          if [[ "${{ github.event_name }}" == 'schedule' ]]; then
             echo "link_type matrix set by schedule"
             echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
           else
