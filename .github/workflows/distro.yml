@@ -29,9 +29,13 @@ jobs:
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v5
-    - uses: actions/download-artifact@v5
+    - uses: actions/download-artifact@v7
       with:
-        path: ./
+        path: ./builds
+    - name: Display structure of downloaded files
+      run: |
+        pwd
+        ls -R
     - name: '📅 Make Build Date'
       id: 'build-date'
       run: |
@@ -47,10 +51,12 @@ jobs:
         find . -type f -iname '*.lib' -delete
         find . -type f -iname '*.xsd' -delete
         find . -type f -iname '*.ico' -delete
+        ls -laR
     - name: '📝 Create Header Notes'
       id: 'header-notes'
       run: |
         pwd
+        ls -laR
         filename="header_notes.md"
         rm -f $filename
         printf "## Windows ARM64 builds\n" >> $filename
@@ -59,6 +65,7 @@ jobs:
       id: 'prerelease-notes'
       run: |
         pwd
+        ls -laR
         filename="prerelease_notes.md"
         rm -f $filename
         printf "\n" >> $filename
@@ -68,6 +75,7 @@ jobs:
     - name: '📝 Concat Release Notes'
       run: |
         pwd
+        ls -laR
         cd "${{ inputs.root_path }}"
         header_notes="header_notes.md"
         library_versions="library_versions.md"
@@ -86,6 +94,7 @@ jobs:
     - name: '🚚 Package'
       shell: bash
       run: |
+        ls -laR
         origin=$(pwd)
         for link_type_dir in **/ffmpeg**/ffmpeg*; do
           if [[ -d $link_type_dir ]]; then
