@@ -78,7 +78,8 @@ jobs:
     - name: '📝 Concat Release Notes'
       working-directory: ./builds/${{ inputs.version_name }}
       run: |
-        cd "ffmpeg**"
+        pwd
+        ls -laR
         header_notes="header_notes.md"
         library_versions="library_versions.md"
         prerelease_notes="prerelease_notes.md"
@@ -97,6 +98,7 @@ jobs:
       shell: bash
       working-directory: ./builds/${{ inputs.version_name }}
       run: |
+        pwd
         ls -laR
         origin=$(pwd)
         for link_type_dir in **/ffmpeg**/ffmpeg*; do
