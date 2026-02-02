@@ -49,19 +49,28 @@ jobs:
       with:
         release-tag: "${{ env.release_tag }}"
     - name: '📤 Upload to Existing Package Release'
+      working-directory: ./
       if: steps.release-exists.outputs.release-exists == 'true' 
       run: |
-          gh release upload "${{ env.release_tag }}" \
-            './**/*.7z' \
-            './**/*.sha256' \
-            --clobber \
+        shopt -s globstar
+        shopt -s nullglob
+        pwd
+        ls -laR
+        gh release upload "${{ env.release_tag }}" \
+          './**/*.7z' \
+          './**/*.sha256' \
+          --clobber \
     - name: '🔨 Create New Package Release'
       if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
-          gh release create "${{ env.release_tag }}" \
-            './**/*.7z' \
-            './**/*.sha256' \
-            --title "Weekly Autobuild - ${{ inputs.build_date }}" \
-            --notes-file release_notes.md \
-            --draft \
-            --prerelease
+        shopt -s globstar
+        shopt -s nullglob
+        pwd
+        ls -laR
+        gh release create "${{ env.release_tag }}" \
+          './**/*.7z' \
+          './**/*.sha256' \
+          --title "Weekly Autobuild - ${{ inputs.build_date }}" \
+          --notes-file release_notes.md \
+          --draft \
+          --prerelease

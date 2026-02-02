@@ -8,7 +8,7 @@ on:
     inputs:
       release_tag:
         description: 'Tag Name for Release'
-        required: false
+        required: true
         type: string
       github_tag:
         description: 'Version tag to build'
