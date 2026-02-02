@@ -67,10 +67,11 @@ jobs:
         shopt -s nullglob
         pwd
         ls -laR
+        release_notes=$(find . -name "release_notes.md" -exec realpath {} \;)
         gh release create "${{ env.release_tag }}" \
           './**/*.7z' \
           './**/*.sha256' \
-          --title "Weekly Autobuild - ${{ inputs.build_date }}" \
-          --notes-file release_notes.md \
+          --title "${{ env.release_tag }}" \
+          --notes-file "$release_notes" \
           --draft \
           --prerelease
