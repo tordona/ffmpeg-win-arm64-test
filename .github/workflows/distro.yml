@@ -118,8 +118,8 @@ jobs:
       uses: actions/upload-artifact@v6
       with:
         if-no-files-found: error
-        name: "${{ inputs.version_name }}-prerelease"
+        name: "${{ inputs.github_tag }}-prerelease"
         path: |
-          ./builds/**/${{ inputs.version_name }}.7z
-          ./builds/**/${{ inputs.version_name }}.sha256
+          ./builds/**/*.7z
+          ./builds/**/*.sha256
           ./builds/**/*.md
