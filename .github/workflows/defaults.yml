@@ -97,7 +97,8 @@ jobs:
             echo "build_type=['essentials', 'full']" >> "$GITHUB_OUTPUT"
           else
             echo "build_type matrix NOT set by schedule"
-            echo "build_type=['${temp_build_type}']" >> "$GITHUB_OUTPUT"
+            echo "build_type=['essentials', 'full']" >> "$GITHUB_OUTPUT"
+            # echo "build_type=['${temp_build_type}']" >> "$GITHUB_OUTPUT"
           fi
   
           temp_link_type="${{ inputs.link_type || 'shared' }}"
@@ -106,7 +107,8 @@ jobs:
             echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
           else
             echo "link_type matrix NOT set by schedule"
-            echo "link_type=['${temp_link_type}']" >> "$GITHUB_OUTPUT"
+            echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
+            # echo "link_type=['${temp_link_type}']" >> "$GITHUB_OUTPUT"
           fi
 
           temp_msystem="${{ inputs.msystem || 'CLANGARM64' }}"

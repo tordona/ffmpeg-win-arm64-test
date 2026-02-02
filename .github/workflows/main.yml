@@ -286,9 +286,9 @@ jobs:
       run: |
         pwd
         ls -laR
-    - name: '☑️ Verify Build Output'
+    - name: '🚚 7Zip Archive Package'
       working-directory: ./builds/ffmpeg-${{ matrix.link_type }}
-      id: 'make-archive'
+      id: 'archive-package'
       run: |
         pwd
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
