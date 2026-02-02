@@ -88,11 +88,17 @@ jobs:
         shell: bash
         run: |
           # echo "Set up default values when not triggered from a workflow_dispatch"
-          temp_release_tag="${{ inputs.release_tag || 'weekly-autobuild' }}"
-          echo "release_tagt=${temp_release_tag}" >> $GITHUB_OUTPUT
+          temp_release_tag="${{ inputs.release_tag || 'devtest-autobuild' }}"
+          if [[ "${{ github.event.schedule }}" == "0 23 * * *" ]]; then
+            temp_release_tag="daily-autobuild"
+          fi
+          if [[ "${{ github.event.schedule }}" == "0 23 * * 0" ]]; then
+            temp_release_tag="weekly-autobuild"
+          fi
+          echo "release_tag=${temp_release_tag}" >> $GITHUB_OUTPUT
 
           temp_build_type="${{ inputs.build_type || 'essentials' }}"
-          if [[${{ github.event_name }} == 'schedule' ]]; then
+          if [[ "${{ github.event_name }}" == 'schedule' ]]; then
             echo "build_type matrix set by schedule"
             echo "build_type=['essentials', 'full']" >> "$GITHUB_OUTPUT"
           else
@@ -102,7 +108,7 @@ jobs:
           fi
   
           temp_link_type="${{ inputs.link_type || 'shared' }}"
-          if [[${{ github.event_name }} == 'schedule' ]]; then
+          if [[ "${{ github.event_name }}"" == 'schedule' ]]; then
             echo "link_type matrix set by schedule"
             echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
           else

@@ -14,7 +14,7 @@ on:
         required: true 
 
 env:
-  release-prefix: "weekly-autobuild"
+  release_tag: "weekly-autobuild"
 
 jobs:
   release-distro:
@@ -36,31 +36,34 @@ jobs:
     - name: '☑️ File Check'
       run: |
         pwd
-        ls -la
-        cd **prerelease
         ls -laR
+    - name: '🔖 Release Tag'
+      run: |
+        temp_release_tag=${{ inputs.release_tag }}
+        if [[ "$temp_release_tag" == *"autobuild"* ]]; then
+          echo "release_tag=${temp_release_tag}-${{ inputs.build_date }}" >> $GITHUB_ENV
+        else
+          echo "release_tag=${temp_release_tag}" >> $GITHUB_ENV
+        fi
+        echo "env.release_tag: ${{ env.release_tag }}"
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
       with:
-        release-tag: "${{ env.release-prefix }}-${{ inputs.build_date }}"
+        release-tag: "${{ inputs.release_tag }}"
     - name: '📤 Upload to Existing Package Release'
       if: steps.release-exists.outputs.release-exists == 'true' 
       run: |
-          path=$(find . -type f -name "${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
-          cd $path
-          gh release upload "${{ env.release-prefix }}-${{ inputs.build_date }}" \
-            '${{ inputs.version_name }}.7z' \
-            '${{ inputs.version_name }}.sha256' \
+          gh release upload "${{ env.release_tag }}" \
+            './**/*.7z' \
+            './**/*.sha256' \
             --clobber \
     - name: '🔨 Create New Package Release'
       if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
-          path=$(find . -type f -name "${{ inputs.version_name }}.7z" -printf "%P\n" | xargs -I {} dirname {})
-          cd $path
-          gh release create "${{ env.release-prefix }}-${{ inputs.build_date }}" \
-            '${{ inputs.version_name }}.7z' \
-            '${{ inputs.version_name }}.sha256' \
+          gh release create "${{ env.release_tag }}" \
+            './**/*.7z' \
+            './**/*.sha256' \
             --title "Weekly Autobuild - ${{ inputs.build_date }}" \
             --notes-file release_notes.md \
             --draft \

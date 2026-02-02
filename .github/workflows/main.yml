@@ -2,7 +2,8 @@ name: FFmpeg Win-ARM64 Auto-Builds
 
 on:
   # schedule:
-  #   - cron: '0 11 * * *'
+  #   - cron: '0 23 * * *' // daily at 23:00 UTC
+  #   - cron: '0 23 * * 0' // sunday weekly at 23:00 UTC
   workflow_dispatch:
     inputs:
       release_tag:
@@ -113,14 +114,14 @@ jobs:
     #     echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
     #     command="clang --version"
     #     eval $command
-    # - name: "⬇️ Download External Utlities"
-    #   run: |
-    #     mkdir utilities
-    #     cd utilities
-    #     curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
-    #     7z x *.7z
-    #     # cd ..
-    #     # cp ./utilities/rcedit.exe "./${{ inputs.root_path }}/${{ inputs.version_name }}/bin"
+    - name: "⬇️ Download External Utlities"
+      run: |
+        mkdir utilities
+        cd utilities
+        curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
+        7z x *.7z
+        # cd ..
+        # cp ./utilities/rcedit.exe "./${{ inputs.root_path }}/${{ inputs.version_name }}/bin"
     - name: '🪡 Create FFmpeg Distribution Configuration Bits'
       id: 'ffmpeg-config-setup'
       uses: ./.github/actions/ffmpeg 
@@ -241,37 +242,34 @@ jobs:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
       working-directory: ./source
       run: |
-        echo "Parse out library versions into markdown file"
+        echo "Parse out FFmpeg library versions into markdown file"
         bash ../.github/scripts/library_versions.sh
-    # - name: "🔦 Parse Essentials Package Versions"
-    #   if: ${{ matrix.build_type == 'essentials' }}
-    #   env:
-    #     output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-    #     version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-    #     packages: ${{ steps.essentials-packages.outputs.packages }}
-    #     package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
-    #   run: |
-    #     echo "Parse Essentials Package Versions"
-    #     bash .github/scripts/package_versions.sh
-    # - name: "🔦 Parse Full Package Versions"
-    #   if: ${{ matrix.build_type == 'full' }}
-    #   env:
-    #     output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-    #     version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-    #     packages: ${{ steps.full-packages.outputs.packages }}
-    #     package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
-    #   run: |
-    #     echo "Parse Full Package Versions"
-    #     bash .github/scripts/package_versions.sh
-    # - name: '🙈 Resource Versioning'
-    #   env:
-    #     root_path: "builds/ffmpeg-${{ matrix.link_type }}"
-    #     github_tag: ${{ needs.defaults.outputs.github_tag }}
-    #     version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-    #     build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-    #   run: |
-    #     echo "Update resource properties on executables"
-    #     bash .github/scripts/resource_edit.sh
+    - name: "🔦 Parse Essentials Package Versions"
+      if: ${{ matrix.build_type == 'essentials' }}
+      env:
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        packages: ${{ steps.essentials-packages.outputs.packages }}
+        package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
+      run: |
+        echo "Parse Essentials Package Versions"
+        bash .github/scripts/package_versions.sh
+    - name: "🔦 Parse Full Package Versions"
+      if: ${{ matrix.build_type == 'full' }}
+      env:
+        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+        packages: ${{ steps.full-packages.outputs.packages }}
+        package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
+      run: |
+        echo "Parse Full Package Versions"
+        bash .github/scripts/package_versions.sh
+    - name: '🙈 Resource Versioning'
+      env:
+        github_tag: ${{ needs.defaults.outputs.github_tag }}
+      run: |
+        echo "Update resource properties on executables"
+        bash .github/scripts/resource_edit.sh
     # - name: '🧹 Cleanup Files for Distribution'
     #   working-directory: ./builds
     #   run: |
@@ -302,25 +300,21 @@ jobs:
         name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
           ./builds/**/**/*
-          # ./builds/**/*.7z
-          # ./builds/**/*.sha256
-          # ./builds/**/*.md
   prep-distro:
     name: '🎞️ Prepare Distribution'
     uses: ./.github/workflows/distro.yml
     needs: ['defaults', 'msys2']
     with:
-      # root_path: "ffmpeg-${{ needs.defaults.outputs.link_type }}"
       version_name: "${{ needs.msys2.outputs.version_name }}"
       github_tag: "${{ needs.defaults.outputs.github_tag }}"
       source_repo: "${{ needs.defaults.outputs.source_repo }}"
       checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
-  # release-distro:
-  #   name: '🎞️ Release Distribution'
-  #   uses: ./.github/workflows/release.yml
-  #   needs: ['defaults', 'msys2', 'prep-distro']
-  #   permissions:
-  #     contents: write
-  #   with:
-  #     version_name: "${{ needs.msys2.outputs.version_name }}"
-  #     build_date: "${{ needs.prep-distro.outputs.build_date }}"
+  release-distro:
+    name: '🎞️ Release Distribution'
+    uses: ./.github/workflows/release.yml
+    needs: ['defaults', 'prep-distro']
+    permissions:
+      contents: write
+    with:
+      release_tag: "${{ needs.defaults.outputs.release_tag }}"
+      build_date: "${{ needs.prep-distro.outputs.build_date }}"

@@ -9,6 +9,7 @@ ff_libs=(
 )
 declare -a ff_lib_versions
 ff_lib_versions+=("**Library Versions**")
+ff_lib_versions+=("")
 ff_lib_versions+=("| library | version | | |")
 ff_lib_versions+=("| -- | -- | -- | -- |")
 for lib in "${ff_libs[@]}"; do
