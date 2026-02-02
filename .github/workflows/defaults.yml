@@ -90,10 +90,10 @@ jobs:
           # echo "Set up default values when not triggered from a workflow_dispatch"
           temp_release_tag="${{ inputs.release_tag || 'devtest-autobuild' }}"
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            if [[ "${{ github.event.schedule }}" == "0 23 * * *" ]]; then
+            if [[ "${{ github.event.schedule || 0 }}" == "0 23 * * *" ]]; then
               temp_release_tag="daily-autobuild"
             fi
-            if [[ "${{ github.event.schedule }}" == "0 23 * * 0" ]]; then
+            if [[ "${{ github.event.schedule || 0 }}" == "0 23 * * 0" ]]; then
               temp_release_tag="weekly-autobuild"
             fi
           fi
