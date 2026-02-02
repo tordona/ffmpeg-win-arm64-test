@@ -5,13 +5,10 @@ on:
     inputs:
       release_tag:
         type: string
-        required: false 
-      version_name:
-        type: string
-        required: true 
+        required: false
       build_date:
         type: string
-        required: true 
+        required: true
 
 env:
   release_tag: "weekly-autobuild"
@@ -50,7 +47,7 @@ jobs:
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
       with:
-        release-tag: "${{ inputs.release_tag }}"
+        release-tag: "${{ env.release_tag }}"
     - name: '📤 Upload to Existing Package Release'
       if: steps.release-exists.outputs.release-exists == 'true' 
       run: |
