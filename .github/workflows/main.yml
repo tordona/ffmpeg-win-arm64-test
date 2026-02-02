@@ -272,29 +272,29 @@ jobs:
       run: |
         echo "Update resource properties on executables"
         bash .github/scripts/resource_edit.sh
-    - name: '🧹 Cleanup Files for Distribution'
-      working-directory: ./builds
-      run: |
-        find . -type d -iname "dump" -exec rm -r {} +
-        find . -type d -iname "examples" -exec rm -r {} +
-        find . -type f -iname '*.lib' -delete
-        find . -type f -iname '*.xsd' -delete
-        find . -type f -iname '*.ico' -delete
-    - name: '☑️ Verify Build Output'
-      working-directory: ./builds
-      id: 'verify-build-output'
-      run: |
-        pwd
-        ls -laR
-    - name: '🚚 7Zip Archive Package'
-      working-directory: ./builds/ffmpeg-${{ matrix.link_type }}
-      id: 'archive-package'
-      run: |
-        pwd
-        version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        7z a "$version_name.7z" * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd -xr!*.md
-        sha256sum "$version_name.7z" > "$version_name.sha256"
-        ls -la
+    # - name: '🧹 Cleanup Files for Distribution'
+    #   working-directory: ./builds
+    #   run: |
+    #     find . -type d -iname "dump" -exec rm -r {} +
+    #     find . -type d -iname "examples" -exec rm -r {} +
+    #     find . -type f -iname '*.lib' -delete
+    #     find . -type f -iname '*.xsd' -delete
+    #     find . -type f -iname '*.ico' -delete
+    # - name: '☑️ Verify Build Output'
+    #   working-directory: ./builds
+    #   id: 'verify-build-output'
+    #   run: |
+    #     pwd
+    #     ls -laR
+    # - name: '🚚 7Zip Archive Package'
+    #   working-directory: ./builds/ffmpeg-${{ matrix.link_type }}
+    #   id: 'archive-package'
+    #   run: |
+    #     pwd
+    #     version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+    #     7z a "$version_name.7z" * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd -xr!*.md
+    #     sha256sum "$version_name.7z" > "$version_name.sha256"
+    #     ls -la
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:
@@ -304,16 +304,16 @@ jobs:
           ./builds/**/*.7z
           ./builds/**/*.sha256
           ./builds/**/*.md
-  # prep-distro:
-  #   name: '🎞️ Prepare Distribution'
-  #   uses: ./.github/workflows/distro.yml
-  #   needs: ['defaults', 'msys2']
-  #   with:
-  #     # root_path: "ffmpeg-${{ needs.defaults.outputs.link_type }}"
-  #     # version_name: "${{ needs.msys2.outputs.version_name }}"
-  #     github_tag: "${{ needs.defaults.outputs.github_tag }}"
-  #     source_repo: "${{ needs.defaults.outputs.source_repo }}"
-  #     checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
+  prep-distro:
+    name: '🎞️ Prepare Distribution'
+    uses: ./.github/workflows/distro.yml
+    needs: ['defaults', 'msys2']
+    with:
+      # root_path: "ffmpeg-${{ needs.defaults.outputs.link_type }}"
+      # version_name: "${{ needs.msys2.outputs.version_name }}"
+      github_tag: "${{ needs.defaults.outputs.github_tag }}"
+      source_repo: "${{ needs.defaults.outputs.source_repo }}"
+      checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
   # release-distro:
   #   name: '🎞️ Release Distribution'
   #   uses: ./.github/workflows/release.yml
