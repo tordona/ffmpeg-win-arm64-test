@@ -67,7 +67,7 @@ jobs:
             rm -f $filename
             printf "## Windows ARM64 builds\n" >> $filename
             printf "\n" >> $filename
-            cd "$root""
+            cd "$root"
           fi
         done
     - name: '📝 Create Prerelease Notes'
@@ -86,7 +86,7 @@ jobs:
             printf "\n" >> $filename
             printf "**Source**\n" >> $filename
             printf "${{ inputs.source_repo }}/commit/${{ inputs.checkout_commit }}\n" >> $filename
-            cd "$root""
+            cd "$root"
           fi
         done
     - name: '📝 Concat Release Notes'
@@ -112,7 +112,7 @@ jobs:
               elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
                 cat "$prerelease_notes" > release_notes.md 
               fi
-            cd "$root""
+            cd "$root"
           fi
         done
     - name: '🚚 Package'
