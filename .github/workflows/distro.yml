@@ -60,6 +60,7 @@ jobs:
         root=$(pwd)
         find . -mindepth 2 -maxdepth 2 -type d -path "./ffmpeg*/*shared" -o -path "./ffmpeg*/*static" | while read -r dir; do
           cd "$root"
+          cd "$dir"
           filename="header_notes.md"
           rm -f $filename
           printf "## Windows ARM64 builds\n" >> $filename
@@ -72,6 +73,7 @@ jobs:
         root=$(pwd)
         find . -mindepth 2 -maxdepth 2 -type d -path "./ffmpeg*/*shared" -o -path "./ffmpeg*/*static" | while read -r dir; do
           cd "$root"
+          cd "$dir"
           filename="prerelease_notes.md"
           rm -f $filename
           printf "\n" >> $filename
