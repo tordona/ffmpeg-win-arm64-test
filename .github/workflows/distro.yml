@@ -3,6 +3,9 @@ name: Prepare Distribution
 on:
   workflow_call:
     inputs:
+      version_name:
+        type: string
+        required: true 
       github_tag:
         type: string
         required: true 
@@ -42,10 +45,8 @@ jobs:
         build_date=$(date '+%Y.%m.%d.0')
         echo "build_date=${build_date}" >> $GITHUB_OUTPUT
     - name: '🧹 Cleanup Files for Distribution'
-      working-directory: ./
+      working-directory: ./builds
       run: |
-        pwd
-        ls -laR
         find . -type d -iname "dump" -exec rm -r {} +
         find . -type d -iname "examples" -exec rm -r {} +
         find . -type f -iname '*.lib' -delete
@@ -53,6 +54,7 @@ jobs:
         find . -type f -iname '*.ico' -delete
         ls -laR
     - name: '📝 Create Header Notes'
+      working-directory: ./builds/${{ inputs.version_name }}
       id: 'header-notes'
       run: |
         pwd
@@ -62,6 +64,7 @@ jobs:
         printf "## Windows ARM64 builds\n" >> $filename
         printf "\n" >> $filename
     - name: '📝 Create Prerelease Notes'
+      working-directory: ./builds/${{ inputs.version_name }}
       id: 'prerelease-notes'
       run: |
         pwd
@@ -73,10 +76,9 @@ jobs:
         printf "**Source**\n" >> $filename
         printf "${{ inputs.source_repo }}/commit/${{ inputs.checkout_commit }}\n" >> $filename
     - name: '📝 Concat Release Notes'
+      working-directory: ./builds/${{ inputs.version_name }}
       run: |
-        pwd
-        ls -laR
-        cd "${{ inputs.root_path }}"
+        cd "ffmpeg**"
         header_notes="header_notes.md"
         library_versions="library_versions.md"
         prerelease_notes="prerelease_notes.md"
@@ -93,10 +95,12 @@ jobs:
         fi
     - name: '🚚 Package'
       shell: bash
+      working-directory: ./builds/${{ inputs.version_name }}
       run: |
         ls -laR
         origin=$(pwd)
         for link_type_dir in **/ffmpeg**/ffmpeg*; do
+          echo "$link_type_dir"
           if [[ -d $link_type_dir ]]; then
             build_dir=$(basename $link_type_dir)
             base_path=${link_type_dir//$build_dir/}
@@ -106,17 +110,12 @@ jobs:
           fi
           cd "$origin"
         done
-    - name: '🚚 Package'
-      shell: bash
-      run: |
-        pwd
-        ls -laR
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:
         if-no-files-found: error
         name: "${{ inputs.version_name }}-prerelease"
         path: |
-          ./**/${{ inputs.version_name }}.7z
-          ./**/${{ inputs.version_name }}.sha256
-          ./**/*.md
+          ./builds/**/${{ inputs.version_name }}.7z
+          ./builds/**/${{ inputs.version_name }}.sha256
+          ./builds/**/*.md
