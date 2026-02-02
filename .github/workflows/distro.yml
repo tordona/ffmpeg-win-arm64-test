@@ -54,55 +54,76 @@ jobs:
         find . -type f -iname '*.ico' -delete
         ls -laR
     - name: '📝 Create Header Notes'
-      working-directory: ./builds/${{ inputs.version_name }}
+      working-directory: ./builds
       id: 'header-notes'
       run: |
-        pwd
-        ls -laR
-        filename="header_notes.md"
-        rm -f $filename
-        printf "## Windows ARM64 builds\n" >> $filename
-        printf "\n" >> $filename
+        root=$(pwd)
+        for dir in */; do
+          path=${dir%/}
+          if [[ -d "$path" ]]; then
+            cd "$path/ffmpeg**"
+            ls -la
+            filename="header_notes.md"
+            rm -f $filename
+            printf "## Windows ARM64 builds\n" >> $filename
+            printf "\n" >> $filename
+            cd "$root""
+          fi
+        done
     - name: '📝 Create Prerelease Notes'
-      working-directory: ./builds/${{ inputs.version_name }}
+      working-directory: ./builds
       id: 'prerelease-notes'
       run: |
-        pwd
-        ls -laR
-        filename="prerelease_notes.md"
-        rm -f $filename
-        printf "\n" >> $filename
-        printf "\n" >> $filename
-        printf "**Source**\n" >> $filename
-        printf "${{ inputs.source_repo }}/commit/${{ inputs.checkout_commit }}\n" >> $filename
+        root=$(pwd)
+        for dir in */; do
+          path=${dir%/}
+          if [[ -d "$path" ]]; then
+            cd "$path/ffmpeg**"
+            ls -la
+            filename="prerelease_notes.md"
+            rm -f $filename
+            printf "\n" >> $filename
+            printf "\n" >> $filename
+            printf "**Source**\n" >> $filename
+            printf "${{ inputs.source_repo }}/commit/${{ inputs.checkout_commit }}\n" >> $filename
+            cd "$root""
+          fi
+        done
     - name: '📝 Concat Release Notes'
-      working-directory: ./builds/${{ inputs.version_name }}
+      working-directory: ./builds
       run: |
-        pwd
-        ls -laR
-        header_notes="header_notes.md"
-        library_versions="library_versions.md"
-        prerelease_notes="prerelease_notes.md"
-        if [[ -f "$library_versions" ]]; then
-          echo "$(<$library_versions)"
-        fi
-        if [[ -f "$prerelease_notes" ]]; then
-          echo "$(<$prerelease_notes)"
-        fi
-        if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
-          cat "$header_notes" "$library_versions" "$prerelease_notes" > release_notes.md
-        elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
-          cat "$prerelease_notes" > release_notes.md 
-        fi
+        root=$(pwd)
+        for dir in */; do
+          path=${dir%/}
+          if [[ -d "$path" ]]; then
+            cd "$path/ffmpeg**"
+            ls -la
+              header_notes="header_notes.md"
+              library_versions="library_versions.md"
+              prerelease_notes="prerelease_notes.md"
+              if [[ -f "$library_versions" ]]; then
+                echo "$(<$library_versions)"
+              fi
+              if [[ -f "$prerelease_notes" ]]; then
+                echo "$(<$prerelease_notes)"
+              fi
+              if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
+                cat "$header_notes" "$library_versions" "$prerelease_notes" > release_notes.md
+              elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
+                cat "$prerelease_notes" > release_notes.md 
+              fi
+            cd "$root""
+          fi
+        done
     - name: '🚚 Package'
       shell: bash
-      working-directory: ./builds/${{ inputs.version_name }}
+      working-directory: ./builds
       run: |
         pwd
-        ls -laR
+        ls -la
         origin=$(pwd)
         for link_type_dir in **/ffmpeg**/ffmpeg*; do
-          echo "$link_type_dir"
+          echo "$link_type_dir: $link_type_dir"
           if [[ -d $link_type_dir ]]; then
             build_dir=$(basename $link_type_dir)
             base_path=${link_type_dir//$build_dir/}
