@@ -38,8 +38,10 @@ jobs:
         build_date=$(date '+%Y.%m.%d.0')
         echo "build_date=${build_date}" >> $GITHUB_OUTPUT
     - name: '🧹 Cleanup Files for Distribution'
-      working-directory: ./builds
+      working-directory: ./
       run: |
+        pwd
+        ls -laR
         find . -type d -iname "dump" -exec rm -r {} +
         find . -type d -iname "examples" -exec rm -r {} +
         find . -type f -iname '*.lib' -delete
@@ -49,7 +51,6 @@ jobs:
       id: 'header-notes'
       run: |
         pwd
-        cd "${{ inputs.root_path }}"
         filename="header_notes.md"
         rm -f $filename
         printf "## Windows ARM64 builds\n" >> $filename
@@ -58,7 +59,6 @@ jobs:
       id: 'prerelease-notes'
       run: |
         pwd
-        cd "${{ inputs.root_path }}"
         filename="prerelease_notes.md"
         rm -f $filename
         printf "\n" >> $filename

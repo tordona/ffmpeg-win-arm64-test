@@ -74,11 +74,11 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
-        build_type: ${{ fromJSON(needs.defaults.outputs.build_type) }}
-        link_type: ${{ fromJSON(needs.defaults.outputs.link_type) }}
+        # build_type: ${{ fromJSON(needs.defaults.outputs.build_type) }}
+        # link_type: ${{ fromJSON(needs.defaults.outputs.link_type) }}
       # matrix:
-      #   build_type: ['essentials', 'full']
-      #   link_type: ['shared', 'static']
+        build_type: ['essentials']
+        link_type: ['shared', 'static']
     defaults:
       run:
         shell: msys2 {0}
@@ -108,19 +108,19 @@ jobs:
             jq:p
             github-cli:p
             7zip:p
-    - name: '🏃‍➡️ Verify MSYS2 Install'
-      run: |
-        echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
-        command="clang --version"
-        eval $command
-    - name: "⬇️ Download External Utlities"
-      run: |
-        mkdir utilities
-        cd utilities
-        curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
-        7z x *.7z
-        # cd ..
-        # cp ./utilities/rcedit.exe "./${{ inputs.root_path }}/${{ inputs.version_name }}/bin"
+    # - name: '🏃‍➡️ Verify MSYS2 Install'
+    #   run: |
+    #     echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
+    #     command="clang --version"
+    #     eval $command
+    # - name: "⬇️ Download External Utlities"
+    #   run: |
+    #     mkdir utilities
+    #     cd utilities
+    #     curl -LO https://github.com/tordona/win-arm64-binaries/releases/download/rcedit/rcedit-v2.0-win-arm64.7z
+    #     7z x *.7z
+    #     # cd ..
+    #     # cp ./utilities/rcedit.exe "./${{ inputs.root_path }}/${{ inputs.version_name }}/bin"
     - name: '🪡 Create FFmpeg Distribution Configuration Bits'
       id: 'ffmpeg-config-setup'
       uses: ./.github/actions/ffmpeg 
@@ -188,19 +188,19 @@ jobs:
       run: |
         echo "Configure FFmpeg Build with Library Options"
         bash ../.github/scripts/config_ffmpeg.sh
-    - name: '🪵 Log: Show FFmpeg Build Config'
-      if: steps.configure-ffmpeg.outcome == 'failure'
-      run: |
-        log="./source/ffbuild/config.log"
-        if [ -f "$log" ]; then
-          cat ./source/ffbuild/config.log
-        fi
-    - name: '🌳 Log: Show FFmpeg Configuration Output'
-      working-directory: ./source
-      run: |
-        if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
-          echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
-        fi
+    # - name: '🪵 Log: Show FFmpeg Build Config'
+    #   if: steps.configure-ffmpeg.outcome == 'failure'
+    #   run: |
+    #     log="./source/ffbuild/config.log"
+    #     if [ -f "$log" ]; then
+    #       cat ./source/ffbuild/config.log
+    #     fi
+    # - name: '🌳 Log: Show FFmpeg Configuration Output'
+    #   working-directory: ./source
+    #   run: |
+    #     if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
+    #       echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
+    #     fi
     - name: '🥋 Modifiy Config Header and readme file'
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
@@ -243,35 +243,35 @@ jobs:
       run: |
         echo "Parse out library versions into markdown file"
         bash ../.github/scripts/library_versions.sh
-    - name: "🔦 Parse Essentials Package Versions"
-      if: ${{ matrix.build_type == 'essentials' }}
-      env:
-        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        packages: ${{ steps.essentials-packages.outputs.packages }}
-        package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
-      run: |
-        echo "Parse Essentials Package Versions"
-        bash .github/scripts/package_versions.sh
-    - name: "🔦 Parse Full Package Versions"
-      if: ${{ matrix.build_type == 'full' }}
-      env:
-        output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
-        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        packages: ${{ steps.full-packages.outputs.packages }}
-        package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
-      run: |
-        echo "Parse Full Package Versions"
-        bash .github/scripts/package_versions.sh
-    - name: '🙈 Resource Versioning'
-      env:
-        root_path: "builds/ffmpeg-${{ matrix.link_type }}"
-        github_tag: ${{ needs.defaults.outputs.github_tag }}
-        version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
-        build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
-      run: |
-        echo "Update resource properties on executables"
-        bash .github/scripts/resource_edit.sh
+    # - name: "🔦 Parse Essentials Package Versions"
+    #   if: ${{ matrix.build_type == 'essentials' }}
+    #   env:
+    #     output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+    #     version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+    #     packages: ${{ steps.essentials-packages.outputs.packages }}
+    #     package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
+    #   run: |
+    #     echo "Parse Essentials Package Versions"
+    #     bash .github/scripts/package_versions.sh
+    # - name: "🔦 Parse Full Package Versions"
+    #   if: ${{ matrix.build_type == 'full' }}
+    #   env:
+    #     output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
+    #     version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+    #     packages: ${{ steps.full-packages.outputs.packages }}
+    #     package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
+    #   run: |
+    #     echo "Parse Full Package Versions"
+    #     bash .github/scripts/package_versions.sh
+    # - name: '🙈 Resource Versioning'
+    #   env:
+    #     root_path: "builds/ffmpeg-${{ matrix.link_type }}"
+    #     github_tag: ${{ needs.defaults.outputs.github_tag }}
+    #     version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
+    #     build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
+    #   run: |
+    #     echo "Update resource properties on executables"
+    #     bash .github/scripts/resource_edit.sh
     # - name: '🧹 Cleanup Files for Distribution'
     #   working-directory: ./builds
     #   run: |
@@ -301,9 +301,10 @@ jobs:
         if-no-files-found: error
         name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
-          ./builds/**/*.7z
-          ./builds/**/*.sha256
-          ./builds/**/*.md
+          ./builds/**/*.*
+          # ./builds/**/*.7z
+          # ./builds/**/*.sha256
+          # ./builds/**/*.md
   prep-distro:
     name: '🎞️ Prepare Distribution'
     uses: ./.github/workflows/distro.yml
