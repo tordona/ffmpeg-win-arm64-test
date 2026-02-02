@@ -293,7 +293,7 @@ jobs:
         pwd
         version_name="${{ steps.ffmpeg-config-setup.outputs.version_name }}"
         7z a "$version_name.7z" * -xr!*.bak -xr!*.ico -xr!*.lib -xr!*.xsd -xr!*.md
-        sha256sum "$version.7z" > "$version_name.sha256"
+        sha256sum "$version_name.7z" > "$version_name.sha256"
         ls -la
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
