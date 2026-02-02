@@ -301,7 +301,7 @@ jobs:
         if-no-files-found: error
         name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
-          ./builds/**/*.*
+          ./builds
           # ./builds/**/*.7z
           # ./builds/**/*.sha256
           # ./builds/**/*.md
