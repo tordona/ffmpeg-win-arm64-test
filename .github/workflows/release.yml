@@ -39,10 +39,17 @@ jobs:
     - name: '☑️ File Check2'
       run: |
         release_notes=$(find . -name "release_notes.md")
+        echo "$release_notes"
+        echo $release_note
         if [[ -f "$release_notes" ]]; then
-          echo $release_note
+          echo "with quotes"
+          echo $release_notes
           cp $release_notes ./release
           cd release
+          ls -la
+        fi
+        if [[ -f $release_notes ]]; then
+          echo "no quotes"
           ls -la
         fi
     - name: '🔍 Check Build Release Exists'
