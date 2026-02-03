@@ -35,20 +35,11 @@ jobs:
       run: |
         pwd
         ls -laR
-    - name: '🔖 Release Tag'
-      run: |
-        temp_release_tag=${{ inputs.release_tag }}
-        if [[ "$temp_release_tag" == *"autobuild"* ]]; then
-          echo "release_tag=${temp_release_tag}-${{ inputs.build_date }}" >> $GITHUB_ENV
-        else
-          echo "release_tag=${temp_release_tag}" >> $GITHUB_ENV
-        fi
-        echo "env.release_tag: ${{ env.release_tag }}"
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
       with:
-        release-tag: "${{ env.release_tag }}"
+        release-tag: "${{ inputs.release_tag }}"
     - name: '📤 Upload to Existing Package Release'
       working-directory: ./release
       if: steps.release-exists.outputs.release-exists == 'true' 
@@ -57,7 +48,7 @@ jobs:
         shopt -s nullglob
         pwd
         ls -laR
-        gh release upload "${{ env.release_tag }}" \
+        gh release upload "${{ inputs.release_tag }}" \
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
           --clobber \
@@ -70,10 +61,10 @@ jobs:
         pwd
         ls -laR
         release_notes=$(find . -name "release_notes.md")
-        gh release create "${{ env.release_tag }}" \
+        gh release create "${{ inputs.release_tag }}" \
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
-          --title "${{ env.release_tag }}" \
+          --title "${{ inputs.release_tag }}" \
           --notes-file "$release_notes" \
           --draft \
           --prerelease
