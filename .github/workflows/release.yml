@@ -39,10 +39,10 @@ jobs:
     - name: '☑️ File Check2'
       run: |
         release_notes=$(find . -name "release_notes.md" -print -quit)
+
+        if [[ -f "$release_notes" ]]; then
         echo "$release_notes"
         echo $release_note
-        if [[ -f "$release_notes" ]]; then
-
         fi
         if [[ -f $release_notes ]]; then
           echo "no quotes"
