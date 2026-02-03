@@ -36,6 +36,15 @@ jobs:
       run: |
         pwd
         ls -laR
+    - name: '☑️ File Check2'
+      run: |
+        release_notes=$(find . -name "release_notes.md")
+        if [[ -f "$release_notes" ]]; then
+          echo $release_note
+          cp $release_notes ./release
+          cd release
+          ls -la
+        fi
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
@@ -65,8 +74,12 @@ jobs:
           --notes-file $release_notes \
           --draft \
           --prerelease
-    # - name: Delete a specific release asset using gh CLI
-    #   run: |
-    #     echo "Delete file passed from notes-file flags because just why?"
-    #     gh release delete-asset "${{ inputs.release_tag }}" \
-    #       "release_notes.md" -y
+    - name: '☑️ Check release_notes asset'
+      if: success()
+      run: |
+        echo "Check if release_notes.md was added to assets"
+        if gh release view "${{ inputs.release_tag }}" --json assets | grep -q "release_notes.md"; then
+          echo "Delete file passed from notes-file flags because just why?"
+          gh release delete-asset "${{ inputs.release_tag }}" \
+            "release_notes.md" -y
+        fi
