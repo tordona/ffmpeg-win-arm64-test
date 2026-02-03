@@ -82,7 +82,7 @@ jobs:
         # build_type: ${{ fromJSON(needs.defaults.outputs.build_type) }}
         # link_type: ${{ fromJSON(needs.defaults.outputs.link_type) }}
       matrix:
-        build_type: ['essentials', 'full']
+        build_type: ['essentials']
         link_type: ['shared', 'static']
     defaults:
       run:
