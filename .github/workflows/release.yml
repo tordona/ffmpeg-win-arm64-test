@@ -62,11 +62,11 @@ jobs:
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
           --title '${{ inputs.release_tag }}' \
-          --notes-file $release_notes.md \
+          --notes-file '$release_notes' \
           --draft \
           --prerelease
-    - name: Delete a specific release asset using gh CLI
-      run: |
-        echo "Delete file passed from notes-file flags because just why?"
-        gh release delete-asset "${{ inputs.release_tag }}" \
-          "release_notes.md" -y
+    # - name: Delete a specific release asset using gh CLI
+    #   run: |
+    #     echo "Delete file passed from notes-file flags because just why?"
+    #     gh release delete-asset "${{ inputs.release_tag }}" \
+    #       "release_notes.md" -y
