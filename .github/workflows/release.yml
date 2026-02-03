@@ -66,12 +66,18 @@ jobs:
       run: |
         shopt -s globstar
         shopt -s nullglob
+        if [[ -f "release_notes.md" ]]; then
+          echo "the notes file exists1"
+        fi
+        if [[ -f "./release_notes.md" ]]; then
+          echo "the notes file exists2"
+        fi
         release_notes=$(find . -name "release_notes.md")
         gh release create "${{ inputs.release_tag }}" \
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
           --title '${{ inputs.release_tag }}' \
-          --notes-file $release_notes \
+          --notes-file release_notes.md \
           --draft \
           --prerelease
     - name: '☑️ Check release_notes asset'
