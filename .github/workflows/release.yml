@@ -36,18 +36,6 @@ jobs:
       run: |
         pwd
         ls -laR
-    - name: '☑️ File Check2'
-      run: |
-        release_notes=$(find . -name "release_notes.md" -print -quit)
-
-        if [[ -f "$release_notes" ]]; then
-        echo "$release_notes"
-        echo $release_note
-        fi
-        if [[ -f $release_notes ]]; then
-          echo "no quotes"
-          ls -la
-        fi
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
@@ -69,7 +57,7 @@ jobs:
       run: |
         shopt -s globstar
         shopt -s nullglob
-        release_notes=$(find . -name "release_notes.md")
+        release_notes=$(find . -name "release_notes.md" -print -quit)
         if [[ -f "$release_notes" ]]; then
           echo "🔨 Create New Package Release"
           gh release create "${{ inputs.release_tag }}" \
