@@ -54,7 +54,7 @@ jobs:
       build_config: ${{ steps.build-config.outputs.build_config }}
     steps:
     - name: '🛒 Checkout'
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     - name: '🗺️ Setup Configuration'
       id: 'baseline'
       working-directory: ./config

@@ -92,7 +92,7 @@ jobs:
       checkout_commit: ${{ steps.parse-commit.outputs.checkout_commit }}
     steps:
     - name: '🛒 Checkout'
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     - name: '🔧 Setup MSYS2'
       id: msys2-env
       uses: msys2/setup-msys2@v2
