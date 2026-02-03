@@ -10,10 +10,6 @@ on:
         description: 'Tag Name for Release'
         required: true
         type: string
-      release_title:
-        description: 'Tag Name for Release'
-        required: false
-        type: string
       github_tag:
         description: 'Version tag to build'
         required: false
