@@ -36,6 +36,22 @@ jobs:
       run: |
         pwd
         ls -laR
+    - name: '☑️ File Check2'
+      run: |
+        release_notes=$(find . -name "release_notes.md" -print -quite)
+        echo "$release_notes"
+        echo $release_note
+        if [[ -f "$release_notes" ]]; then
+          echo "no quotes"
+          echo $release_notes
+          cp $release_notes ./release
+          cd release
+          ls -la
+        fi
+        if [[ -f $release_notes ]]; then
+          echo "no quotes"
+          ls -la
+        fi
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
@@ -57,23 +73,26 @@ jobs:
       run: |
         shopt -s globstar
         shopt -s nullglob
-        release_notes=$(find . -name "release_notes.md" -print -quit)
-        echo $release_notes
+        if [[ -f "release_notes.md" ]]; then
+          echo "the notes file exists1"
+        fi
+        if [[ -f "./release_notes.md" ]]; then
+          echo "the notes file exists2"
+        fi
+        release_notes=$(find . -name "release_notes.md")
         gh release create "${{ inputs.release_tag }}" \
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
           --title '${{ inputs.release_tag }}' \
-          --notes-file $release_notes \
+          --notes-file release_notes.md \
           --draft \
           --prerelease
-    - name: '☑️ Handle release_notes asset'
+    - name: '☑️ Check release_notes asset'
       if: success()
       run: |
-        echo "Handle if release_notes.md was added to assets. WTF."
+        echo "Check if release_notes.md was added to assets"
         if gh release view "${{ inputs.release_tag }}" --json assets | grep -q "release_notes.md"; then
           echo "Delete file passed from notes-file flags because just why?"
           gh release delete-asset "${{ inputs.release_tag }}" \
             "release_notes.md" -y
-        else
-          echo "no release.md found in assets"
         fi
