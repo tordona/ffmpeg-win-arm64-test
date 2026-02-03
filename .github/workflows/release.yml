@@ -41,14 +41,14 @@ jobs:
         release_notes=$(find . -name "release_notes.md")
         echo "$release_notes"
         echo $release_note
-        if [[ -f "$release_notes" ]]; then
+        if [[ -n "$release_notes" ]]; then
           echo "with quotes"
           echo $release_notes
           cp $release_notes ./release
           cd release
           ls -la
         fi
-        if [[ -f $release_notes ]]; then
+        if [[ -n $release_notes ]]; then
           echo "no quotes"
           ls -la
         fi
