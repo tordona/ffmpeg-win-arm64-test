@@ -57,7 +57,8 @@ jobs:
       run: |
         shopt -s globstar
         shopt -s nullglob
-        release_notes=$(find . -name "release_notes.md" -quit)
+        release_notes=$(find . -name "release_notes.md" -print -quit)
+        echo $release_notes
         gh release create "${{ inputs.release_tag }}" \
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
