@@ -56,8 +56,8 @@ jobs:
         pwd
         ls -laR
         gh release upload "${{ env.release_tag }}" \
-          'release/**/*.7z' \
-          'release/**/*.sha256' \
+          '**/*.7z' \
+          '**/*.sha256' \
           --clobber \
     - name: '🔨 Create New Package Release'
       working-directory: ./release
@@ -69,8 +69,8 @@ jobs:
         ls -laR
         release_notes=$(find . -name "release_notes.md" -exec realpath {} \;)
         gh release create "${{ env.release_tag }}" \
-          'release/**/*.7z' \
-          'release//**/*.sha256' \
+          '**/*.7z' \
+          '**/*.sha256' \
           --title "${{ env.release_tag }}" \
           --notes-file "$release_notes" \
           --draft \
