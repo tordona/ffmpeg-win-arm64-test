@@ -56,7 +56,7 @@ jobs:
       run: |
         temp_release_tag=${{ inputs.release_tag }}
         if [[ "$temp_release_tag" == *"autobuild"* ]]; then
-          echo "release_tag=${temp_release_tag}-${{ steps.build-date.outputs.release_tag }}" >> $GITHUB_OUTPUT
+          echo "release_tag=${temp_release_tag}-${{ steps.build-date.outputs.build_date }}" >> $GITHUB_OUTPUT
         else
           echo "release_tag=${temp_release_tag}" >> $GITHUB_OUTPUT
         fi
