@@ -69,7 +69,7 @@ jobs:
         shopt -s nullglob
         pwd
         ls -laR
-        release_notes=$(find . -name "release_notes.md" -exec realpath {} \;)
+        release_notes=$(find . -name "release_notes.md")
         gh release create "${{ env.release_tag }}" \
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
