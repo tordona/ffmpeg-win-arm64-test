@@ -38,15 +38,11 @@ jobs:
         ls -laR
     - name: '☑️ File Check2'
       run: |
-        release_notes=$(find . -name "release_notes.md" -print -quite)
+        release_notes=$(find . -name "release_notes.md" -print -quit)
         echo "$release_notes"
         echo $release_note
         if [[ -f "$release_notes" ]]; then
-          echo "no quotes"
-          echo $release_notes
-          cp $release_notes ./release
-          cd release
-          ls -la
+
         fi
         if [[ -f $release_notes ]]; then
           echo "no quotes"
@@ -73,26 +69,14 @@ jobs:
       run: |
         shopt -s globstar
         shopt -s nullglob
-        if [[ -f "release_notes.md" ]]; then
-          echo "the notes file exists1"
-        fi
-        if [[ -f "./release_notes.md" ]]; then
-          echo "the notes file exists2"
-        fi
         release_notes=$(find . -name "release_notes.md")
-        gh release create "${{ inputs.release_tag }}" \
-          './ffmpeg**/**/*.7z' \
-          './ffmpeg**/**/*.sha256' \
-          --title '${{ inputs.release_tag }}' \
-          --notes-file release_notes.md \
-          --draft \
-          --prerelease
-    - name: '☑️ Check release_notes asset'
-      if: success()
-      run: |
-        echo "Check if release_notes.md was added to assets"
-        if gh release view "${{ inputs.release_tag }}" --json assets | grep -q "release_notes.md"; then
-          echo "Delete file passed from notes-file flags because just why?"
-          gh release delete-asset "${{ inputs.release_tag }}" \
-            "release_notes.md" -y
+        if [[ -f "$release_notes" ]]; then
+          echo "🔨 Create New Package Release"
+          gh release create "${{ inputs.release_tag }}" \
+            './ffmpeg**/**/*.7z' \
+            './ffmpeg**/**/*.sha256' \
+            --title '${{ inputs.release_tag }}' \
+            --notes-file release_notes.md \
+            --draft \
+            --prerelease
         fi
