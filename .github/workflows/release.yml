@@ -43,6 +43,11 @@ jobs:
         if [[ -f "$release_notes" ]]; then
           cp $release_notes .
         fi
+    - name: '☑️ File Check 2'
+      working-directory: ./release
+      run: |
+        pwd
+        ls -laR
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
@@ -64,11 +69,12 @@ jobs:
       run: |
         shopt -s globstar
         shopt -s nullglob
+        ls -laR
         gh release create "${{ inputs.release_tag }}" \
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
           --title '${{ inputs.release_tag }}' \
-          --notes-file './release_notes.md' \
+          --notes-file 'release_notes.md' \
           --draft \
           --prerelease
     # - name: Delete a specific release asset using gh CLI
