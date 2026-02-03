@@ -5,6 +5,9 @@ on:
     inputs:
       version_name:
         type: string
+        required: true
+      release_tag:
+        type: string
         required: true 
       github_tag:
         type: string
@@ -18,6 +21,9 @@ on:
     outputs:
       build_date:
         value: ${{ jobs.prep-distro.outputs.build_date }}
+      release_tag:
+        value: ${{ jobs.prep-distro.outputs.release_tag }}
+
 jobs:
   prep-distro:
     name: '💻 Prepare Distribution Package'
@@ -29,6 +35,7 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       build_date: ${{ steps.build-date.outputs.build_date }}
+      release_tag: ${{ steps.release-tag.outputs.release_tag }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v6
@@ -44,6 +51,15 @@ jobs:
       run: |
         build_date=$(date '+%Y.%m.%d.0')
         echo "build_date=${build_date}" >> $GITHUB_OUTPUT
+    - name: '🔖 Release Tag'
+      id: 'release-tag'
+      run: |
+        temp_release_tag=${{ inputs.release_tag }}
+        if [[ "$temp_release_tag" == *"autobuild"* ]]; then
+          echo "release_tag=${temp_release_tag}-${{ steps.build-date.outputs.release_tag }}" >> $GITHUB_OUTPUT
+        else
+          echo "release_tag=${temp_release_tag}" >> $GITHUB_OUTPUT
+        fi
     - name: '📝 Create Header Notes'
       working-directory: ./builds
       id: 'header-notes'

@@ -112,12 +112,11 @@ jobs:
             libssh2:p
             jq:p
             github-cli:p
-            7zip:p
-    # - name: '🏃‍➡️ Verify MSYS2 Install'
-    #   run: |
-    #     echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
-    #     command="clang --version"
-    #     eval $command
+    - name: '🏃‍➡️ Verify MSYS2 Install'
+      run: |
+        echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
+        command="clang --version"
+        eval $command
     - name: "⬇️ Download External Utlities"
       run: |
         mkdir utilities
@@ -310,15 +309,16 @@ jobs:
     needs: ['defaults', 'msys2']
     with:
       version_name: "${{ needs.msys2.outputs.version_name }}"
+      release_tag: "${{ needs.defaults.outputs.release_tag }}"
       github_tag: "${{ needs.defaults.outputs.github_tag }}"
       source_repo: "${{ needs.defaults.outputs.source_repo }}"
       checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
   release-distro:
     name: '🎞️ Release Distribution'
     uses: ./.github/workflows/release.yml
-    needs: ['defaults', 'prep-distro']
+    needs: ['prep-distro']
     permissions:
       contents: write
     with:
-      release_tag: "${{ needs.defaults.outputs.release_tag }}"
       build_date: "${{ needs.prep-distro.outputs.build_date }}"
+      release_tag: "${{ needs.prep-distro.outputs.release_tag }}"

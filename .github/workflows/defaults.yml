@@ -82,7 +82,7 @@ jobs:
       git_dist_repo: ${{ env.git_dist_repo }}
     steps:
       - name: '🛒 Checkout'
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: '🗺️ Map Workflow Inputs to Output Variables'
         id: input-defaults
         shell: bash
