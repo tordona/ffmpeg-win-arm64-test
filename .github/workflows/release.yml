@@ -57,6 +57,7 @@ jobs:
       run: |
         shopt -s globstar
         shopt -s nullglob
+        release_notes=$(find . -name "release_notes.md")
         gh release create "${{ inputs.release_tag }}" \
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
@@ -64,10 +65,10 @@ jobs:
           --notes-file $release_notes \
           --draft \
           --prerelease
-    - name: '☑️ Hanndle release_notes asset'
+    - name: '☑️ Handle release_notes asset'
       if: success()
       run: |
-        echo "Check if release_notes.md was added to assets"
+        echo "Handle if release_notes.md was added to assets. WTF."
         if gh release view "${{ inputs.release_tag }}" --json assets | grep -q "release_notes.md"; then
           echo "Delete file passed from notes-file flags because just why?"
           gh release delete-asset "${{ inputs.release_tag }}" \
