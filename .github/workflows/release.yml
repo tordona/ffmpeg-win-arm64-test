@@ -36,22 +36,6 @@ jobs:
       run: |
         pwd
         ls -laR
-    - name: '☑️ File Check2'
-      run: |
-        release_notes=$(find . -name "release_notes.md")
-        echo "$release_notes"
-        echo $release_note
-        if [[ -n "$release_notes" ]]; then
-          echo "with quotes"
-          echo $release_notes
-          cp $release_notes ./release
-          cd release
-          ls -la
-        fi
-        if [[ -n $release_notes ]]; then
-          echo "no quotes"
-          ls -la
-        fi
     - name: '🔍 Check Build Release Exists'
       id: release-exists
       uses: insightsengineering/release-existence-action@v1.0.0
@@ -73,21 +57,14 @@ jobs:
       run: |
         shopt -s globstar
         shopt -s nullglob
-        if [[ -f "release_notes.md" ]]; then
-          echo "the notes file exists1"
-        fi
-        if [[ -f "./release_notes.md" ]]; then
-          echo "the notes file exists2"
-        fi
-        release_notes=$(find . -name "release_notes.md")
         gh release create "${{ inputs.release_tag }}" \
           './ffmpeg**/**/*.7z' \
           './ffmpeg**/**/*.sha256' \
           --title '${{ inputs.release_tag }}' \
-          --notes-file release_notes.md \
+          --notes-file $release_notes \
           --draft \
           --prerelease
-    - name: '☑️ Check release_notes asset'
+    - name: '☑️ Hanndle release_notes asset'
       if: success()
       run: |
         echo "Check if release_notes.md was added to assets"
