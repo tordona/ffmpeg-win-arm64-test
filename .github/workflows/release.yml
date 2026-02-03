@@ -28,6 +28,7 @@ jobs:
     - uses: actions/download-artifact@v5
       with:
         path: ./release
+        pattern: '*-prerelease'
     - name: '☑️ File Check'
       run: |
         pwd
@@ -55,8 +56,8 @@ jobs:
         pwd
         ls -laR
         gh release upload "${{ env.release_tag }}" \
-          './**/*.7z' \
-          './**/*.sha256' \
+          '**prerelease/**/*.7z' \
+          '**prerelease/**/*.sha256' \
           --clobber \
     - name: '🔨 Create New Package Release'
       working-directory: ./release
@@ -68,8 +69,8 @@ jobs:
         ls -laR
         release_notes=$(find . -name "release_notes.md" -exec realpath {} \;)
         gh release create "${{ env.release_tag }}" \
-          './**/*.7z' \
-          './**/*.sha256' \
+          '**prerelease/**/*.7z' \
+          '**prerelease//**/*.sha256' \
           --title "${{ env.release_tag }}" \
           --notes-file "$release_notes" \
           --draft \
