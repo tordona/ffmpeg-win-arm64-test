@@ -57,7 +57,7 @@ jobs:
         ls -laR
         gh release upload "${{ env.release_tag }}" \
           './ffmpeg**/**/*.7z' \
-          './ffmpeg**/**/*.sha' \
+          './ffmpeg**/**/*.sha256' \
           --clobber \
     - name: '🔨 Create New Package Release'
       working-directory: ./release
@@ -70,7 +70,7 @@ jobs:
         release_notes=$(find . -name "release_notes.md" -exec realpath {} \;)
         gh release create "${{ env.release_tag }}" \
           './ffmpeg**/**/*.7z' \
-          './ffmpeg**/**/*.sha' \
+          './ffmpeg**/**/*.sha256' \
           --title "${{ env.release_tag }}" \
           --notes-file "$release_notes" \
           --draft \
