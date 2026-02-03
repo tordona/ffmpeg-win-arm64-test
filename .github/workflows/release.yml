@@ -37,14 +37,15 @@ jobs:
         pwd
         ls -laR
     - name: '☑️ Release Notes'
-      working-directory: ./release
       run: |
+        pwd
+        path=$(pwd)
         release_notes=$(find . -name "release_notes.md")
+        echo $release_notes
         if [[ -f "$release_notes" ]]; then
-          cp $release_notes .
+          cp $release_notes $pwd
         fi
     - name: '☑️ File Check 2'
-      working-directory: ./release
       run: |
         pwd
         ls -laR
