@@ -63,14 +63,6 @@
           "status": "disable"
         },
         {
-          "option": "doc",
-          "status": "enable"
-        },
-        {
-          "option": "htmlpages",
-          "status": "enable"
-        },
-        {
           "option": "manpages",
           "status": "disable"
         },
