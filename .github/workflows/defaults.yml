@@ -87,7 +87,7 @@ jobs:
         id: input-defaults
         shell: bash
         run: |
-          # echo "📢 Set up default values when not triggered from a workflow_dispatch"
+          echo "📢 Set up default values when not triggered from a workflow_dispatch"
           temp_release_tag="${{ inputs.release_tag || 'devtest-autobuild' }}"
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
             if [[ "${{ github.event.schedule || 0 }}" == "0 23 * * *" ]]; then
@@ -147,6 +147,7 @@ jobs:
         id: msys-defaults
         shell: bash
         run: |
+          echo "📢 Map MSYSTEM to toolchain and CPU arch"
           prefix="${msys_prefix}-${msys_toolchain}"
           if [[ ${{ steps.input-defaults.outputs.msystem }} == "CLANGARM64" ]]; then
               echo "arch=aarch64" >> $GITHUB_OUTPUT

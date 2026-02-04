@@ -14,4 +14,3 @@ for package in $packages; do
     echo >> $file
   fi
 done
-echo "$(<$file)"
