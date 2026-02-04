@@ -147,6 +147,7 @@ jobs:
       run: |
         cd source
         commit=$(git rev-parse HEAD)
+        echo "📢 Commit hash: ${commit}"
         echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
     - name: "📦 Install packages - Essentials Build"
       id: 'essentials-packages'
