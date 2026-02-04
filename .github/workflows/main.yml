@@ -1,9 +1,9 @@
 name: FFmpeg Win-ARM64 Auto-Builds
 
 on:
-  # schedule:
-  #   - cron: '0 23 * * *' // daily at 23:00 UTC
-  #   - cron: '0 23 * * 0' // sunday weekly at 23:00 UTC
+  schedule:
+    - cron: '0 23 * * *' 
+    - cron: '0 23 * * 0'
   workflow_dispatch:
     inputs:
       release_tag:
@@ -44,12 +44,12 @@ on:
         required: true
         default: 'base'
         type: environment
-  push:
-    paths-ignore:
-      - '**.md'
-      - '.vscode/**'
-      # - '.github/**'
-      - '.devcontainer/**'
+  # push:
+  #   paths-ignore:
+  #     - '**.md'
+  #     - '.vscode/**'
+  #     - '.github/**'
+  #     - '.devcontainer/**'
 
 # concurrency:
 #   group: ${{ github.workflow }}-${{ github.ref }}
