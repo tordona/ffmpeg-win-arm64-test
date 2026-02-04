@@ -34,14 +34,12 @@ runs:
   using: "composite"
   steps:
   - name: '🗺️ Setup Configuration'
-    id: 'baseline'
     shell: msys2 {0}
     working-directory: ./config
     run: |
-      base_config=$(jq -r '.config' options.json)
+      base_config="--extra-libs='-static -lpthread -lm -liconv' --pkg-config-flags='--static'"
       echo "build_config=${base_config}" >> $GITHUB_ENV
   - name: '🏛️ Set Target Architecture'
-    id: 'arch'
     shell: msys2 {0} 
     run: |
       echo "Set Explict Architecture Option Value"
@@ -52,7 +50,6 @@ runs:
       fi
       echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
   - name: '🔗 Set Link Type'
-    id: 'link_type'
     shell: msys2 {0}
     run: |
       if [[ ${{ inputs.link_type }} == "shared" ]]; then
@@ -62,7 +59,6 @@ runs:
       fi
       echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
   - name: '🏴 Set Compile LDFLAGS'
-    id: 'flags'
     shell: msys2 {0}
     working-directory: ./config
     run: |
