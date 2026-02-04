@@ -58,7 +58,8 @@ jobs:
         shopt -s globstar
         shopt -s nullglob
         draft_flag=""
-        if [[ "${{ inputs.release_tag }}" != *"autobuild"* && "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+        if [[ "${{ inputs.release_tag }}" != *"autobuild"* && 
+              "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           draft_flag="--draft"
         fi
         release_notes=$(find . -name "release_notes.md" -print -quit)
