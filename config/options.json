@@ -24,7 +24,7 @@
         },
         {
           "option": "libxml2",
-          "status": "disable"
+          "status": "enable"
         },
         {
           "option": "bzlib",
