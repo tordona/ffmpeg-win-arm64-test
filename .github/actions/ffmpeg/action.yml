@@ -58,13 +58,13 @@ runs:
         temp_config=" --disable-shared --enable-static"
       fi
       echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
-  - name: '🏴 Set Compile LDFLAGS'
+  - name: '🏴 Set Compile Linker Flags'
     shell: msys2 {0}
     working-directory: ./config
     run: |
-      options=$(jq -r --arg version "${{ inputs.major_version }}" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version) | .option] | join(" ")' options.json)
       if [[ ${{ inputs.build_type }} == "full" ]]; then
-        temp_config=" --extra-ldflags='-Wl,--allow-multiple-definition'"
+        temp_config=" --extra-cflags=-DLIBTWOLAME_STATIC"
+        temp_config+=" --extra-ldflags='-Wl,--allow-multiple-definition'"
         echo "build_config=$build_config$temp_config" >> $GITHUB_ENV
       fi
   - name: '🏴 Set Initial FFmpeg Build Config'
