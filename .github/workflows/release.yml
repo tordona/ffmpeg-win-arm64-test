@@ -58,13 +58,15 @@ jobs:
         shopt -s globstar
         shopt -s nullglob
         release_notes=$(find . -name "release_notes.md" -print -quit)
+        echo $release_notes
+        echo "$release_notes"
         if [[ -n "$release_notes" ]]; then
           echo "🔨 Create New Package Release"
           gh release create "${{ inputs.release_tag }}" \
             './ffmpeg**/**/*.7z' \
             './ffmpeg**/**/*.sha256' \
             --title '${{ inputs.release_tag }}' \
-            --notes-file release_notes.md \
+            --notes-file $release_notes \
             --draft \
             --prerelease
         fi
