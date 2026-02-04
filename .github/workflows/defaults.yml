@@ -105,7 +105,7 @@ jobs:
             echo "build_type=['essentials', 'full']" >> "$GITHUB_OUTPUT"
           else
             echo "build_type matrix NOT set by schedule"
-            if [[ "${temp_build_type}" == 'both' ]]; then
+            if [[ "${temp_build_type}" == "both" ]]; then
               echo "build_type=['essentials', 'full']" >> "$GITHUB_OUTPUT"
             else
               echo "build_type=['${temp_build_type}']" >> "$GITHUB_OUTPUT"
@@ -113,12 +113,12 @@ jobs:
           fi
   
           temp_link_type="${{ inputs.link_type || 'shared' }}"
-          if [[ "${{ github.event_name }}" == 'schedule' ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
             echo "link_type matrix set by schedule"
             echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
           else
             echo "link_type matrix NOT set by schedule"
-            if [[ "${temp_link_type}" == 'both' ]]; then
+            if [[ "${temp_link_type}" == "both" ]]; then
               echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
             else
               echo "link_type=['${temp_link_type}']" >> "$GITHUB_OUTPUT"

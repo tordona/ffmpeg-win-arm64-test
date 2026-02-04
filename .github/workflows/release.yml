@@ -57,6 +57,10 @@ jobs:
       run: |
         shopt -s globstar
         shopt -s nullglob
+        draft_flag=""
+        if [[ "${{ inputs.release_tag }}" != *"autobuild"* && "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          draft_flag="--draft"
+        fi
         release_notes=$(find . -name "release_notes.md" -print -quit)
         if [[ -n "$release_notes" ]]; then
           echo "🔨 Create New Package Release"
@@ -65,6 +69,5 @@ jobs:
             './ffmpeg**/**/*.sha256' \
             --title '${{ inputs.release_tag }}' \
             --notes-file $release_notes \
-            --draft \
-            --prerelease
+            $draft_flag
         fi
