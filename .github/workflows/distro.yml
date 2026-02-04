@@ -54,7 +54,7 @@ jobs:
     - name: '🔖 Release Tag'
       id: 'release-tag'
       run: |
-        temp_release_tag=${{ inputs.release_tag }}
+        temp_release_tag="${{ inputs.release_tag }}"
         temp_release_tag="${temp_release_tag// /-}"
         temp_release_tag="${temp_release_tag,,}"
         if [[ "$temp_release_tag" == *"autobuild"* ]]; then
