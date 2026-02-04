@@ -109,7 +109,6 @@ jobs:
             jq:p
             github-cli:p
             7zip:p
-            texi2html:p
             texinfo:p
     - name: '🏃‍➡️ Verify MSYS2 Install'
       run: |
