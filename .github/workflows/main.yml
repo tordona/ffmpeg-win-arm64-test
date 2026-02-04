@@ -15,13 +15,14 @@ on:
         required: false
         type: string
       build_type:
-        description: 'Build type of included libraries'
+        description: 'Build type of enabled libraries'
         required: true
         default: 'essentials'
         type: choice
         options:
         - essentials
         - full
+        - both
       link_type:
         description: 'Link type of libraries'
         required: true
@@ -30,6 +31,7 @@ on:
         options:
         - shared
         - static
+        - both
       msystem:
         description: 'MSYS2 System Environment'
         required: true
