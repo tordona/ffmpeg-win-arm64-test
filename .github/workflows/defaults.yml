@@ -100,13 +100,12 @@ jobs:
           echo "release_tag=${temp_release_tag}" >> $GITHUB_OUTPUT
 
           temp_build_type="${{ inputs.build_type || 'essentials' }}"
-
           if [[ "${{ github.event_name }}" == 'schedule' ]]; then
             echo "build_type matrix set by schedule"
             echo "build_type=['essentials', 'full']" >> "$GITHUB_OUTPUT"
           else
             echo "build_type matrix NOT set by schedule"
-            if [[ "$type_build_type" == 'both' ]]; then
+            if [[ "${temp_build_type}" == 'both' ]]; then
               echo "build_type=['essentials', 'full']" >> "$GITHUB_OUTPUT"
             else
               echo "build_type=['${temp_build_type}']" >> "$GITHUB_OUTPUT"
@@ -119,7 +118,7 @@ jobs:
             echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
           else
             echo "link_type matrix NOT set by schedule"
-            if [[ "$temp_link_type" == 'both' ]]; then
+            if [[ "${temp_link_type}" == 'both' ]]; then
               echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
             else
               echo "link_type=['${temp_link_type}']" >> "$GITHUB_OUTPUT"
