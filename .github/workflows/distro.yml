@@ -99,9 +99,11 @@ jobs:
           library_versions="library_versions.md"
           prerelease_notes="prerelease_notes.md"
           if [[ -f "$library_versions" ]]; then
+            echo "📢"
             echo "$(<$library_versions)"
           fi
           if [[ -f "$prerelease_notes" ]]; then
+            echo "📢"
             echo "$(<$prerelease_notes)"
           fi
           if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then

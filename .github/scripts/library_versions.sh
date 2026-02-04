@@ -20,7 +20,7 @@ for lib in "${ff_libs[@]}"; do
     version_string="${version_string//lib/| lib}"
     version_string="${version_string//_VERSION=/ | }"
     version_string="${version_string//./ | } |"
-    echo $version_string
+    echo "📢 ${version_string}"
     ff_lib_versions+=("${version_string}")
   fi
 done

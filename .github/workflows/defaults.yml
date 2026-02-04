@@ -87,7 +87,7 @@ jobs:
         id: input-defaults
         shell: bash
         run: |
-          # echo "Set up default values when not triggered from a workflow_dispatch"
+          # echo "📢 Set up default values when not triggered from a workflow_dispatch"
           temp_release_tag="${{ inputs.release_tag || 'devtest-autobuild' }}"
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
             if [[ "${{ github.event.schedule || 0 }}" == "0 23 * * *" ]]; then
@@ -101,10 +101,10 @@ jobs:
 
           temp_build_type="${{ inputs.build_type || 'essentials' }}"
           if [[ "${{ github.event_name }}" == 'schedule' ]]; then
-            echo "build_type matrix set by schedule"
+            echo "📢 build_type matrix set by schedule"
             echo "build_type=['essentials', 'full']" >> "$GITHUB_OUTPUT"
           else
-            echo "build_type matrix NOT set by schedule"
+            echo "📢 build_type matrix NOT set by schedule"
             if [[ "${temp_build_type}" == "both" ]]; then
               echo "build_type=['essentials', 'full']" >> "$GITHUB_OUTPUT"
             else
@@ -114,10 +114,10 @@ jobs:
   
           temp_link_type="${{ inputs.link_type || 'shared' }}"
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            echo "link_type matrix set by schedule"
+            echo "📢 link_type matrix set by schedule"
             echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
           else
-            echo "link_type matrix NOT set by schedule"
+            echo "📢 link_type matrix NOT set by schedule"
             if [[ "${temp_link_type}" == "both" ]]; then
               echo "link_type=['shared', 'static']" >> $GITHUB_OUTPUT
             else
@@ -136,10 +136,10 @@ jobs:
             curl -O https://raw.githubusercontent.com/FFmpeg/FFmpeg/refs/heads/master/RELEASE
             version=$(<RELEASE)
           fi
-          echo "version: $version"
+          echo "📢 version: $version"
           if [[ "$version" =~ ([0-9]+) ]]; then
               major_version="${BASH_REMATCH[1]}"
-              echo "Major version: $major_version"
+              echo "📢 Major version: $major_version"
           fi
           echo "github_tag=${version}" >> $GITHUB_OUTPUT
           echo "major_version=${major_version}" >> $GITHUB_OUTPUT

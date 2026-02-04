@@ -111,7 +111,7 @@ jobs:
             7zip:p
     - name: '🏃‍➡️ Verify MSYS2 Install'
       run: |
-        echo "MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
+        echo "📢 MSYS2 is installed at: ${{ steps.msys2-env.outputs.msys2-location }}"
         command="clang --version"
         eval $command
     - name: "⬇️ Download External Utlities"
@@ -153,7 +153,7 @@ jobs:
       if: ${{ matrix.build_type == 'essentials' }}
       working-directory: ./config
       run: |
-        echo "Install required library packages - Essentials Build"
+        echo "📢 Install required library packages - Essentials Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}" '[.options.standard[], .options.essentials[] | .[] | select(.version <= $version and .custom != "true") | $prefix + "-" +.package] | sort_by(ascii_downcase) | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
@@ -163,7 +163,7 @@ jobs:
       if: ${{ matrix.build_type == 'full' }}
       working-directory: ./config
       run: |
-        echo "Install required library packages - Full Build"
+        echo "📢 Install required library packages - Full Build"
         major_version="${{ needs.defaults.outputs.major_version }}"
         packages=$(jq -r --arg version "$major_version" --arg prefix "${{ needs.defaults.outputs.package_prefix }}" '[.options.standard[], .options.essentials[], .options.full[] | .[] | select(.version <= $version and .custom != "true") | $prefix + "-" +.package] | sort_by(ascii_downcase) | join(" ")' options.json)
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
@@ -174,7 +174,7 @@ jobs:
        gh release download "${{ env.msys_toolchain }}-${{ needs.defaults.outputs.arch }}" --pattern "*.zst" -D "./packages" -R tordona/mingw-packages
     - name: "➡️ Install External Packages"
       run: |
-        echo "Install Custom Packages from External Repo"
+        echo "📢 Install Custom Packages from External Repo"
         cd packages
         pacman -U --disable-download-timeout --overwrite '*' --noconfirm *.pkg.tar.zst
     - name: '🔨 Configure FFmpeg Build'
@@ -187,21 +187,21 @@ jobs:
       continue-on-error: true
       working-directory: ./source
       run: |
-        echo "Configure FFmpeg Build with Library Options"
+        echo "📢 Configure FFmpeg Build with Library Options"
         bash ../.github/scripts/config_ffmpeg.sh
-    # - name: '🪵 Log: Show FFmpeg Build Config'
-    #   if: steps.configure-ffmpeg.outcome == 'failure'
-    #   run: |
-    #     log="./source/ffbuild/config.log"
-    #     if [ -f "$log" ]; then
-    #       cat ./source/ffbuild/config.log
-    #     fi
-    # - name: '🌳 Log: Show FFmpeg Configuration Output'
-    #   working-directory: ./source
-    #   run: |
-    #     if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
-    #       echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
-    #     fi
+    - name: '🪵 Log: Show FFmpeg Build Config'
+      if: steps.configure-ffmpeg.outcome == 'failure'
+      run: |
+        log="./source/ffbuild/config.log"
+        if [ -f "$log" ]; then
+          cat ./source/ffbuild/config.log
+        fi
+    - name: '🌳 Log: Show FFmpeg Configuration Output'
+      working-directory: ./source
+      run: |
+        if test -f "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"; then
+          echo "$(<${{ steps.ffmpeg-config-setup.outputs.build_file_ref }})"
+        fi
     - name: '🥋 Modifiy Config Header and readme file'
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
@@ -214,7 +214,7 @@ jobs:
         commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
       working-directory: ./source
       run: |
-        echo "Remove build distribution specifc configrations"
+        echo "📢 Remove build distribution specifc configrations"
         bash ../.github/scripts/config_header.sh
     - name: '🔄 Copy Support Files'
       env:
@@ -222,7 +222,7 @@ jobs:
         version_name: "${{ steps.ffmpeg-config-setup.outputs.version_name }}"
         build_file_ref: "${{ steps.ffmpeg-config-setup.outputs.build_file_ref }}"
       run: |
-        echo "Copy support files to output directory"
+        echo "📢 Copy support files to output directory"
         bash .github/scripts/support_files.sh
     - name: '🖥️ Get number of CPU cores'
       uses: SimenB/github-actions-cpu-cores@v2
@@ -242,7 +242,7 @@ jobs:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
       working-directory: ./source
       run: |
-        echo "Parse out FFmpeg library versions into markdown file"
+        echo "📢 Parse out FFmpeg library versions into markdown file"
         bash ../.github/scripts/library_versions.sh
     - name: "🔦 Parse Essentials Package Versions"
       if: ${{ matrix.build_type == 'essentials' }}
@@ -252,7 +252,7 @@ jobs:
         packages: ${{ steps.essentials-packages.outputs.packages }}
         package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
       run: |
-        echo "Parse Essentials Package Versions"
+        echo "📢 Parse Essentials Package Versions"
         bash .github/scripts/package_versions.sh
     - name: "🔦 Parse Full Package Versions"
       if: ${{ matrix.build_type == 'full' }}
@@ -262,13 +262,13 @@ jobs:
         packages: ${{ steps.full-packages.outputs.packages }}
         package_prefix: "${{ needs.defaults.outputs.package_prefix }}"
       run: |
-        echo "Parse Full Package Versions"
+        echo "📢 Parse Full Package Versions"
         bash .github/scripts/package_versions.sh
     - name: '🙈 Resource Versioning'
       env:
         github_tag: ${{ needs.defaults.outputs.github_tag }}
       run: |
-        echo "Update resource properties on executables"
+        echo "📢 Update resource properties on executables"
         bash .github/scripts/resource_edit.sh
     # - name: '🧹 Cleanup Files for Distribution'
     #   working-directory: ./builds

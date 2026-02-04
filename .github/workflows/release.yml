@@ -64,7 +64,7 @@ jobs:
         fi
         release_notes=$(find . -name "release_notes.md" -print -quit)
         if [[ -n "$release_notes" ]]; then
-          echo "🔨 Create New Package Release"
+          echo "📢 Create New Package Release"
           gh release create "${{ inputs.release_tag }}" \
             './ffmpeg**/**/*.7z' \
             './ffmpeg**/**/*.sha256' \

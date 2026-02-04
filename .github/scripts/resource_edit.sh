@@ -1,7 +1,7 @@
-echo "Resource Edit FFmpeg FFplay FFprobe"
+echo "📢 Resource Edit FFmpeg FFplay FFprobe"
 rcedit=$(find . -name "rcedit.exe" -exec realpath {} \;)
 if [[ -z "$rcedit" ]]; then
-  echo "rcedit not found"
+  echo "📢 rcedit not found"
   exit 1
 fi
 
