@@ -53,6 +53,7 @@ jobs:
       id: 'build-date'
       run: |
         build_date=$(date '+%Y.%m.%d.0')
+        removal_date=$(date '+%Y.%m.%d.0' -d 'today - 15 days')
         echo "build_date=${build_date}" >> $GITHUB_OUTPUT
     - name: '🔖 Release Tag'
       id: 'release-tag'

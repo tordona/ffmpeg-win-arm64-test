@@ -9,6 +9,9 @@ on:
       build_date:
         type: string
         required: true
+      github_tag:
+        type: string
+        required: true 
 
 env:
   release_tag: "weekly-autobuild"
@@ -72,3 +75,49 @@ jobs:
             --notes-file $release_notes \
             $draft_flag
         fi
+    - name: '🔖 Expired Daily Build Tag'
+      id: 'expired-daily-autobuild-tag'
+      run: |
+        temp_removal_date=$(date '+%Y.%m.%d.0' -d 'today - 2 days')
+        temp_removal_date="daily-autobuild-${temp_removal_date}"
+        echo "📢 Expired tag: $temp_removal_date"
+        echo "removal_date=${temp_removal_date}" >> $GITHUB_OUTPUT
+    - name: '🔍 Check Expired Release Exists'
+      id: expired-release-exists
+      uses: insightsengineering/release-existence-action@v1.0.0
+      with:
+        release-tag: "${{ steps.expired-daily-autobuild-tag.outputs.removal_date }}"
+    - name: '☠️ Delete Expired Build'
+      if: steps.expired-release-exists.outputs.release-exists == 'true' 
+      run: |
+        gh release delete "${{ steps.expired-daily-autobuild-tag.outputs.removal_date }}" --cleanup-tag -y
+    - name: '☠️ Delete Latest Build'
+      run: |
+        gh release delete "latest" --cleanup-tag -y
+    - name: '🔨 Create Latest Release'
+      working-directory: ./release
+      run: |
+        release_notes=$(find . -name "release_notes.md" -print -quit)
+        if [[ ! -n "$release_notes" ]]; then
+          exit 0
+        fi
+        if [[ "${{ inputs.release_tag }}" != *"daily-autobuild"* ]]; then
+          exit 0
+        fi
+        echo "📢 Create Lastest Release"
+        archives=$(find . -name *.7z)
+        for archive in $archives; do
+          filename=$(basename "$archive")
+          path=$(dirname "$archive")
+          rename="${filename//${{ inputs.github_tag }}/latest}"
+          mv "$path/$filename" "$path/$rename"
+        done
+        find . -type f -iname "*.7z"
+        gh release create "latest" \
+          '**/*.7z' \
+          '**/*.sha256' \
+          --title 'Latest Auto-Build - ${{ inputs.build_date }}' \
+          --notes-file $release_notes \
+          --latest
+
+  
