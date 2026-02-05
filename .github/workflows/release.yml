@@ -43,6 +43,11 @@ jobs:
           echo "📢 No Archives Found"
           exit 1
         fi
+        release_notes=$(find . -name "release_notes.md" -print -quit)
+        if [[ -z "$release_notes" ]]; then
+          echo "📢 No Releast NNotes Found"
+          exit 1
+        fi
         ls -laR
     - name: '🔍 Check Build Release Exists'
       id: 'check-build-release'
@@ -71,15 +76,13 @@ jobs:
           draft_flag="--draft"
         fi
         release_notes=$(find . -name "release_notes.md" -print -quit)
-        if [[ -n "$release_notes" ]]; then
-          echo "📢 Create New Package Release"
-          gh release create "${{ inputs.release_tag }}" \
-            '**/*.7z' \
-            '**/*.sha256' \
-            --title '${{ inputs.release_tag }}' \
-            --notes-file $release_notes \
-            $draft_flag
-        fi
+        echo "📢 Create New Package Release"
+        gh release create "${{ inputs.release_tag }}" \
+          '**/*.7z' \
+          '**/*.sha256' \
+          --title '${{ inputs.release_tag }}' \
+          --notes-file $release_notes \
+          $draft_flag
     - name: '🔖 Expired Daily Build Tag'
       id: 'expired-daily-autobuild-tag'
       run: |

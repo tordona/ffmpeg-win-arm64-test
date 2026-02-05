@@ -72,12 +72,12 @@ jobs:
       run: |
         root=$(pwd)
         find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
-          echo "📢 Create Header Notes"
-          echo "📢 ${dir}"
           cd "$root"
-          cd "$dir"
+          base_dir="${dir%/*}"
+          cd "$base_dir"
           build_dir=$(basename $dir)
           if [[ $build_dir == "ffmpeg-"* ]]; then
+            echo "📢 Create Header Notes"
             filename="header_notes.md"
             rm -f $filename
             printf "## Windows ARM64 builds\n" >> $filename
@@ -90,12 +90,12 @@ jobs:
       run: |
         root=$(pwd)
         find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
-          echo "📢 Create Prerelease Notes"
-          echo "📢 ${dir}"
           cd "$root"
-          cd "$dir"
+          base_dir="${dir%/*}"
+          cd "$base_dir"
           build_dir=$(basename $dir)
           if [[ $build_dir == "ffmpeg-"* ]]; then
+            echo "📢 Create Prerelease Notes"
             filename="prerelease_notes.md"
             rm -f $filename
             printf "\n" >> $filename
@@ -109,10 +109,9 @@ jobs:
       run: |
         root=$(pwd)
         find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
-          echo "📢 Concat Release Notes"
-          echo "📢 ${dir}"
           cd "$root"
-          cd "$dir"
+          base_dir="${dir%/*}"
+          cd "$base_dir"
           build_dir=$(basename $dir)
           if [[ $build_dir == "ffmpeg-"* ]]; then
             header_notes="header_notes.md"
