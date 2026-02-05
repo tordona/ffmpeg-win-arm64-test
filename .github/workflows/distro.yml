@@ -87,7 +87,6 @@ jobs:
           rm -f $filename
           printf "## Windows ARM64 builds\n" >> $filename
           printf "\n" >> $filename
-          echo "test" >> $filename
         done
     - name: '📝 Create Prerelease Notes'
       id: 'prerelease-notes'
