@@ -138,13 +138,15 @@ jobs:
       working-directory: ./builds
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 2 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
+        find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
           cd "$root"
           base_dir="${dir%/*}"
           cd "$base_dir"
           build_dir=$(basename $dir)
-          7z a "$build_dir.7z" $build_dir
-          sha256sum "$build_dir.7z" > "$build_dir.sha256"
+          if [[ $build_dir == "ffmpeg-"* ]]; then
+            7z a "$build_dir.7z" "$build_dir"
+            sha256sum "$build_dir.7z" > "$build_dir.sha256"
+          fi
         done
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6

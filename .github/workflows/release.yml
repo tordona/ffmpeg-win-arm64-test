@@ -38,6 +38,11 @@ jobs:
       working-directory: ./release
       run: |
         pwd
+        archives=$(find . -name '*.7z')
+        if [[ -z "$archives" ]]; then
+          echo "📢 No Archives Found"
+          exit 1
+        fi
         ls -laR
     - name: '🔍 Check Build Release Exists'
       id: 'check-build-release'
