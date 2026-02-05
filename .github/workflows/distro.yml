@@ -49,6 +49,9 @@ jobs:
       run: |
         pwd
         ls -R
+    - name: '📅 Make Release Directory'
+      run: |
+        mkdir release
     - name: '📅 Make Build Date'
       id: 'build-date'
       run: |
@@ -71,65 +74,62 @@ jobs:
       id: 'header-notes'
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
-          cd "$root"
-          base_dir="${dir%/*}"
-          cd "$base_dir"
-          build_dir=$(basename $dir)
-          if [[ $build_dir == "ffmpeg-"* ]]; then
-            echo "📢 Create Header Notes"
-            filename="header_notes.md"
-            rm -f $filename
-            printf "## Windows ARM64 builds\n" >> $filename
-            printf "\n" >> $filename
-          fi
+        find . -wholename "*/builds/**/ffmpeg.exe" | while read -r ffmpeg; do
+          cd $root
+          bin_dir="${ffmpeg%/*}"
+          parent_dir=$(dirname "$bin_dir")
+          build_dir=$(basename $parent_dir)
+          cd "$parent_dir/.."
+          echo "📢 Create Header Notes"
+          filename="header_notes.md"
+          rm -f $filename
+          printf "## Windows ARM64 builds\n" >> $filename
+          printf "\n" >> $filename
+          echo "test" >> $filename
         done
     - name: '📝 Create Prerelease Notes'
       working-directory: ./builds
       id: 'prerelease-notes'
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
-          cd "$root"
-          base_dir="${dir%/*}"
-          cd "$base_dir"
-          build_dir=$(basename $dir)
-          if [[ $build_dir == "ffmpeg-"* ]]; then
-            echo "📢 Create Prerelease Notes"
-            filename="prerelease_notes.md"
-            rm -f $filename
-            printf "\n" >> $filename
-            printf "\n" >> $filename
-            printf "**Source**\n" >> $filename
-            printf "${{ inputs.source_repo }}/commit/${{ inputs.checkout_commit }}\n" >> $filename
-          fi
+        find . -wholename "*/builds/**/ffmpeg.exe" | while read -r ffmpeg; do
+          cd $root
+          bin_dir="${ffmpeg%/*}"
+          parent_dir=$(dirname "$bin_dir")
+          build_dir=$(basename $parent_dir)
+          cd "$parent_dir/.."
+          echo "📢 Create Prerelease Notes"
+          filename="prerelease_notes.md"
+          rm -f $filename
+          printf "\n" >> $filename
+          printf "\n" >> $filename
+          printf "**Source**\n" >> $filename
+          printf "${{ inputs.source_repo }}/commit/${{ inputs.checkout_commit }}\n" >> $filename
         done
     - name: '📝 Concat Release Notes'
-      working-directory: ./builds
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
-          cd "$root"
-          base_dir="${dir%/*}"
-          cd "$base_dir"
-          build_dir=$(basename $dir)
-          if [[ $build_dir == "ffmpeg-"* ]]; then
-            header_notes="header_notes.md"
-            library_versions="library_versions.md"
-            prerelease_notes="prerelease_notes.md"
-            if [[ -f "$library_versions" ]]; then
-              echo "📢"
-              echo "$(<$library_versions)"
-            fi
-            if [[ -f "$prerelease_notes" ]]; then
-              echo "📢"
-              echo "$(<$prerelease_notes)"
-            fi
-            if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
-              cat "$header_notes" "$library_versions" "$prerelease_notes" > release_notes.md
-            elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
-              cat "$prerelease_notes" > release_notes.md 
-            fi
+        find . -wholename "*/builds/**/ffmpeg.exe" | while read -r ffmpeg; do
+          cd $root
+          bin_dir="${ffmpeg%/*}"
+          parent_dir=$(dirname "$bin_dir")
+          build_dir=$(basename $parent_dir)
+          cd "$parent_dir/.."
+          header_notes="header_notes.md"
+          library_versions="library_versions.md"
+          prerelease_notes="prerelease_notes.md"
+          if [[ -f "$library_versions" ]]; then
+            echo "📢"
+            echo "$(<$library_versions)"
+          fi
+          if [[ -f "$prerelease_notes" ]]; then
+            echo "📢"
+            echo "$(<$prerelease_notes)"
+          fi
+          if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
+            cat "$header_notes" "$library_versions" "$prerelease_notes" > "${root}/releases/release_notes.md"
+          elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
+            cat "$prerelease_notes" > "${root}/releases/release_notes.md" 
           fi
         done
     - name: '🧹 Cleanup Files for Distribution'
@@ -143,18 +143,19 @@ jobs:
         ls -laR
     - name: '🚚 Package for Distribution'
       shell: bash
-      working-directory: ./builds
       run: |
+        mkdir releases -p
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
-          cd "$root"
-          base_dir="${dir%/*}"
-          cd "$base_dir"
-          build_dir=$(basename $dir)
-          if [[ $build_dir == "ffmpeg-"* ]]; then
-            7z a "$build_dir.7z" "$build_dir"
-            sha256sum "$build_dir.7z" > "$build_dir.sha256"
-          fi
+        find . -wholename "*/builds/**/ffmpeg.exe" | while read -r ffmpeg; do
+          cd $root
+          bin_dir="${ffmpeg%/*}"
+          parent_dir=$(dirname "$bin_dir")
+          build_dir=$(basename $parent_dir)
+          cd "$parent_dir/.."
+          7z a "$build_dir.7z" "$build_dir"
+          sha256sum "$build_dir.7z" > "$build_dir.sha256"
+          mv "$build_dir.7z" "$root/releases"
+          mv "$build_dir.sha256" "$root/releases"
         done
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
@@ -162,6 +163,6 @@ jobs:
         if-no-files-found: error
         name: "${{ inputs.github_tag }}-prerelease"
         path: |
-          ./builds/**/*.7z
-          ./builds/**/*.sha256
-          ./builds/**/*.md
+          ./releases/*.7z
+          ./releases/*.sha256
+          ./releases/*.md
