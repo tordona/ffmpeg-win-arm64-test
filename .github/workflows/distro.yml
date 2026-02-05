@@ -17,6 +17,9 @@ on:
         required: true 
       checkout_commit:
         type: string
+        required: true
+      checkout_short:
+        type: string
         required: true 
     outputs:
       build_date:
