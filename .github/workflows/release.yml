@@ -38,6 +38,9 @@ jobs:
       working-directory: ./releases
       run: |
         pwd
+        ls -laR
+        cd ..
+        ls -laR
         archives=$(find . -name '*.7z')
         if [[ -z "$archives" ]]; then
           echo "📢 No Archives Found"
