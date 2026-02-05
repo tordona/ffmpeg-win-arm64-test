@@ -71,7 +71,6 @@ jobs:
           echo "release_tag=${temp_release_tag}" >> $GITHUB_OUTPUT
         fi
     - name: '📝 Create Header Notes'
-      working-directory: ./builds
       id: 'header-notes'
       run: |
         root=$(pwd)
@@ -91,7 +90,6 @@ jobs:
           echo "test" >> $filename
         done
     - name: '📝 Create Prerelease Notes'
-      working-directory: ./builds
       id: 'prerelease-notes'
       run: |
         root=$(pwd)
