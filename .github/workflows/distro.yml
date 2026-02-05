@@ -67,7 +67,9 @@ jobs:
       id: 'header-notes'
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 2 -type d -path "./ffmpeg*/*shared" -o -path "./ffmpeg*/*static" | while read -r dir; do
+        find . -mindepth 2 -maxdepth 2 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
+          echo "📢 Create Header Notes"
+          echo "📢 ${dir}"
           cd "$root"
           cd "$dir"
           filename="header_notes.md"
@@ -80,7 +82,9 @@ jobs:
       id: 'prerelease-notes'
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 2 -type d -path "./ffmpeg*/*shared" -o -path "./ffmpeg*/*static" | while read -r dir; do
+        find . -mindepth 2 -maxdepth 2 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
+          echo "📢 Create Prerelease Notes"
+          echo "📢 ${dir}"
           cd "$root"
           cd "$dir"
           filename="prerelease_notes.md"
@@ -94,7 +98,9 @@ jobs:
       working-directory: ./builds
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 2 -type d -path "./ffmpeg*/*shared" -o -path "./ffmpeg*/*static" | while read -r dir; do
+        find . -mindepth 2 -maxdepth 2 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
+          echo "📢 Concat Release Notes"
+          echo "📢 ${dir}"
           cd "$root"
           cd "$dir"
           header_notes="header_notes.md"
@@ -128,7 +134,7 @@ jobs:
       working-directory: ./builds
       run: |
         root=$(pwd)
-        find . -mindepth 3 -maxdepth 3 -type d \( -path "./ffmpeg*/*shared/ffmpeg*" -o -path "./ffmpeg*/*static/ffmpeg*" \) | while read -r dir; do
+        find . -mindepth 2 -maxdepth 2 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
           cd "$root"
           base_dir="${dir%/*}"
           cd "$base_dir"

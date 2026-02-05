@@ -150,6 +150,9 @@ jobs:
         commit=$(git rev-parse HEAD)
         echo "📢 Commit hash: ${commit}"
         echo "checkout_commit=${commit}" >> $GITHUB_OUTPUT
+        short=$(git rev-parse --short HEAD)
+        echo "📢 Commit short: ${short}"
+        echo "checkout_short=${short}" >> $GITHUB_OUTPUT
     - name: "📦 Install packages - Essentials Build"
       id: 'essentials-packages'
       if: ${{ matrix.build_type == 'essentials' }}
@@ -214,6 +217,7 @@ jobs:
         source_repo: "${{ needs.defaults.outputs.source_repo }}"
         git_dist_repo: "${{ needs.defaults.outputs.git_dist_repo }}"
         commit: "${{ steps.parse-commit.outputs.checkout_commit }}"
+        short: "${{ steps.parse-commit.outputs.checkout_short }}"
       working-directory: ./source
       run: |
         echo "📢 Remove build distribution specifc configrations"
@@ -312,6 +316,7 @@ jobs:
       github_tag: "${{ needs.defaults.outputs.github_tag }}"
       source_repo: "${{ needs.defaults.outputs.source_repo }}"
       checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
+      checkout_short: "${{ needs.msys2.outputs.checkout_short }}"
   release-distro:
     name: '🎞️ Release Distribution'
     uses: ./.github/workflows/release.yml
