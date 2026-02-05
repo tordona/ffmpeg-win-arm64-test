@@ -52,6 +52,7 @@ jobs:
     - name: '📅 Make Release Directory'
       run: |
         mkdir releases -p
+        ls -laR
     - name: '📅 Make Build Date'
       id: 'build-date'
       run: |
