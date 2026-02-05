@@ -48,8 +48,8 @@ jobs:
         shopt -s globstar
         shopt -s nullglob
         gh release upload "${{ inputs.release_tag }}" \
-          './ffmpeg**/**/*.7z' \
-          './ffmpeg**/**/*.sha256' \
+          '**/*.7z' \
+          '**/*.sha256' \
           --clobber \
     - name: '🔨 Create New Package Release'
       working-directory: ./release
@@ -66,8 +66,8 @@ jobs:
         if [[ -n "$release_notes" ]]; then
           echo "📢 Create New Package Release"
           gh release create "${{ inputs.release_tag }}" \
-            './ffmpeg**/**/*.7z' \
-            './ffmpeg**/**/*.sha256' \
+            '**/*.7z' \
+            '**/*.sha256' \
             --title '${{ inputs.release_tag }}' \
             --notes-file $release_notes \
             $draft_flag
