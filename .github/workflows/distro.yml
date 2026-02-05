@@ -81,6 +81,8 @@ jobs:
           parent_dir=$(dirname "$bin_dir")
           build_dir=$(basename $parent_dir)
           cd "$parent_dir/.."
+          pwd
+          ls -laR
           echo "📢 Create Header Notes"
           filename="header_notes.md"
           rm -f $filename
@@ -100,6 +102,8 @@ jobs:
           build_dir=$(basename $parent_dir)
           cd "$parent_dir/.."
           echo "📢 Create Prerelease Notes"
+          pwd
+          ls -laR
           filename="prerelease_notes.md"
           rm -f $filename
           printf "\n" >> $filename
@@ -118,6 +122,8 @@ jobs:
           parent_dir=$(dirname "$bin_dir")
           build_dir=$(basename $parent_dir)
           cd "$parent_dir/.."
+          pwd
+          ls -laR
           header_notes="header_notes.md"
           library_versions="library_versions.md"
           prerelease_notes="prerelease_notes.md"
