@@ -71,57 +71,66 @@ jobs:
       id: 'header-notes'
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 2 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
+        find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
           echo "📢 Create Header Notes"
           echo "📢 ${dir}"
           cd "$root"
           cd "$dir"
-          filename="header_notes.md"
-          rm -f $filename
-          printf "## Windows ARM64 builds\n" >> $filename
-          printf "\n" >> $filename
+          build_dir=$(basename $dir)
+          if [[ $build_dir == "ffmpeg-"* ]]; then
+            filename="header_notes.md"
+            rm -f $filename
+            printf "## Windows ARM64 builds\n" >> $filename
+            printf "\n" >> $filename
+          fi
         done
     - name: '📝 Create Prerelease Notes'
       working-directory: ./builds
       id: 'prerelease-notes'
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 2 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
+        find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
           echo "📢 Create Prerelease Notes"
           echo "📢 ${dir}"
           cd "$root"
           cd "$dir"
-          filename="prerelease_notes.md"
-          rm -f $filename
-          printf "\n" >> $filename
-          printf "\n" >> $filename
-          printf "**Source**\n" >> $filename
-          printf "${{ inputs.source_repo }}/commit/${{ inputs.checkout_commit }}\n" >> $filename
+          build_dir=$(basename $dir)
+          if [[ $build_dir == "ffmpeg-"* ]]; then
+            filename="prerelease_notes.md"
+            rm -f $filename
+            printf "\n" >> $filename
+            printf "\n" >> $filename
+            printf "**Source**\n" >> $filename
+            printf "${{ inputs.source_repo }}/commit/${{ inputs.checkout_commit }}\n" >> $filename
+          fi
         done
     - name: '📝 Concat Release Notes'
       working-directory: ./builds
       run: |
         root=$(pwd)
-        find . -mindepth 2 -maxdepth 2 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
+        find . -mindepth 2 -maxdepth 3 -type d \( -path "**/*shared/ffmpeg*" -o -path "**/*static/ffmpeg*" \) | while read -r dir; do
           echo "📢 Concat Release Notes"
           echo "📢 ${dir}"
           cd "$root"
           cd "$dir"
-          header_notes="header_notes.md"
-          library_versions="library_versions.md"
-          prerelease_notes="prerelease_notes.md"
-          if [[ -f "$library_versions" ]]; then
-            echo "📢"
-            echo "$(<$library_versions)"
-          fi
-          if [[ -f "$prerelease_notes" ]]; then
-            echo "📢"
-            echo "$(<$prerelease_notes)"
-          fi
-          if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
-            cat "$header_notes" "$library_versions" "$prerelease_notes" > release_notes.md
-          elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
-            cat "$prerelease_notes" > release_notes.md 
+          build_dir=$(basename $dir)
+          if [[ $build_dir == "ffmpeg-"* ]]; then
+            header_notes="header_notes.md"
+            library_versions="library_versions.md"
+            prerelease_notes="prerelease_notes.md"
+            if [[ -f "$library_versions" ]]; then
+              echo "📢"
+              echo "$(<$library_versions)"
+            fi
+            if [[ -f "$prerelease_notes" ]]; then
+              echo "📢"
+              echo "$(<$prerelease_notes)"
+            fi
+            if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
+              cat "$header_notes" "$library_versions" "$prerelease_notes" > release_notes.md
+            elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
+              cat "$prerelease_notes" > release_notes.md 
+            fi
           fi
         done
     - name: '🧹 Cleanup Files for Distribution'
