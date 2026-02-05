@@ -51,7 +51,7 @@ jobs:
         ls -R
     - name: '📅 Make Release Directory'
       run: |
-        mkdir release
+        mkdir releases -p
     - name: '📅 Make Build Date'
       id: 'build-date'
       run: |
@@ -118,20 +118,13 @@ jobs:
           header_notes="header_notes.md"
           library_versions="library_versions.md"
           prerelease_notes="prerelease_notes.md"
-          if [[ -f "$library_versions" ]]; then
-            echo "📢"
-            echo "$(<$library_versions)"
-          fi
-          if [[ -f "$prerelease_notes" ]]; then
-            echo "📢"
-            echo "$(<$prerelease_notes)"
-          fi
-          if [[ -f "$library_versions" && -f "$prerelease_notes" ]]; then
-            cat "$header_notes" "$library_versions" "$prerelease_notes" > "${root}/releases/release_notes.md"
-          elif [[ ! -f "$library_versions" && -f "$prerelease_notes" ]]; then
-            cat "$prerelease_notes" > "${root}/releases/release_notes.md" 
+          if [[ -f "$header_notes" && -f "$library_versions" && -f "$prerelease_notes" ]]; then
+            cat "$header_notes" "$library_versions" "$prerelease_notes" > "$root/releases/release_notes.md"
+          else
+            exit 1
           fi
         done
+        ls -laR
     - name: '🧹 Cleanup Files for Distribution'
       working-directory: ./builds
       run: |
@@ -140,6 +133,7 @@ jobs:
         find . -type f -iname '*.lib' -delete
         find . -type f -iname '*.xsd' -delete
         find . -type f -iname '*.ico' -delete
+        find . -type f -iname '*.md' -delete
         ls -laR
     - name: '🚚 Package for Distribution'
       shell: bash
