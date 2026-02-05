@@ -86,6 +86,7 @@ jobs:
     outputs:
       version_name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
       checkout_commit: ${{ steps.parse-commit.outputs.checkout_commit }}
+      checkout_short: ${{ steps.parse-commit.outputs.checkout_short }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v6
