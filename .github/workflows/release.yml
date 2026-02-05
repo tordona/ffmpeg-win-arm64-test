@@ -35,7 +35,7 @@ jobs:
         path: ./releases
         pattern: '*-prerelease'
     - name: '☑️ File Check'
-      working-directory: ./release
+      working-directory: ./releases
       run: |
         pwd
         archives=$(find . -name '*.7z')
