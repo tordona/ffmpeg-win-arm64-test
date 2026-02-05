@@ -40,13 +40,13 @@ jobs:
         pwd
         ls -laR
     - name: '🔍 Check Build Release Exists'
-      id: release-exists
+      id: 'check-build-release'
       uses: insightsengineering/release-existence-action@v1.0.0
       with:
         release-tag: "${{ inputs.release_tag }}"
     - name: '📤 Upload to Existing Package Release'
+      if: steps.check-build-release.outputs.release-exists == 'true'
       working-directory: ./release
-      if: steps.release-exists.outputs.release-exists == 'true' 
       run: |
         shopt -s globstar
         shopt -s nullglob
@@ -55,8 +55,8 @@ jobs:
           '**/*.sha256' \
           --clobber \
     - name: '🔨 Create New Package Release'
+      if: steps.check-build-release.outputs.release-exists == 'false'
       working-directory: ./release
-      if: steps.release-exists.outputs.release-exists == 'false' 
       run: |
         shopt -s globstar
         shopt -s nullglob
@@ -83,16 +83,24 @@ jobs:
         echo "📢 Expired tag: $temp_removal_date"
         echo "removal_date=${temp_removal_date}" >> $GITHUB_OUTPUT
     - name: '🔍 Check Expired Release Exists'
-      id: expired-release-exists
+      id: 'check-expired-release'
       uses: insightsengineering/release-existence-action@v1.0.0
       with:
         release-tag: "${{ steps.expired-daily-autobuild-tag.outputs.removal_date }}"
     - name: '☠️ Delete Expired Build'
-      if: steps.expired-release-exists.outputs.release-exists == 'true' 
+      if: steps.check-expired-release.outputs.release-exists == 'true'
       run: |
+        echo "📢 Delete Expired Build"
         gh release delete "${{ steps.expired-daily-autobuild-tag.outputs.removal_date }}" --cleanup-tag -y
+    - name: '🔍 Check Latest Tag Exists'
+      id: 'check-latest-tag'
+      uses: insightsengineering/release-existence-action@v1.0.0
+      with:
+        release-tag: "latest"
     - name: '☠️ Delete Latest Build'
+      if: steps.check-latest-tag.outputs.release-exists == 'true' 
       run: |
+        echo "📢 Delete Lastest Release"
         gh release delete "latest" --cleanup-tag -y
     - name: '🔨 Create Latest Release'
       working-directory: ./release

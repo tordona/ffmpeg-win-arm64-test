@@ -91,7 +91,7 @@ jobs:
     - name: '🛒 Checkout'
       uses: actions/checkout@v6
     - name: '🔧 Setup MSYS2'
-      id: msys2-env
+      id: 'msys2-env'
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ needs.defaults.outputs.msystem }}
