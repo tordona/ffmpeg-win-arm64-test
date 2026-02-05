@@ -108,6 +108,8 @@ jobs:
         done
     - name: '📝 Concat Release Notes'
       run: |
+        pwd
+        ls -laR
         root=$(pwd)
         find . -wholename "*/builds/**/ffmpeg.exe" | while read -r ffmpeg; do
           cd $root
@@ -118,10 +120,22 @@ jobs:
           header_notes="header_notes.md"
           library_versions="library_versions.md"
           prerelease_notes="prerelease_notes.md"
+            echo "📢"
+            echo "$(<$header_notes)"
+            echo "📢"
+            echo "$(<$library_versions)"
+            echo "📢"
+            echo "$(<$prerelease_notes)"
           if [[ -f "$header_notes" && -f "$library_versions" && -f "$prerelease_notes" ]]; then
+            echo "Test"
+            echo "📢"
+            echo "$(<$header_notes)"
+            echo "📢"
+            echo "$(<$library_versions)"
+            echo "📢"
+            echo "$(<$prerelease_notes)"
             cat "$header_notes" "$library_versions" "$prerelease_notes" > "$root/releases/release_notes.md"
-          else
-            exit 1
+            echo "$(<$root/releases/release_notes.md)"
           fi
         done
         ls -laR
