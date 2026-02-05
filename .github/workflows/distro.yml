@@ -80,12 +80,10 @@ jobs:
           parent_dir=$(dirname "$bin_dir")
           build_dir=$(basename $parent_dir)
           cd "$parent_dir/.."
-          pwd
-          ls -laR
           echo "📢 Create Header Notes"
           filename="header_notes.md"
           rm -f $filename
-          printf "## Windows ARM64 builds\n" >> $filename
+          printf "## Windows ARM64 Builds\n" >> $filename
           printf "\n" >> $filename
         done
     - name: '📝 Create Prerelease Notes'
@@ -99,8 +97,6 @@ jobs:
           build_dir=$(basename $parent_dir)
           cd "$parent_dir/.."
           echo "📢 Create Prerelease Notes"
-          pwd
-          ls -laR
           filename="prerelease_notes.md"
           rm -f $filename
           printf "\n" >> $filename
@@ -119,27 +115,11 @@ jobs:
           parent_dir=$(dirname "$bin_dir")
           build_dir=$(basename $parent_dir)
           cd "$parent_dir/.."
-          pwd
-          ls -laR
           header_notes="header_notes.md"
           library_versions="library_versions.md"
           prerelease_notes="prerelease_notes.md"
-            echo "📢"
-            echo "$(<$header_notes)"
-            echo "📢"
-            echo "$(<$library_versions)"
-            echo "📢"
-            echo "$(<$prerelease_notes)"
           if [[ -f "$header_notes" && -f "$library_versions" && -f "$prerelease_notes" ]]; then
-            echo "Test"
-            echo "📢"
-            echo "$(<$header_notes)"
-            echo "📢"
-            echo "$(<$library_versions)"
-            echo "📢"
-            echo "$(<$prerelease_notes)"
             cat "$header_notes" "$library_versions" "$prerelease_notes" > "$root/releases/release_notes.md"
-            echo "$(<$root/releases/release_notes.md)"
           fi
         done
         ls -laR
