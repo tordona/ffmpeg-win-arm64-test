@@ -13,9 +13,6 @@ on:
         type: string
         required: true 
 
-env:
-  release_tag: "weekly-autobuild"
-
 jobs:
   release-distro:
     name: '💻 Release Distribution'
@@ -37,10 +34,6 @@ jobs:
     - name: '☑️ File Check'
       working-directory: ./releases
       run: |
-        pwd
-        ls -laR
-        cd ..
-        ls -laR
         archives=$(find . -name '*.7z')
         if [[ -z "$archives" ]]; then
           echo "📢 No Archives Found"
@@ -51,7 +44,6 @@ jobs:
           echo "📢 No Release Notes Found"
           exit 1
         fi
-        ls -laR
     - name: '🔍 Check Build Release Exists'
       id: 'check-build-release'
       uses: insightsengineering/release-existence-action@v1.0.0
@@ -127,7 +119,7 @@ jobs:
           cd $(dirname "$archive")
           file=$(basename "$archive")
           filename=${file%.*}
-          renamed_file="${file//git-/git-latest-}"
+          renamed_file="${file//${{ inputs.github_tag }}/master-latest}"
           mv "$file" "$renamed_file"
           rm -rf "${filename}.sha256"
           sha256sum "$renamed_file" > "${renamed_file//.7z/.sha256}"
