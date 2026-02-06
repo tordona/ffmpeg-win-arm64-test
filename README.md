@@ -1,0 +1,1 @@
+[![FFmpeg Win-ARM64 Auto-Builds](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml)
