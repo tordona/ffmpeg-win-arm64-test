@@ -585,7 +585,7 @@ Usage:
    <thead>
       <tr>
          <th>Status</th>
-         <th>Explaination</th>
+         <th align="left">Explaination</th>
       </tr>
    </thead>
    <tbody>
