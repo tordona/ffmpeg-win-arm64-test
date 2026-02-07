@@ -3,12 +3,12 @@ name: Release Distribution
 on:
   workflow_call:
     inputs:
-      release_tag:
-        type: string
-        required: false
       build_date:
         type: string
         required: true
+      release_tag:
+        type: string
+        required: false
       github_tag:
         type: string
         required: true 
@@ -34,6 +34,9 @@ jobs:
     - name: '☑️ File Check'
       working-directory: ./releases
       run: |
+        echo "📢 build_date: ${{ inputs.build_date }}"
+        echo "📢 github_tag: ${{ inputs.github_tag }}"
+        echo "📢 release_tag: ${{ inputs.release_tag }}"
         archives=$(find . -name '*.7z')
         if [[ -z "$archives" ]]; then
           echo "📢 No Archives Found"

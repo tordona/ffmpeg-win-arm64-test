@@ -312,10 +312,10 @@ jobs:
     uses: ./.github/workflows/distro.yml
     needs: ['defaults', 'msys2']
     with:
-      version_name: "${{ needs.msys2.outputs.version_name }}"
       release_tag: "${{ needs.defaults.outputs.release_tag }}"
       github_tag: "${{ needs.defaults.outputs.github_tag }}"
       source_repo: "${{ needs.defaults.outputs.source_repo }}"
+      version_name: "${{ needs.msys2.outputs.version_name }}"
       checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
       checkout_short: "${{ needs.msys2.outputs.checkout_short }}"
   release-distro:
@@ -327,4 +327,4 @@ jobs:
     with:
       build_date: "${{ needs.prep-distro.outputs.build_date }}"
       release_tag: "${{ needs.prep-distro.outputs.release_tag }}"
-      github_tag: "${{ needs.defaults.outputs.github_tag }}"
+      github_tag: "${{ needs.prep-distro.outputs.github_tag }}"

@@ -3,18 +3,18 @@ name: Prepare Distribution
 on:
   workflow_call:
     inputs:
-      version_name:
-        type: string
-        required: true
       release_tag:
         type: string
-        required: true 
+        required: true
       github_tag:
         type: string
-        required: true 
+        required: true
       source_repo:
         type: string
         required: true 
+      version_name:
+        type: string
+        required: true
       checkout_commit:
         type: string
         required: true
@@ -26,7 +26,8 @@ on:
         value: ${{ jobs.prep-distro.outputs.build_date }}
       release_tag:
         value: ${{ jobs.prep-distro.outputs.release_tag }}
-
+      github_tag:
+        value: ${{ jobs.prep-distro.outputs.github_tag }}
 jobs:
   prep-distro:
     name: '💻 Prepare Distribution Package'
@@ -38,7 +39,8 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       build_date: ${{ steps.build-date.outputs.build_date }}
-      release_tag: ${{ steps.release-tag.outputs.release_tag }}
+      release_tag: ${{ steps.tags.outputs.release_tag }}
+      github_tag: ${{ steps.tags.outputs.github_tag }}
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v6
@@ -60,7 +62,7 @@ jobs:
         removal_date=$(date '+%Y.%m.%d.0' -d 'today - 15 days')
         echo "build_date=${build_date}" >> $GITHUB_OUTPUT
     - name: '🔖 Release Tag'
-      id: 'release-tag'
+      id: 'tags'
       run: |
         temp_release_tag="${{ inputs.release_tag }}"
         temp_release_tag="${temp_release_tag// /-}"
@@ -70,6 +72,7 @@ jobs:
         else
           echo "release_tag=${temp_release_tag}" >> $GITHUB_OUTPUT
         fi
+        echo "github_tag=${{ inputs.github_tag }}" >> $GITHUB_OUTPUT
     - name: '📝 Create Header Notes'
       id: 'header-notes'
       run: |
