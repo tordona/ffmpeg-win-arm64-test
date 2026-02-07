@@ -1,117 +1,110 @@
 [![FFmpeg Win-ARM64 Auto-Builds](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml)
 
-
-
-## Compiling FFmpeg for Windows using MSYS2 Environment
-
-This is a general walk-through for compiling a local build of FFmpeg on Microsoft Windows. This guide specifically targets the ARM64 architecture, but can be applied to x64 architecture with slight modifications.
+## Compiling FFmpeg for Windows using MSYS2 Environment  
+This is a general walk-through for compiling a local build of FFmpeg on Microsoft Windows. This guide specifically targets the ARM64 architecture, but can be applied to x64 with slight modifications.
 
 ## Prerequisites
 
-* Device runing Windows on ARM
-* [Windows 11 ARM, minimum 24H2](https://www.microsoft.com/en-us/software-download/windows11arm64) 
-* [MSYS2](https://www.msys2.org/)
-* [FFmpeg source code](https://github.com/FFmpeg/FFmpeg)
-
+* **Hardware:** A device running Windows on ARM.
+* **OS:** [Windows 11 ARM, minimum 24H2](https://www.microsoft.com/en-us/software-download/windows11arm64).
+* **Environment:** [MSYS2](https://www.msys2.org/)
+* **Source:** [FFmpeg](https://github.com/FFmpeg/FFmpeg)
 
 ## General Compilation Steps
-**1. Install Required MSYS2 Environment**  
-Visit https://www.msys2.org/docs/arm64/ for instructions and download links.
 
-*Unless noted, all of the commands should be run within the `CLANGARM64` shell environment.*
+### 1. Install Required MSYS2 Environment
+Visit the [MSYS2 ARM64 Documentation](https://www.msys2.org/docs/arm64/) for specific installation instructions and download links.
 
-**2. Launch and update Environment tools**  
-- Execute `clangarm64.exe` in the MSYS2 install directory
-- Update MSYS2
+> [!IMPORTANT]
+> Unless otherwise noted, all commands must be executed within the **CLANGARM64** shell environment.
 
-```
-pacman -Suy
-```
+### 2. Launch and Update Environment Tools
+1. Execute `clangarm64.exe` located in your MSYS2 installation directory.
+2. Update the package database and core system packages:
+   ```bash
+   pacman -Suy
+   ```
 
-**3. Install tooling and dependencies**  
-You need basic development tools, compilers, and libraries to get started. Use `pacman` the [package management](https://www.msys2.org/docs/package-management/) of MSYS2 to install these items.
+### 3. Install tooling and dependencies  
+Several basic development tools, compilers, and libraries are needed to begin. Use `pacman` to install the following items.
 
-standard packages:
+Standard packages:
 ```
 pacman -S gcc git make
 ```
 
-architecture specific packages and toolchains:
+Architecture-specific packages:
 ```
 pacman -S mingw-w64-clang-aarch64-{toolchain,gcc-compat,diffutils,libssh2,texinfo}
 ```
   
-**4. Download the source code**  
+### 4. Download the source code
 Clone the official repository using Git:  
 ```
 git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
 ```
 
-**5. Create a build directory**  
-Recommend to create a directory to store the compiled FFmpeg build, that's outside of the source directory.
+### 5. Create a build directory  
+It is recommended to create a separate directory to store the compiled FFmpeg build outside of the source tree.
 
 ```
-mkdir ffmpeg_builds
+mkdir $HOME/ffmpeg_builds
 ```
 
-**5. Configure FFmpeg**  
-Run the `configure` script inside the source directory to prepare the build environment.  
-To start, use the `prefix` option to specify where the build will be stored.  
-Next, pass in a few flags to properly link necessary libraries.  
+### 6. Configure FFmpeg
+Run the `configure` script inside the source directory to prepare the build environment. We use the `--prefix` option to specify the installation path and flags to link libraries statically.
 
 ```
 cd ffmpeg
-./configure --prefix='~/ffmpeg_builds' --extra-libs='-static' --pkg-config-flags='--static'
+./configure --prefix='$HOME/ffmpeg_builds' --extra-libs='-static' --pkg-config-flags='--static'
 ```
 
 Be patient. The `configure` process may take several minutes to finish before andy status change.  
   
   
-**6. Compile the Source**  
-Start the compilation by calling `make` and pass the jobs argument `-j$(nproc)`.  
-`nproc` will return the number of processing units available on your device.  
+### 7. Compile the Source  
+Start the compilation by calling `make`. The -`j$(nproc)` argument utilizes all available processing units on your device to speed up the build.
 
 ```
 make -j$(nproc)
 ```
 
-**7. Install**  
-Installing involves calling `make` command with the `install` directive.  
-The compiled binaries will be installed to the specified `prefix` (~/ffmpeg_builds). 
+### 9. Install  
+Run the `install` directive to move the compiled binaries to your specified prefix directory ($HOME/ffmpeg_builds).
 
 ```
 make install
 ```
 
-**9. Run the executable**  
-Run the installed version to ensure compilcation finished. It is typically installed to a parent directory named `bin`
+### 10. Verify the Installation
+Run the newly created executable to ensure the compilation was successful.
 ```
-cd ~/ffmpeg_builds/bin
-./ffmpeg.exe
+cd $HOME/ffmpeg_builds/bin
+./ffmpeg.exe -version
 ```
 
 **10. Congratulations**  
-If all was succesful, a generic standard version of FFmpeg was just created specific to your Windows device.
+If the version information appears, you have successfully created a simplified version of FFmpeg optimized specifically for your Windows ARM device.
 
-## Getting Customized
-`./configure --help` will give a list of all available options that can disabled or enabled. To enable a library, the dependencies need to be install via `pacman`  
+## Customization
+To see a full list of available options, run `./configure --help`. To enable a specific library, the dependencies must be installed via `pacman` first.
 
-To enable the option `libmp3lame`, first install the library:
+1. Install the library:
 ```
 pacman -S mingw-w64-clang-aarch64-lame
 ```
 
-then add the switch to configration options:
+2. Add the switch to your configuration:
 ```
 ./configure [...other-options and flags] --enable-libmp3lame
 ```
 
-## Mappings
-This is a partial mapping of FFmpeg options to MSYS2 Packages.  
+## Package Mappings
+The following table provides a partial mapping of FFmpeg options to their corresponding MSYS2 packages.
 
-`--enable-[FFmpeg_Option]`  
-
-`pacman -S mingw-w64-clang-aarch64-[MSYS2_Package]`  
+Usage:
+* FFmpeg Option: `--enable-[Option]`
+* MSYS2 Package: `pacman -S mingw-w64-clang-aarch64-[Package]`
 
 <table>
   <thead>
