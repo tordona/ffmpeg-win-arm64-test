@@ -580,3 +580,25 @@ Usage:
      </tr>
   </tbody>
 </table>
+
+<table>
+   <thead>
+      <tr>
+         <th>Status</th>
+         <th>Explaination</th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr>
+         <td align="center">✅</td>
+         <td>Packages have no issues</td>
+      </tr>
+      <tr>
+         <td align="center">⚠️</td>
+         <td>Packages may not be properly detected for static linking</td>
+      </tr>
+   </tbody>
+</table>
+
+## Additional Resources
+[Official FFmpeg Compilation Guide](https://trac.ffmpeg.org/wiki/CompilationGuide)
