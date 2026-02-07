@@ -6,7 +6,7 @@ This is a general walk-through for compiling a local build of FFmpeg on Microsof
 ## Prerequisites
 
 * **Hardware:** A device running Windows on ARM.
-* **OS:** [Windows 11 ARM, minimum 24H2](https://www.microsoft.com/en-us/software-download/windows11arm64)
+* **OS:** [Windows 11 ARM](https://www.microsoft.com/en-us/software-download/windows11arm64) (build 24H2 or later recommended]
 * **Environment:** [MSYS2](https://www.msys2.org/)
 * **Source:** [FFmpeg](https://github.com/FFmpeg/FFmpeg)
 
@@ -58,8 +58,7 @@ Run the `configure` script inside the source directory to prepare the build envi
 cd ffmpeg
 ./configure --prefix='$HOME/ffmpeg_builds' --extra-libs='-static' --pkg-config-flags='--static'
 ```
-
-_Be patient. The `configure` process may take several minutes to finish before any status change._
+_Note: Be patient. The `configure` process may take several minutes to finish before any status change._
   
 ### 7. Compile the Source  
 Start the compilation by calling `make`. The -`j$(nproc)` argument utilizes all available processing units on your device to speed up the build.
@@ -68,22 +67,31 @@ Start the compilation by calling `make`. The -`j$(nproc)` argument utilizes all 
 make -j$(nproc)
 ```
 
-### 9. Install  
+### 8. Install  
 Run the `install` directive to move the compiled binaries to your specified prefix directory ($HOME/ffmpeg_builds).
 
 ```
 make install
 ```
 
-### 10. Verify the Installation
-Run the newly created executable to ensure the compilation was successful.
+### 9. Verify the Installation
+Check the newly created executable to ensure the compilation was successful.
+1. Test the version output. Expected output should indicate `ffmpeg version N-[version_string]`
+  
 ```
 cd $HOME/ffmpeg_builds/bin
 ./ffmpeg.exe -version
+```  
+
+2. Verify the binary architecture. Expected output should indicate `_PE32+ executable for MS Windows 6.00 (console), ARM64`
+```bash
+file ffmpeg.exe
 ```
 
+
+
 ### 10. Congratulations
-If the version information appears, you have successfully created a simplified version of FFmpeg optimized specifically for your Windows ARM device.
+If the version information appears and binary architecture is correct, you have successfully created a simplified version of FFmpeg optimized specifically for your Windows ARM device.
 
 ## Customization
 To see a full list of available options, run `./configure --help`. To enable a specific library, the dependencies must be installed via `pacman` first.
