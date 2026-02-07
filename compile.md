@@ -1,4 +1,4 @@
-[![FFmpeg Win-ARM64 Auto-Builds](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml)
+[![FFmpeg Win-ARM64 Auto-Builds Test](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml)
 
 ## Compiling FFmpeg for Windows using MSYS2 Environment  
 This is a general walk-through for compiling a local build of FFmpeg on Microsoft Windows. This guide specifically targets the ARM64 architecture, but can be applied to x64 with slight modifications.
@@ -58,8 +58,9 @@ Run the `configure` script inside the source directory to prepare the build envi
 cd ffmpeg
 ./configure --prefix='$HOME/ffmpeg_builds' --extra-libs='-static' --pkg-config-flags='--static'
 ```
-_Note: Be patient. The `configure` process may take several minutes to finish before any status change._
-  
+> [!NOTE]
+> Be patient. The `configure` process may take several minutes to finish before any status change
+
 ### 7. Compile the Source  
 Start the compilation by calling `make`. The -`j$(nproc)` argument utilizes all available processing units on your device to speed up the build.
 
@@ -76,19 +77,21 @@ make install
 
 ### 9. Verify the Installation
 Check the newly created executable to ensure the compilation was successful.
-1. Test the version output. Expected output should indicate `ffmpeg version N-[version_string]`
+1. Test the version output.
   
 ```
 cd $HOME/ffmpeg_builds/bin
 ./ffmpeg.exe -version
 ```  
+> :memo: **Expected Result:** Output should indicate `ffmpeg version N-[version_string]`
 
-2. Verify the binary architecture. Expected output should indicate `_PE32+ executable for MS Windows 6.00 (console), ARM64`
+
+2. Verify the binary architecture.  
 ```bash
 file ffmpeg.exe
 ```
-
-
+> :memo: **Expected Result:** Output should indicate `_PE32+ executable for MS Windows 6.00 (console), ARM64`  
+<br>
 
 ### 10. Congratulations
 If the version information appears and binary architecture is correct, you have successfully created a simplified version of FFmpeg optimized specifically for your Windows ARM device.
