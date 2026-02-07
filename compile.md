@@ -88,6 +88,7 @@ If the version information appears, you have successfully created a simplified v
 ## Customization
 To see a full list of available options, run `./configure --help`. To enable a specific library, the dependencies must be installed via `pacman` first.
 
+Example: Enabling MP3 support (libmp3lame)  
 1. Install the library:
 ```
 pacman -S mingw-w64-clang-aarch64-lame
