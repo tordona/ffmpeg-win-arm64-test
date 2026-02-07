@@ -6,7 +6,7 @@ This is a general walk-through for compiling a local build of FFmpeg on Microsof
 ## Prerequisites
 
 * **Hardware:** A device running Windows on ARM.
-* **OS:** [Windows 11 ARM, minimum 24H2](https://www.microsoft.com/en-us/software-download/windows11arm64).
+* **OS:** [Windows 11 ARM, minimum 24H2](https://www.microsoft.com/en-us/software-download/windows11arm64)
 * **Environment:** [MSYS2](https://www.msys2.org/)
 * **Source:** [FFmpeg](https://github.com/FFmpeg/FFmpeg)
 
@@ -115,6 +115,12 @@ Usage:
      </tr>
   </thead>
   <tbody>
+      <tr>
+        <td>amf</td>
+        <td>7</td>
+        <td>amf-headers</td>
+        <td align="center">✅</td
+     </tr>
      <tr>
         <td>chromaprint</td>
         <td>7</td>
@@ -131,6 +137,18 @@ Usage:
         <td>frei0r</td>
         <td>7</td>
         <td>frei0r-plugins</td>
+        <td align="center">✅</td>
+     </tr>
+     <tr>
+        <td>gmp</td>
+        <td>7</td>
+        <td>gmp</td>
+        <td align="center">✅</td>
+     </tr>
+     <tr>
+        <td>gnutls</td>
+        <td>7</td>
+        <td>gnutls</td>
         <td align="center">✅</td>
      </tr>
      <tr>
@@ -533,6 +551,12 @@ Usage:
         <td>sdl2</td>
         <td>7</td>
         <td>SDL2</td>
+        <td align="center">✅</td>
+     </tr>
+      <tr>
+        <td>vaapi</td>
+        <td>7</td>
+        <td>libva</td>
         <td align="center">✅</td>
      </tr>
      <tr>
