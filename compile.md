@@ -16,7 +16,7 @@ This is a general walk-through for compiling a local build of FFmpeg on Microsof
 Visit the [MSYS2 ARM64 Documentation](https://www.msys2.org/docs/arm64/) for specific installation instructions and download links.
 
 > [!IMPORTANT]
-> Unless otherwise noted, all commands must be executed within the **CLANGARM64** shell environment.
+> Unless otherwise noted, all commands must be executed within the **`CLANGARM64`** shell environment.
 
 ### 2. Launch and Update Environment Tools
 1. Execute `clangarm64.exe` located in your MSYS2 installation directory.
@@ -59,8 +59,7 @@ cd ffmpeg
 ./configure --prefix='$HOME/ffmpeg_builds' --extra-libs='-static' --pkg-config-flags='--static'
 ```
 
-Be patient. The `configure` process may take several minutes to finish before andy status change.  
-  
+_Be patient. The `configure` process may take several minutes to finish before any status change._
   
 ### 7. Compile the Source  
 Start the compilation by calling `make`. The -`j$(nproc)` argument utilizes all available processing units on your device to speed up the build.
@@ -83,7 +82,7 @@ cd $HOME/ffmpeg_builds/bin
 ./ffmpeg.exe -version
 ```
 
-**10. Congratulations**  
+### 10. Congratulations
 If the version information appears, you have successfully created a simplified version of FFmpeg optimized specifically for your Windows ARM device.
 
 ## Customization
