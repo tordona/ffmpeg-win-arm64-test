@@ -6,9 +6,13 @@ This is a general walk-through for compiling a local build of FFmpeg on Microsof
 ## Prerequisites
 
 * **Hardware:** A device running Windows on ARM.
+  * Snapdragon 7c Gen 2
+  * Snapdragon 8cx
+  * Snapdragon Elite
+  * Microsoft SQ series
 * **OS:** [Windows 11 ARM](https://www.microsoft.com/en-us/software-download/windows11arm64) (build 24H2 or later recommended]
 * **Environment:** [MSYS2](https://www.msys2.org/)
-* **Source:** [FFmpeg](https://github.com/FFmpeg/FFmpeg)
+* **Source:** [https://git.ffmpeg.org/ffmpeg.git](https://git.ffmpeg.org/ffmpeg.git)
 
 ## General Compilation Steps
 
@@ -609,4 +613,6 @@ Usage:
 </table>
 
 ## Additional Resources
-[Official FFmpeg Compilation Guide](https://trac.ffmpeg.org/wiki/CompilationGuide)
+[Official FFmpeg Compilation Guide](https://trac.ffmpeg.org/wiki/CompilationGuide)  
+[FFmpeg Subreddit](https://www.reddit.com/r/ffmpeg/)  
+[https://github.com/tordona/mingw-packages](https://github.com/tordona/mingw-packages) - Modified package scripts for MinGW-w64
