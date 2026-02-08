@@ -29,9 +29,9 @@ Visit the [MSYS2 ARM64 Documentation](https://www.msys2.org/docs/arm64/) for spe
 Several basic development tools, compilers, and libraries are needed to begin. Use `pacman` to install the following items.
 
 Standard packages:
-```
-pacman -S gcc git make
-```
+   ```
+   pacman -S gcc git make
+   ```
 
 Architecture-specific packages:
 ```
@@ -46,7 +46,6 @@ git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
 
 ### 5. Create a build directory  
 It is recommended to create a separate directory to store the compiled FFmpeg build outside of the source tree.
-
 ```
 mkdir $HOME/ffmpeg_builds
 ```
@@ -58,39 +57,37 @@ Run the `configure` script inside the source directory to prepare the build envi
 cd ffmpeg
 ./configure --prefix='$HOME/ffmpeg_builds' --extra-libs='-static' --pkg-config-flags='--static'
 ```
+
 > [!NOTE]
 > Be patient. The `configure` process may take several minutes to finish before any status change
 
 ### 7. Compile the Source  
 Start the compilation by calling `make`. The -`j$(nproc)` argument utilizes all available processing units on your device to speed up the build.
-
 ```
 make -j$(nproc)
 ```
 
 ### 8. Install  
 Run the `install` directive to move the compiled binaries to your specified prefix directory ($HOME/ffmpeg_builds).
-
 ```
 make install
 ```
 
 ### 9. Verify the Installation
 Check the newly created executable to ensure the compilation was successful.
-1. Test the version output.
-  
-```
-cd $HOME/ffmpeg_builds/bin
-./ffmpeg.exe -version
-```  
-> :memo: **Expected Result:** Output should indicate `ffmpeg version N-[version_string]`
+1. Test the version output:
+   ```
+   cd $HOME/ffmpeg_builds/bin
+   ./ffmpeg.exe -version
+   ```  
+   > :memo: **Expected Result:** Output should indicate `ffmpeg version N-[version_string]`
 
 
-2. Verify the binary architecture.  
-```bash
-file ffmpeg.exe
-```
-> :memo: **Expected Result:** Output should indicate `_PE32+ executable for MS Windows 6.00 (console), ARM64`  
+2. Verify the binary architecture:  
+   ```bash
+   file ffmpeg.exe
+   ```
+   > :memo: **Expected Result:** Output should indicate `_PE32+ executable for MS Windows 6.00 (console), ARM64`  
 <br>
 
 ### 10. Congratulations
@@ -101,14 +98,14 @@ To see a full list of available options, run `./configure --help`. To enable a s
 
 Example: Enabling MP3 support (libmp3lame)  
 1. Install the library:
-```
-pacman -S mingw-w64-clang-aarch64-lame
-```
+   ```
+   pacman -S mingw-w64-clang-aarch64-lame
+   ```
 
 2. Add the switch to your configuration:
-```
-./configure [...other-options and flags] --enable-libmp3lame
-```
+   ```
+   ./configure [...other-options and flags] --enable-libmp3lame
+   ```
 
 ## Package Mappings
 The following table provides a partial mapping of FFmpeg options to their corresponding MSYS2 packages.
