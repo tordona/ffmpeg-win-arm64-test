@@ -132,463 +132,475 @@ Usage:
         <td>amf</td>
         <td>7</td>
         <td>amf-headers</td>
-        <td align="center">✅</td
+        <td>✅</td>
+     </tr>
+      <tr>
+        <td>avisynthplus</td>
+        <td>7</td>
+        <td> </td>
+        <td>☑️</td>
      </tr>
      <tr>
         <td>chromaprint</td>
         <td>7</td>
         <td>chromaprint</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>fontconfig</td>
         <td>7</td>
         <td>fontconfig</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>frei0r</td>
         <td>7</td>
         <td>frei0r-plugins</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>gmp</td>
         <td>7</td>
         <td>gmp</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>gnutls</td>
         <td>7</td>
         <td>gnutls</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>ladspa</td>
         <td>7</td>
         <td>ladspa-sdk</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>ladspa</td>
         <td>7</td>
         <td>dlfcn</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>lcms2</td>
         <td>7</td>
         <td>lcms2</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libaom</td>
         <td>7</td>
         <td>aom</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libaribb24</td>
         <td>7</td>
         <td>aribb24</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libaribcaption</td>
         <td>7</td>
         <td>libaribcaption</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libass</td>
         <td>7</td>
         <td>libass</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libbluray</td>
         <td>7</td>
         <td>libbluray</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libbs2b</td>
         <td>7</td>
         <td>libbs2b</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libcdio</td>
         <td>7</td>
         <td>libcdio</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libcdio</td>
         <td>7</td>
         <td>libcdio-paranoia</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libcodec2</td>
         <td>7</td>
         <td>codec2</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libdav1d</td>
         <td>7</td>
         <td>dav1d</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libdvdnav</td>
         <td>7</td>
         <td>libdvdnav</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libdvdread</td>
         <td>7</td>
         <td>libdvdread</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libfreetype</td>
         <td>7</td>
         <td>freetype</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libfribidi</td>
         <td>7</td>
         <td>fribidi</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libgme</td>
         <td>7</td>
         <td>libgme</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libgsm</td>
         <td>7</td>
         <td>gsm</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libharfbuzz</td>
         <td>7</td>
         <td>harfbuzz</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libilbc</td>
         <td>7</td>
         <td>libilbc</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libjxl</td>
         <td>7</td>
         <td>libjxl</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libkvazaar</td>
         <td>7</td>
         <td>kvazaar</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>liblc3</td>
         <td>7</td>
         <td>liblc3</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libmodplug</td>
         <td>7</td>
         <td>libmodplug</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libmp3lame</td>
         <td>7</td>
         <td>lame</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libmysofa</td>
         <td>7</td>
         <td>libmysofa</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>liboapv</td>
         <td>8</td>
         <td>openapv</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libopencore-amrnb</td>
         <td>7</td>
         <td>opencore-amr</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libopencore-amrwb</td>
         <td>7</td>
         <td>opencore-amr</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libopenh264</td>
         <td>7</td>
         <td>openh264</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libopenjpeg</td>
         <td>7</td>
         <td>openjpeg2</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libopenmpt</td>
         <td>7</td>
         <td>libopenmpt</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libopus</td>
         <td>7</td>
         <td>opus</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libplacebo</td>
         <td>7</td>
         <td>libplacebo</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libqrencode</td>
         <td>7</td>
         <td>qrencode</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>librav1e</td>
         <td>7</td>
         <td>rav1e</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>librist</td>
         <td>7</td>
         <td>librist</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>librubberband</td>
         <td>7</td>
         <td>rubberband</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libshaderc</td>
         <td>7</td>
         <td>shaderc</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libshine</td>
         <td>7</td>
         <td>shine</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libsnappy</td>
         <td>7</td>
         <td>snappy</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libsoxr</td>
         <td>7</td>
         <td>libsoxr</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libspeex</td>
         <td>7</td>
         <td>speex</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libsrt</td>
         <td>7</td>
         <td>srt</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libssh</td>
         <td>7</td>
         <td>libssh</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libsvtav1</td>
         <td>7</td>
         <td>svt-av1</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libtheora</td>
         <td>7</td>
         <td>libtheora</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libtwolame</td>
         <td>7</td>
         <td>twolame</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libvidstab</td>
         <td>7</td>
         <td>vid.stab</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libvmaf</td>
         <td>7</td>
         <td>vmaf</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libvo-amrwbenc</td>
         <td>7</td>
         <td>vo-amrwbenc</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libvorbis</td>
         <td>7</td>
         <td>libvorbis</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libvpx</td>
         <td>7</td>
         <td>libvpx</td>
-        <td align="center">✅</td>
+        <td>✅</td>
+     </tr>
+     <tr>
+        <td>libvvenc</td>
+        <td>7</td>
+        <td> </td>
+        <td>☑️</td>
      </tr>
      <tr>
         <td>libwebp</td>
         <td>7</td>
         <td>libwebp</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libx264</td>
         <td>7</td>
         <td>libx264</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libx265</td>
         <td>7</td>
         <td>x265</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libxevd</td>
         <td>7</td>
         <td>xevd</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libxeve</td>
         <td>7</td>
         <td>xeve</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libxvid</td>
         <td>7</td>
         <td>xvidcore</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>libzimg</td>
         <td>7</td>
         <td>zimg</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libzmq</td>
         <td>7</td>
         <td>zeromq</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>libzvbi</td>
         <td>7</td>
         <td>zvbi</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>mediafoundation</td>
         <td>7</td>
         <td>qt6-multimedia-wmf</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>openal</td>
         <td>7</td>
         <td>openal</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>opencl</td>
         <td>7</td>
         <td>opencl-icd</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>sdl2</td>
         <td>7</td>
         <td>SDL2</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
       <tr>
         <td>vaapi</td>
         <td>7</td>
         <td>libva</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>vapoursynth</td>
         <td>7</td>
         <td>vapoursynth</td>
-        <td align="center">✅</td>
+        <td>✅</td>
      </tr>
      <tr>
         <td>vulkan</td>
         <td>7</td>
         <td>vulkan-loader</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
      <tr>
         <td>whisper</td>
         <td>8</td>
         <td>whisper.cpp</td>
-        <td align="center">⚠️</td>
+        <td>⚠️☑️</td>
      </tr>
   </tbody>
 </table>
@@ -602,12 +614,16 @@ Usage:
    </thead>
    <tbody>
       <tr>
-         <td align="center">✅</td>
-         <td>Packages have no issues</td>
+         <td>✅</td>
+         <td>Package available. No known issues</td>
       </tr>
       <tr>
-         <td align="center">⚠️</td>
-         <td>Packages may not be properly detected for static linking</td>
+         <td>☑️</td>
+         <td>3rd-party package or source code</td>
+      </tr>
+      <tr>
+         <td>⚠️</td>
+         <td>Package may not be properly detected for static linking</td>
       </tr>
    </tbody>
 </table>
