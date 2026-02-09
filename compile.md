@@ -144,13 +144,13 @@ Usage:
         <td>chromaprint</td>
         <td>7</td>
         <td>chromaprint</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>fontconfig</td>
         <td>7</td>
         <td>fontconfig</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>frei0r</td>
@@ -198,13 +198,13 @@ Usage:
         <td>libaribb24</td>
         <td>7</td>
         <td>aribb24</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libaribcaption</td>
         <td>7</td>
         <td>libaribcaption</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libass</td>
@@ -216,7 +216,7 @@ Usage:
         <td>libbluray</td>
         <td>7</td>
         <td>libbluray</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libbs2b</td>
@@ -240,7 +240,7 @@ Usage:
         <td>libcodec2</td>
         <td>7</td>
         <td>codec2</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libdav1d</td>
@@ -264,7 +264,7 @@ Usage:
         <td>libfreetype</td>
         <td>7</td>
         <td>freetype</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libfribidi</td>
@@ -288,25 +288,25 @@ Usage:
         <td>libharfbuzz</td>
         <td>7</td>
         <td>harfbuzz</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libilbc</td>
         <td>7</td>
         <td>libilbc</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libjxl</td>
         <td>7</td>
         <td>libjxl</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libkvazaar</td>
         <td>7</td>
         <td>kvazaar</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>liblc3</td>
@@ -318,7 +318,7 @@ Usage:
         <td>libmodplug</td>
         <td>7</td>
         <td>libmodplug</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libmp3lame</td>
@@ -354,7 +354,7 @@ Usage:
         <td>libopenh264</td>
         <td>7</td>
         <td>openh264</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libopenjpeg</td>
@@ -378,13 +378,13 @@ Usage:
         <td>libplacebo</td>
         <td>7</td>
         <td>libplacebo</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libqrencode</td>
         <td>7</td>
         <td>qrencode</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>librav1e</td>
@@ -402,13 +402,13 @@ Usage:
         <td>librubberband</td>
         <td>7</td>
         <td>rubberband</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libshaderc</td>
         <td>7</td>
         <td>shaderc</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libshine</td>
@@ -426,7 +426,7 @@ Usage:
         <td>libsoxr</td>
         <td>7</td>
         <td>libsoxr</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libspeex</td>
@@ -444,7 +444,7 @@ Usage:
         <td>libssh</td>
         <td>7</td>
         <td>libssh</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libsvtav1</td>
@@ -468,13 +468,13 @@ Usage:
         <td>libvidstab</td>
         <td>7</td>
         <td>vid.stab</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libvmaf</td>
         <td>7</td>
         <td>vmaf</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libvo-amrwbenc</td>
@@ -522,13 +522,13 @@ Usage:
         <td>libxevd</td>
         <td>7</td>
         <td>xevd</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libxeve</td>
         <td>7</td>
         <td>xeve</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libxvid</td>
@@ -540,13 +540,13 @@ Usage:
         <td>libzimg</td>
         <td>7</td>
         <td>zimg</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libzmq</td>
         <td>7</td>
         <td>zeromq</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>libzvbi</td>
@@ -564,13 +564,13 @@ Usage:
         <td>openal</td>
         <td>7</td>
         <td>openal</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>opencl</td>
         <td>7</td>
         <td>opencl-icd</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>sdl2</td>
@@ -594,13 +594,13 @@ Usage:
         <td>vulkan</td>
         <td>7</td>
         <td>vulkan-loader</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
      <tr>
         <td>whisper</td>
         <td>8</td>
         <td>whisper.cpp</td>
-        <td>⚠️☑️</td>
+        <td>✴️☑️</td>
      </tr>
   </tbody>
 </table>
@@ -622,7 +622,7 @@ Usage:
          <td>3rd-party package or source code</td>
       </tr>
       <tr>
-         <td>⚠️</td>
+         <td>✴️</td>
          <td>Package may not be properly detected for static linking</td>
       </tr>
    </tbody>
