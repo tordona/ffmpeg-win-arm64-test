@@ -15,7 +15,7 @@ Daily releases are auto builds run approxiamately 24:00 UTC. Based on latest Git
 ## Latest Release
 Latest releases provide consistent URLs always pointing to the latest build available (most recent daily build).
 
-https://github.com/tordona/ffmpeg-win-arm64/releases/tag/latest
+[releases/tag/latest](releases/tag/latest)
 
 ## Builds
 There are a few variants offered. The essentials build variant contains commonly used libraries, whereas the full build variant also contains most of the remainder. See the libraries section for a list. All variants contain all internal components available for Windows. If you're downloading a package to support features in a program like Shotcut or Adacity, the essentials shared build is sufficient.
