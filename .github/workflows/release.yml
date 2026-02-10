@@ -34,6 +34,7 @@ jobs:
     - name: '☑️ File Check'
       working-directory: ./releases
       run: |
+        ls -laR
         echo "📢 build_date: ${{ inputs.build_date }}"
         echo "📢 github_tag: ${{ inputs.github_tag }}"
         echo "📢 release_tag: ${{ inputs.release_tag }}"
