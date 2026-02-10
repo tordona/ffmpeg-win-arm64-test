@@ -1,4 +1,4 @@
-name: ffmpeg-win-arm64-auto-builds
+name: Autobuild FFmpeg Win-ARM64
 
 on:
   schedule:
