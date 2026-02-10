@@ -4,18 +4,17 @@ FFmpeg builds for Windows ARM64
 ## Stable Releases
 Stable releases are based on last two major releasees, with current minor and patch.  
 
-[test](./ffmpeg-win-arm64/releases/tag/8.0.1)
+[https://github.com/tordona/ffmpeg-win-arm64/releases/tag/8.0.1](https://github.com/tordona/ffmpeg-win-arm64/releases/tag/8.0.1)
 
-https://github.com/tordona/ffmpeg-win-arm64/releases/tag/7.1.3
-
-
-## Daily Releases
-Daily releases are auto builds run approxiamately 24:00 UTC. Based on latest Github commits at the time. These are available for up-to 14 days.
+[https://github.com/tordona/ffmpeg-win-arm64/releases/tag/7.1.3](https://github.com/tordona/ffmpeg-win-arm64/releases/tag/7.1.3)
 
 ## Latest Release
 Latest releases provide consistent URLs always pointing to the latest build available (most recent daily build).
 
-[releases/tag/latest](releases/tag/latest)
+[https://github.com/tordona/ffmpeg-win-arm64-test/releases/tag/latest](https://github.com/tordona/ffmpeg-win-arm64-test/releases/tag/latest)
+
+## Daily Releases
+Daily releases are automatically build based on latest Github commits at the time. These are available for up-to 14 days.
 
 ## Builds
 There are a few variants offered. The essentials build variant contains commonly used libraries, whereas the full build variant also contains most of the remainder. See the libraries section for a list. All variants contain all internal components available for Windows. If you're downloading a package to support features in a program like Shotcut or Adacity, the essentials shared build is sufficient.
@@ -47,16 +46,19 @@ hardware-support libraries in all builds
 amf d3d11va d3d12va dxva2 vaapi
 `
 
+## Library Versions
+As of, 2026.02.10, these are documented in each respective archive within the `readme.txt` file.
+
 ## Building from source
 See [BUILDING.md](BUILDING.md)
 
 ## Additional Resources 
 
-* [FFmpeg Official Website](https://www.ffmpeg.org)
-* [MSYS2 - Software Distribution and Building Platform for Windows](https://www.msys2.org)
-* [Additional MSYS PKGBUILDs](https://github.com/tordona/mingw-packages)
+* [FFmpeg](https://www.ffmpeg.org) - Official Website
+* [MSYS2](https://www.msys2.org) - Software Distribution and Building Platform for Windows
+* [Additional MSYS PKGBUILDs](https://github.com/tordona/mingw-packages) - Modified Packages for FFmpeg building on Windows
+* [CODEX FFMPEG](https://www.gyan.dev/ffmpeg/builds/) - Visit for all other Windows x64 FFmpeg variants
+* [FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds) - Builds of FFmpeg for Windows and Linux
+* [https://osxexperts.net](https://osxexperts.net) - FFmpeg static build for macOS 
 
----
-### Links
-Essential and Full builds are inspired by [https://www.gyan.dev/ffmpeg/builds/](https://www.gyan.dev/ffmpeg/builds/)  
-Visit for all other Windows x64 FFmpeg variants
+
