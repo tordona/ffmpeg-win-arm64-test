@@ -1,7 +1,12 @@
 [![FFmpeg Win-ARM64 Auto-Builds](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml/badge.svg)](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml)
 
 # ffmpeg-win-arm64
-FFmpeg builds for Windows ARM64 (Qualcomm Snapdragon)
+FFmpeg builds for Windows on ARM (Qualcomm Snapdragon / ARM64)
+
+* Qualcomm Snapdragon 7c
+* Qualcomm Snapdragon 8cx
+* Qualcomm Snapdragon Elite series
+* Microsoft SQ Series
 
 ## Stable Releases
 Stable releases are based on the last two major releases, including current minor and patch versions.
@@ -22,7 +27,7 @@ There are a few variants offered:
 * **Essentials:** Contains commonly used libraries. This is usually sufficient for features in programs like Shotcut or Audacity.
 * **Full:** Contains the essentials plus most remaining libraries.
 
-All variants include all internal components available for Windows. See the [Libraries](#libraries) section for a full list.
+Both variants include all internal components available for Windows. See the [Libraries](#libraries) section for a full list.
 
 ## Libraries
 
