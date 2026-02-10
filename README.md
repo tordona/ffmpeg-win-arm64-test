@@ -1,5 +1,7 @@
+[![FFmpeg Win-ARM64 Auto-Builds](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml/badge.svg)](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml)
+
 # ffmpeg-win-arm64
-FFmpeg builds for Windows ARM64
+FFmpeg builds for Windows ARM64 (Qualcomm Snapdragon)
 
 ## Stable Releases
 Stable releases are based on last two major releasees, with current minor and patch.  
