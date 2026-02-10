@@ -34,10 +34,6 @@ jobs:
     - name: '☑️ File Check'
       working-directory: ./releases
       run: |
-        ls -laR
-        echo "📢 build_date: ${{ inputs.build_date }}"
-        echo "📢 github_tag: ${{ inputs.github_tag }}"
-        echo "📢 release_tag: ${{ inputs.release_tag }}"
         archives=$(find . -name '*.7z')
         if [[ -z "$archives" ]]; then
           echo "📢 No Archives Found"
@@ -48,6 +44,11 @@ jobs:
           echo "📢 No Release Notes Found"
           exit 1
         fi
+        mkdir ../latest -p
+        mv ffmpeg*latest* ../latest 2>/dev/null
+        cp $release_notes ../latest 2>/dev/null
+        cd ..
+        ls -laR
     - name: '🔍 Check Build Release Exists'
       id: 'check-build-release'
       uses: insightsengineering/release-existence-action@v1.0.0
@@ -107,7 +108,7 @@ jobs:
         gh release delete "latest" --cleanup-tag -y
     - name: '🔨 Create Latest Release'
       if: success()
-      working-directory: ./releases
+      working-directory: ./latest
       run: |
         release_notes=$(find . -name "release_notes.md" -print -quit)
         if [[ "${{ inputs.release_tag }}" != *"daily-autobuild"* ]]; then
@@ -119,18 +120,18 @@ jobs:
           exit 0
         fi
         echo "📢 Create Lastest Release"
-        root=$(pwd)
-        archives=$(find . -name '*.7z')
-        for archive in $archives; do
-          cd $root
-          cd $(dirname "$archive")
-          file=$(basename "$archive")
-          filename=${file%.*}
-          renamed_file="${file//${{ inputs.github_tag }}/master-latest}"
-          mv "$file" "$renamed_file"
-          rm -rf "${filename}.sha256"
-          sha256sum "$renamed_file" > "${renamed_file//.7z/.sha256}"
-        done
+        # root=$(pwd)
+        # archives=$(find . -name '*.7z')
+        # for archive in $archives; do
+        #   cd $root
+        #   cd $(dirname "$archive")
+        #   file=$(basename "$archive")
+        #   filename=${file%.*}
+        #   renamed_file="${file//${{ inputs.github_tag }}/master-latest}"
+        #   mv "$file" "$renamed_file"
+        #   rm -rf "${filename}.sha256"
+        #   sha256sum "$renamed_file" > "${renamed_file//.7z/.sha256}"
+        # done
         gh release create "latest" \
           '*.7z' \
           '*.sha256' \

@@ -135,7 +135,6 @@ jobs:
         find . -type f -iname '*.xsd' -delete
         find . -type f -iname '*.ico' -delete
         find . -type f -iname '*.md' -delete
-        ls -laR
     - name: '🚚 Package for Distribution'
       shell: bash
       run: |
