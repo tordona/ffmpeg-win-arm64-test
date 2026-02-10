@@ -1,4 +1,4 @@
-[![FFmpeg Win-ARM64 Auto-Builds](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml/badge.svg)](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml)
+[![Custom Lable](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml/badge.svg)](https://github.com/tordona/ffmpeg-win-arm64-test/actions/workflows/main.yml?label=lint)
 
 # ffmpeg-win-arm64
 FFmpeg builds for Windows on ARM (Qualcomm Snapdragon / ARM64)
