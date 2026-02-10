@@ -48,11 +48,12 @@ amf d3d11va d3d12va dxva2 vaapi
 `
 
 ## Building from source
-See [building.md](/building.md)
+See [BUILDING.md](BUILDING.md)
 
-## Additional Resources
+## Additional Resources 
 
-* [MSYS2](https://www.msys2.org)
+* [FFmpeg Official Website](https://www.ffmpeg.org)
+* [MSYS2 - Software Distribution and Building Platform for Windows](https://www.msys2.org)
 * [Additional MSYS PKGBUILDs](https://github.com/tordona/mingw-packages)
 
 ---
