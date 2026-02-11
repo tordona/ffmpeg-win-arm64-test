@@ -48,15 +48,11 @@ jobs:
       uses: actions/download-artifact@v7
       with:
         path: ./builds
-    - name: Display structure of downloaded files
-      run: |
-        pwd
-        ls -R
-    - name: '📅 Make Release Directory'
+    - name: '🍳 Make Release Directory'
       run: |
         mkdir releases -p
         ls -laR
-    - name: '📅 Make Build Date'
+    - name: '🍳 Make Build Date'
       id: 'build-date'
       run: |
         build_date=$(date '+%Y.%m.%d.0')
