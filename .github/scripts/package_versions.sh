@@ -1,6 +1,6 @@
 path="$output_path/$version_name"
 file="$output_path/$version_name/readme.txt"
-recent="$output_path/recent.txt"
+recent="$output_path/recent.md"
 echo >> $file
 echo >> $file
 echo "----------------------------------------" >> $file
