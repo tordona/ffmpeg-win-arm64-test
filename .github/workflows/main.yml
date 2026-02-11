@@ -230,19 +230,16 @@ jobs:
       run: |
         echo "📢 Copy support files to output directory"
         bash .github/scripts/support_files.sh
-    - name: '🖥️ Get number of CPU cores'
-      uses: SimenB/github-actions-cpu-cores@v2
-      id: 'cpu-cores'
     - name: '🍳 Trigger Make Command'
       id: 'make-ffmpeg'
       working-directory: ./source
       run: |
-        make -j${{ steps.cpu-cores.outputs.count }}
+        make -j$(nproc)
     - name: '🏭 Trigger Install Command'
       id: 'install-ffmpeg'
       working-directory: ./source
       run: |
-        make install -j${{ steps.cpu-cores.outputs.count }}
+        make install -j$(nproc)
     - name: '🔦 Parse Library Versions'
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
