@@ -122,7 +122,7 @@ jobs:
         if [[ -n "$recently_updated" ]]; then
           cat "$release_notes" "$recently_updated" > "latest.md"
         else
-          mv $release_notes > "latest.md"
+          mv $release_notes "latest.md"
         fi
 
         echo "📢 Create Lastest Release"
