@@ -25,12 +25,12 @@ jobs:
     permissions:
       contents: write
     steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v6
     - uses: actions/download-artifact@v5
       with:
         path: ./releases
         pattern: '*-prerelease'
-    - name: '🛒 Checkout'
-      uses: actions/checkout@v6
     - name: '☑️ File Check'
       working-directory: ./releases
       run: |
