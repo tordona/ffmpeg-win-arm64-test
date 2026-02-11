@@ -25,7 +25,8 @@ for package in $packages; do
     build_date_threshold=$((86400 * $days_old))
     if [[ "$diff" -le "$build_date_threshold" ]]; then
       if [[ ! -f $recent ]]; then
-        echo "### Recently updated packages:  " >> $recent
+        echo >> $recent
+        echo "**Recently updated packages**  " >> $recent
         echo >> $recent
         echo "\`\`\`" >> $recent
       fi
