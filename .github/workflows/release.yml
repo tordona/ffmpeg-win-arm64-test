@@ -122,7 +122,7 @@ jobs:
         gh release create "latest" \
           '*.7z' \
           '*.sha256' \
-          --title 'Latest Auto-Build - ${{ inputs.build_date }}' \
+          --title 'Latest Autobuild - ${{ inputs.build_date }}' \
           --notes-file $release_notes \
           --latest
 
