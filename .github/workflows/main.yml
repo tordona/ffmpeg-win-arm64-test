@@ -2,12 +2,14 @@ name: Autobuild FFmpeg Win-ARM64
 
 on:
   schedule:
-    - cron: '30 3 * * *' 
+    - cron: '30 1 * * *' 
+    - cron: '30 5 * * *' 
+    - cron: '0 15 * * *' 
   workflow_dispatch:
     inputs:
       release_tag:
         description: 'Tag Name for Release'
-        required: true
+        required: false
         type: string
       github_tag:
         description: 'Version tag to build'
