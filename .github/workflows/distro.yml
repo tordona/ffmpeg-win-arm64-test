@@ -159,13 +159,6 @@ jobs:
             mv "$latest_dir.7z" "$root/releases"
             mv "$latest_dir.sha256" "$root/releases"
           fi
-          find . -name readme.txt -type f -exec sed -i "s|${{ inputs.github_tag }}|master-latest|g" {} \;
-          latest_dir="${build_dir//${{ inputs.github_tag }}/master-latest}"
-          mv $build_dir $latest_dir
-          7z a "$latest_dir.7z" "$latest_dir"
-          sha256sum "$latest_dir.7z" > "$latest_dir.sha256"
-          mv "$latest_dir.7z" "$root/releases"
-          mv "$latest_dir.sha256" "$root/releases"
         done
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
