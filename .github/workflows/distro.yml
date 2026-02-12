@@ -51,7 +51,6 @@ jobs:
     - name: '🍳 Make Release Directory'
       run: |
         mkdir releases -p
-        ls -laR
     - name: '🍳 Make Build Date'
       id: 'build-date'
       run: |
@@ -107,7 +106,6 @@ jobs:
     - name: '📝 Concat Release Notes'
       run: |
         pwd
-        ls -laR
         root=$(pwd)
         find . -wholename "*/builds/**/ffmpeg.exe" | while read -r ffmpeg; do
           cd $root
@@ -122,7 +120,6 @@ jobs:
             cat "$header_notes" "$library_versions" "$prerelease_notes" > "$root/releases/release_notes.md"
           fi
         done
-        ls -laR
     - name: '🧹 Cleanup Files for Distribution'
       working-directory: ./builds
       run: |

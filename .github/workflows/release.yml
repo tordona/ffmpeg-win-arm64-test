@@ -120,11 +120,13 @@ jobs:
           exit 0
         fi
         if [[ -n "$recently_updated" ]]; then
+          echo "recently_updated"
+          echo "$(<recently_updated)"
           cat "$release_notes" "$recently_updated" > "latest.md"
         else
           mv $release_notes "latest.md"
         fi
-
+        echo "$(<latest.md)"
         echo "📢 Create Lastest Release"
         gh release create "latest" \
           '*.7z' \
