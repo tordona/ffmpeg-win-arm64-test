@@ -12,7 +12,7 @@ for package in $packages; do
   if [[ $info == "error"* ]]; then
     continue
   fi
-  modified_info="${info/$package_prefix/}"
+  modified_info="${info/$package_prefix-/}"
   modified_info="${modified_info/ (mingw-w64)/}"
   echo "$modified_info" >> $file
   echo >> $file
@@ -31,7 +31,7 @@ for package in $packages; do
         echo "\`\`\`" >> $recent
       fi
       recently_updated=$(echo "$pkg_info" | head -n 2)
-      recently_updated="${recently_updated/$package_prefix/}"
+      recently_updated="${recently_updated/$package_prefix-/}"
       recently_updated="${recently_updated//         /}"
       echo "$recently_updated" >> $recent
       echo >> $recent
