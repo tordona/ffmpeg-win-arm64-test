@@ -26,18 +26,15 @@ for package in $packages; do
     if [[ "$diff" -le "$build_date_threshold" ]]; then
       if [[ ! -f $recent ]]; then
         echo >> $recent
-        echo "**Recently updated packages**  " >> $recent
+        echo "**Recently updated external packages**  " >> $recent
         echo >> $recent
-        echo "\`\`\`" >> $recent
+        echo "| Package | Version |" >> $recent
+        echo "| -- | -- |" >> $recent
       fi
-      recently_updated=$(echo "$pkg_info" | head -n 2)
-      recently_updated="${recently_updated/$package_prefix-/}"
-      recently_updated="${recently_updated//         /}"
-      echo "$recently_updated" >> $recent
-      echo >> $recent
+      package_name=$(echo "$pkg_info" | grep "^Name" | awk -F: '{print $2}' | xargs)
+      package_name="${package_name/$package_prefix-/}"
+      package_version=$(echo "$pkg_info" | grep "^Version" | awk -F: '{print $2}' | xargs)
+      echo "| $package_name | $package_version |" >> $recent
     fi
   fi
 done
-if [[ -f $recent ]]; then
-  echo "\`\`\`" >> $recent
-fi
