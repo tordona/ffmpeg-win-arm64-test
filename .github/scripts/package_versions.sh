@@ -31,6 +31,8 @@ for package in $packages; do
         echo "\`\`\`" >> $recent
       fi
       recently_updated=$(echo "$pkg_info" | head -n 2)
+      recently_updated="${recently_updated/$package_prefix/}"
+      recently_updated="${recently_updated//         /}"
       echo "$recently_updated" >> $recent
       echo >> $recent
     fi
