@@ -26,9 +26,9 @@ for package in $packages; do
     if [[ "$diff" -le "$build_date_threshold" ]]; then
       if [[ ! -f $recent ]]; then
         echo >> $recent
-        echo "**Recently updated external packages**  " >> $recent
+        echo "**Recently Updated External Packages**  " >> $recent
         echo >> $recent
-        echo "| Package | Version |" >> $recent
+        echo "| package | version |" >> $recent
         echo "| -- | -- |" >> $recent
       fi
       package_name=$(echo "$pkg_info" | grep "^Name" | awk -F: '{print $2}' | xargs)
