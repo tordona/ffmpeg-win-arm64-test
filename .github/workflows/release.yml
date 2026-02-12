@@ -86,7 +86,7 @@ jobs:
     - name: '🔖 Expired Daily Build Tag'
       id: 'expired-daily-autobuild-tag'
       run: |
-        temp_removal_date=$(date '+%Y.%m.%d.0' -d 'today - 2 days')
+        temp_removal_date=$(date '+%Y.%m.%d.0' -d 'today - 15 days')
         temp_removal_date="daily-autobuild-${temp_removal_date}"
         echo "📢 Expired tag: $temp_removal_date"
         echo "removal_date=${temp_removal_date}" >> $GITHUB_OUTPUT

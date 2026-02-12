@@ -21,7 +21,7 @@ for package in $packages; do
     build_time=$(date -d "$build_date" +%s)
     current_time=$(date +%s)
     diff=$(( current_time - build_time ))
-    days_old="14"
+    days_old="2"
     build_date_threshold=$((86400 * $days_old))
     if [[ "$diff" -le "$build_date_threshold" ]]; then
       if [[ ! -f $recent ]]; then
