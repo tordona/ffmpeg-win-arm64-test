@@ -45,9 +45,14 @@ jobs:
           echo "📢 No Release Notes Found"
           exit 1
         fi
+        recently_updated=$(find . -name "latest.md" -print -quit)
+        if [[ -z "$recently_updated" ]]; then
+          echo "📢 No Recently Updated Notes Found"
+        fi
         mkdir ../latest -p
         mv ffmpeg*latest* ../latest 2>/dev/null
         cp $release_notes ../latest 2>/dev/null
+        cp $recently_updated ../latest 2>/dev/null
     - name: '🔍 Check Build Release Exists'
       id: 'check-build-release'
       uses: insightsengineering/release-existence-action@v1.0.0
@@ -119,11 +124,10 @@ jobs:
           echo "📢 Skipping Create Latest Release"
           exit 0
         fi
-        notes=$release_notes
+        notes=$recently_updated
         if [[ -n "$recently_updated" ]]; then
           notes=$recently_updated
         fi
-        echo "$(<latest.md)"
         echo "📢 Create Lastest Release"
         gh release create "latest" \
           '*.7z' \
