@@ -110,7 +110,7 @@ jobs:
       working-directory: ./latest
       run: |
         release_notes=$(find . -name "release_notes.md" -print -quit)
-        recently_updated=$(find . -name "recent.md" -print -quit)
+        recently_updated=$(find . -name "latest.md" -print -quit)
         if [[ "${{ inputs.release_tag }}" != *"daily-autobuild"* ]]; then
           echo "📢 Skipping Create Latest Release"
           exit 0
@@ -119,12 +119,9 @@ jobs:
           echo "📢 Skipping Create Latest Release"
           exit 0
         fi
+        notes=$release_notes
         if [[ -n "$recently_updated" ]]; then
-          echo "recently_updated"
-          echo "$(<recently_updated)"
-          cat "$release_notes" "$recently_updated" > "latest.md"
-        else
-          mv $release_notes "latest.md"
+          notes=$recently_updated
         fi
         echo "$(<latest.md)"
         echo "📢 Create Lastest Release"
@@ -132,7 +129,7 @@ jobs:
           '*.7z' \
           '*.sha256' \
           --title 'Latest Autobuild - ${{ inputs.build_date }}' \
-          --notes-file 'latest.md' \
+          --notes-file $notes \
           --latest
 
   

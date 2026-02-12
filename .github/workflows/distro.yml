@@ -115,9 +115,13 @@ jobs:
           cd "$parent_dir/.."
           header_notes="header_notes.md"
           library_versions="library_versions.md"
+          recent="recent.md"
           prerelease_notes="prerelease_notes.md"
           if [[ -f "$header_notes" && -f "$library_versions" && -f "$prerelease_notes" ]]; then
             cat "$header_notes" "$library_versions" "$prerelease_notes" > "$root/releases/release_notes.md"
+          fi
+          if [[ -f "$recent" ]]; then
+            cat "$root/releases/release_notes.md" "$recent" > "$root/releases/latest.md"
           fi
         done
     - name: '🧹 Cleanup Files for Distribution'
@@ -158,7 +162,7 @@ jobs:
       uses: actions/upload-artifact@v6
       with:
         if-no-files-found: error
-        name: "${{ inputs.github_tag }}-prerelease"
+        name: "ffmpeg-distro-prerelease"
         path: |
           ./releases/*.7z
           ./releases/*.sha256
