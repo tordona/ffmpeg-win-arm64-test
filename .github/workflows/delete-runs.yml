@@ -1,26 +1,18 @@
-name: Delete Old Workflow Runs
+name: Delete old workflow runs
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Allows manual triggering from the GitHub UI
 
 jobs:
-  delete-old-actions:
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    permissions:
-      contents: write
+  delete-runs:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write # Required permission to delete runs
     steps:
-    - name: Delete workflow runs
-      uses: dmvict/clean-workflow-runs@v1.0.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        repo: user/repo
-        workflow_id: main.yml
-        branch: main
-        run_conclusions: |
-          failure
-          timed_out
-        save_period: 30
-        save_min_runs_number: 1
-        dry: true
+      - name: Delete old workflow runs
+        uses: Mattraks/delete-workflow-runs@v2 # Example using the Mattraks action
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Default token provided by GitHub
+          retain_days: 30 # Deletes runs older than 30 days
+          keep_minimum_runs: 10 # Ensures at least 10 runs are always kept
+          dry_run: true
