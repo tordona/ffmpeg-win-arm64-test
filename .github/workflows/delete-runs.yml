@@ -41,7 +41,7 @@ on:
           - success
       dry_run:
         description: "Simulate deletions"
-        default: "false"
+        default: "true"
         type: choice
         options:
           - "false"
