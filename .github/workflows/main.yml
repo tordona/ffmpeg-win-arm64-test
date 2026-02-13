@@ -300,7 +300,7 @@ jobs:
       uses: actions/upload-artifact@v6
       with:
         if-no-files-found: error
-        name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
+        name: temp-${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
           ./builds/**/**/*
   prep-distro:

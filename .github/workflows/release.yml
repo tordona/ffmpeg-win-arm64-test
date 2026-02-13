@@ -45,10 +45,6 @@ jobs:
           echo "📢 No Release Notes Found"
           exit 1
         fi
-        recently_updated=$(find . -name "latest.md" -print -quit)
-        if [[ -z "$recently_updated" ]]; then
-          echo "📢 No Recently Updated Notes Found"
-        fi
         mkdir ../latest -p
         mv ffmpeg*latest* ../latest 2>/dev/null
         cp $release_notes ../latest 2>/dev/null

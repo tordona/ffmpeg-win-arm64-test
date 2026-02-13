@@ -158,11 +158,6 @@ jobs:
             mv "$latest_dir.sha256" "$root/releases"
           fi
         done
-    - name: '☠️ Delete Previous Artifacts'
-      uses: geekyeggo/delete-artifact@v5
-      with:
-          name: |
-              ffmpeg-*
     - name: '📤 Upload artifact: package'
       uses: actions/upload-artifact@v6
       with:
@@ -172,3 +167,8 @@ jobs:
           ./releases/*.7z
           ./releases/*.sha256
           ./releases/*.md
+    - name: '☠️ Delete Previous Artifacts'
+      uses: geekyeggo/delete-artifact@v5
+      with:
+          name: |
+              temp-ffmpeg-*
