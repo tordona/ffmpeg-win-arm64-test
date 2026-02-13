@@ -35,7 +35,6 @@ jobs:
     - name: '☑️ File Check'
       working-directory: ./releases
       run: |
-        ls -laR
         archives=$(find . -name '*.7z')
         if [[ -z "$archives" ]]; then
           echo "📢 No Archives Found"
@@ -47,9 +46,12 @@ jobs:
           exit 1
         fi
         mkdir ../latest -p
-        mv ffmpeg*latest* ../latest 2>/dev/null
-        cp $release_notes ../latest 2>/dev/null
-        cp $recently_updated ../latest 2>/dev/null
+        mv ffmpeg*latest* ../latest
+        cp $release_notes ../latest
+        recently_updated=$(find . -name "latest.md" -print -quit)
+        if [[ -n "$recently_updated" ]]; then
+          cp $recently_updated ../latest
+        fi
     - name: '🔍 Check Build Release Exists'
       id: 'check-build-release'
       uses: insightsengineering/release-existence-action@v1.0.0
