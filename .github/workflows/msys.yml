@@ -20,7 +20,7 @@ jobs:
       id: 'msys2-env'
       uses: msys2/setup-msys2@v2
       with:
-        msystem: ${{ needs.defaults.outputs.msystem }}
+        msystem: CLANGARM64
         update: true
         cache: true
         release: true
