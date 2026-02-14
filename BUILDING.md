@@ -629,6 +629,8 @@ Usage:
 </table>
 
 ## Additional Resources
-[Official FFmpeg Compilation Guide](https://trac.ffmpeg.org/wiki/CompilationGuide)  
-[FFmpeg Subreddit](https://www.reddit.com/r/ffmpeg/)  
-[https://github.com/tordona/mingw-packages](https://github.com/tordona/mingw-packages) - Modified package scripts for MinGW-w64
+* [Official FFmpeg Compilation Guide](https://trac.ffmpeg.org/wiki/CompilationGuide)  
+* [FFmpeg Subreddit](https://www.reddit.com/r/ffmpeg/)
+
+## Third Party Packages
+* [https://github.com/tordona/mingw-packages](https://github.com/tordona/mingw-packages) - Modified package scripts for MinGW-w64
