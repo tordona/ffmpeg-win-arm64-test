@@ -45,9 +45,12 @@ jobs:
           echo "📢 No Release Notes Found"
           exit 1
         fi
-        mkdir ../latest -p
-        mv ffmpeg*latest* ../latest
-        cp $release_notes ../latest
+        if [[ "${{ inputs.release_tag }}" == *"autobuild"* && 
+              "${{ github.event_name }}" != "workflow_dispatch" ]]; then
+          mkdir ../latest -p
+          mv ffmpeg*latest* ../latest
+          cp $release_notes ../latest
+        fi
         recently_updated=$(find . -name "latest.md" -print -quit)
         if [[ -n "$recently_updated" ]]; then
           cp $recently_updated ../latest
