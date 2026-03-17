@@ -106,6 +106,7 @@ jobs:
         echo "📢 Delete Expired Build"
         gh release delete "${{ steps.expired-daily-autobuild-tag.outputs.removal_date }}" --cleanup-tag -y
     - name: '🔍 Check Latest Tag Exists'
+      if: ${{ contains(inputs.release_tag, 'daily-autobuild') }}
       id: 'check-latest-tag'
       uses: insightsengineering/release-existence-action@v1.0.0
       with:
@@ -117,19 +118,9 @@ jobs:
         gh release delete "latest" --cleanup-tag -y
     - name: '🔨 Create Latest Release'
       if: success()
-      working-directory: ./
+      working-directory: ./latest
       run: |
-        if [[ "${{ inputs.release_tag }}" != *"daily-autobuild"* ]]; then
-          echo "📢 Skipping Create Latest Release"
-          exit 0
-        fi
-        cd latest
-        release_notes=$(find . -name "release_notes.md" -print -quit)
-        if [[ ! -n "$release_notes" ]]; then
-          echo "📢 Skipping Create Latest Release"
-          exit 0
-        fi
-        notes=$release_notes
+        notes=$(find . -name "release_notes.md" -print -quit)
         recently_updated=$(find . -name "latest.md" -print -quit)
         if [[ -n "$recently_updated" ]]; then
           notes=$recently_updated
@@ -141,3 +132,5 @@ jobs:
           --title 'Latest Autobuild - ${{ inputs.build_date }}' \
           --notes-file $notes \
           --latest
+
+  
