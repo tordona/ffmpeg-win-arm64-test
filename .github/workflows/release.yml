@@ -45,8 +45,7 @@ jobs:
           echo "📢 No Release Notes Found"
           exit 1
         fi
-        if [[ "${{ inputs.release_tag }}" == *"autobuild"* && 
-              "${{ github.event_name }}" != "workflow_dispatch" ]]; then
+        if [[ "${{ inputs.release_tag }}" == *"autobuild"* ]]; then
           mkdir ../latest -p
           mv ffmpeg*latest* ../latest
           cp $release_notes ../latest
@@ -118,7 +117,7 @@ jobs:
         gh release delete "latest" --cleanup-tag -y
     - name: '🔨 Create Latest Release'
       if: success()
-      working-directory: ./latest
+      working-directory: ./
       run: |
         if [[ "${{ inputs.release_tag }}" != *"daily-autobuild"* ]]; then
           echo "📢 Skipping Create Latest Release"
