@@ -77,13 +77,21 @@ jobs:
               "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           draft_flag="--draft"
         fi
+        notes_flag=""
         release_notes=$(find . -name "release_notes.md" -print -quit)
+        if [[ -n "$release_notes" ]]; then
+          notes_flag="--notes-file $release_notes \"
+        fi
+        recently_updated=$(find . -name "latest.md" -print -quit)
+        if [[ -n "$recently_updated" ]]; then
+          notes_flag="--notes-file $recently_updated \"
+        fi
         echo "📢 Create New Package Release"
         gh release create "${{ inputs.release_tag }}" \
           '*.7z' \
           '*.sha256' \
           --title '${{ inputs.release_tag }}' \
-          --notes-file $release_notes \
+          $notes_flag
           $draft_flag
     - name: '🔖 Expired Daily Build Tag'
       id: 'expired-daily-autobuild-tag'
