@@ -113,7 +113,7 @@ jobs:
         echo "📢 Delete Lastest Release"
         gh release delete "latest" --cleanup-tag -y
     - name: '🔨 Create Latest Release'
-      if: contains('${{ inputs.release_tag }}', 'daily-autobuild')
+      if: ${{ contains('${{ inputs.release_tag }}', 'daily-autobuild') }}
       working-directory: ./latest
       run: |
         release_notes=$(find . -name "release_notes.md" -print -quit)
