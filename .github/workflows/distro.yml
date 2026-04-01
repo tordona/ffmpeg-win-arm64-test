@@ -150,8 +150,8 @@ jobs:
               git_version="git-${{ inputs.checkout_short }}"
               find . -name readme.txt -type f -exec sed -i "s|${{ inputs.github_tag }}|$git_version|g" {} \;
               git_name="${build_dir/${{ inputs.github_tag }}/$git_version}"
-              mv $build_dir $git_name
-              7z a "$git_name.7z" "$build_dir"
+              cp $build_dir $git_name
+              7z a "$git_name.7z" "$git_name"
               sha256sum "$git_name.7z" > "$git_name.sha256"
               mv "$git_name.7z" "$root/releases"
               mv "$git_name.sha256" "$root/releases"
