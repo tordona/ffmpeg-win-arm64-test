@@ -149,7 +149,7 @@ jobs:
               # rename value from https://github.com/FFmpeg/FFmpeg/blob/master/RELEASE to "git-SHORT_COMMIT_HASH"
               git_version="git-${{ inputs.checkout_short }}"
               find . -name readme.txt -type f -exec sed -i "s|${{ inputs.github_tag }}|$git_version|g" {} \;
-              git_name="${name/${{ inputs.github_tag }}/$git_version}"
+              git_name="${build_dir/${{ inputs.github_tag }}/$git_version}"
               7z a "$git_name.7z" "$build_dir"
               sha256sum "$git_name.7z" > "$git_name.sha256"
               mv "$git_name.7z" "$root/releases"
