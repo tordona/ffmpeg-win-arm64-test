@@ -143,12 +143,13 @@ jobs:
             bin_dir="${ffmpeg%/*}"
             parent_dir=$(dirname "$bin_dir")
             build_dir=$(basename $parent_dir)
-            git_name="git-${{ inputs.checkout_short }}"
+            git_version="git-${{ inputs.checkout_short }}"
             cd "$parent_dir/.."
             if [[ "${{ inputs.release_tag }}" == *"daily-autobuild"* && "${{ inputs.github_tag }}" == *"git"* ]]; then
               # rename value from https://github.com/FFmpeg/FFmpeg/blob/master/RELEASE to "git-SHORT_COMMIT_HASH"
-              git_name="git-${{ inputs.checkout_short }}"
-              find . -name readme.txt -type f -exec sed -i "s|${{ inputs.github_tag }}|$git_name|g" {} \;
+              git_version="git-${{ inputs.checkout_short }}"
+              find . -name readme.txt -type f -exec sed -i "s|${{ inputs.github_tag }}|$git_version|g" {} \;
+              git_name="${name/${{ inputs.github_tag }}/$git_version}"
               7z a "$git_name.7z" "$build_dir"
               sha256sum "$git_name.7z" > "$git_name.sha256"
               mv "$git_name.7z" "$root/releases"
@@ -162,7 +163,7 @@ jobs:
             if [[ "${{ inputs.release_tag }}" == *"daily-autobuild"* ]]; then
               # rename / copy as "master-latest"
               find . -name readme.txt -type f -exec sed -i "s|${{ inputs.github_tag }}|master-latest|g" {} \;
-              find . -name readme.txt -type f -exec sed -i "s|$git_name|master-latest|g" {} \;
+              find . -name readme.txt -type f -exec sed -i "s|$git_version|master-latest|g" {} \;
               latest_dir="${build_dir//${{ inputs.github_tag }}/master-latest}"
               mv $build_dir $latest_dir
               7z a "$latest_dir.7z" "$latest_dir"
