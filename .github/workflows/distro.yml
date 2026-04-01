@@ -148,11 +148,11 @@ jobs:
             if [[ "${{ inputs.release_tag }}" == *"daily-autobuild"* && "${{ inputs.github_tag }}" == *"-git* ]]; then
               # rename value from https://github.com/FFmpeg/FFmpeg/blob/master/RELEASE to "git-SHORT_COMMIT_HASH"
               git_name="git-${{ inputs.checkout_short }}"
-              find . -name readme.txt -type f -exec sed -i "s|${{ inputs.github_tag }}|$gitname|g" {} \;
-              7z a "$gitname.7z" "$build_dir"
-              sha256sum "$gitname.7z" > "$gitname.sha256"
-              mv "$gitname.7z" "$root/releases"
-              mv "$gitname.sha256" "$root/releases"
+              find . -name readme.txt -type f -exec sed -i "s|${{ inputs.github_tag }}|$git_name|g" {} \;
+              7z a "$git_name.7z" "$build_dir"
+              sha256sum "$git_name.7z" > "$git_name.sha256"
+              mv "$git_name.7z" "$root/releases"
+              mv "$git_name.sha256" "$root/releases"
             else
               7z a "$build_dir.7z" "$build_dir"
               sha256sum "$build_dir.7z" > "$build_dir.sha256"
