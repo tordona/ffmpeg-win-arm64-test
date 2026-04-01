@@ -55,10 +55,6 @@
           "status": "disable"
         },
         {
-          "option": "libdrm",
-          "status": "disable"
-        },
-        {
           "option": "w32threads",
           "status": "disable"
         },
@@ -433,17 +429,11 @@
           "version": "8"
         }
       ],
-      "dependent": [
-        {
+      "dependent": [{
           "option": "libcaca",
           "package": "libcaca",
           "version": "7"
-        }, {
-          "option": "cairo",
-          "package": "cairo",
-          "version": "8.1"
-        }
-      ]
+      }]
     }
   }
 }
