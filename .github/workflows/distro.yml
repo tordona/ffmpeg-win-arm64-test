@@ -145,7 +145,7 @@ jobs:
             build_dir=$(basename $parent_dir)
             git_name="git-${{ inputs.checkout_short }}"
             cd "$parent_dir/.."
-            if [[ "${{ inputs.release_tag }}" == *"daily-autobuild"* && "${{ inputs.github_tag }}" == *"-git"* ]]; then
+            if [[ "${{ inputs.release_tag }}" == *"daily-autobuild"* && "${{ inputs.github_tag }}" == *"git"* ]]; then
               # rename value from https://github.com/FFmpeg/FFmpeg/blob/master/RELEASE to "git-SHORT_COMMIT_HASH"
               git_name="git-${{ inputs.checkout_short }}"
               find . -name readme.txt -type f -exec sed -i "s|${{ inputs.github_tag }}|$git_name|g" {} \;
