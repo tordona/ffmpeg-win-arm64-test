@@ -85,6 +85,14 @@
 		{
           "option": "nvdec",
           "status": "enable"
+        },
+		{
+          "option": "cuda-llvm",
+          "status": "enable"
+        },
+		{
+          "option": "cuvid",
+          "status": "enable"
         }
     ],
     "standard": {
