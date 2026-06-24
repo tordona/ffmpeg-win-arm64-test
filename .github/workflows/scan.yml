@@ -1,0 +1,34 @@
+name: Microsoft Security DevOps Analysis
+
+on:
+  workflow_call:
+    inputs: 
+      version_name:
+        type: string
+        required: true
+jobs:
+  scan:
+    name: '☣️ Anti-malware Security Scan'
+    runs-on: windows-latest
+    permissions:
+      security-events: write
+    steps:
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v6
+    - name: Download FFmpeg Binaries for Scanning
+      uses: actions/download-artifact@v7
+      with:
+        name: temp-${{ inputs.version_name }}
+        path: ./dist
+    - name: '💂 Run Microsoft Security DevOps'
+      uses: microsoft/security-devops-action@latest
+      id: msdo
+      with:
+        categories: 'artifacts'
+        tools: 'antimalware'
+        break-on-detections: true 
+    - name: '📂 Upload scan results to Security tab'
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: ${{ steps.msdo.outputs.sarifFile }}
