@@ -1,8 +1,8 @@
 name: Autobuild FFmpeg Win-ARM64
 
 on:
-  # schedule:
-  #   - cron: '0 16 * * *' 
+#  schedule:
+#    - cron: '0 16 * * *' 
   workflow_dispatch:
     inputs:
       release_tag:
@@ -111,9 +111,9 @@ jobs:
             7zip:p
             texinfo:p
             rcedit:p
-    - name: '🔐 Import Public Key'
+    - name: '🔐 Import GPG Public Key'
       run: |
-        echo "📢 Import public key. Used to verify external packages"
+        echo "📢 Allow verify external packages from detached sig"
         pacman-key --init
         echo "${{ secrets.GPG_PUBLIC_KEY }}" > /tmp/pubkey.asc
         pacman-key --add /tmp/pubkey.asc

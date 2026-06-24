@@ -11,7 +11,7 @@ on:
         required: false
       github_tag:
         type: string
-        required: true 
+        required: true
 
 jobs:
   release-distro:
@@ -88,6 +88,20 @@ jobs:
           --title '${{ inputs.release_tag }}' \
           --notes-file $notes \
           $draft_flag
+    - name: '🔍 Get Repo Latest Tag'
+      if: ${{ contains(inputs.release_tag, 'daily-autobuild') }}
+      id: 'latest-release-tag-name'
+      run: |
+        prefix="latest-"
+        latest_autobuild_release=$(gh release list --repo ${{ github.repository }} --json tagName --jq ".[] | select(.tagName | startswith(\"$prefix\")) | .tagName" | head -n 1)
+        if [[ -n "$latest_autobuild_release" ]]; then
+          echo "latest_tag_name=${latest_autobuild_release}" >> $GITHUB_OUTPUT
+        fi
+    - name: '☠️ Delete Latest Release'
+      if: steps.latest-release-tag-name.outputs.latest_tag_name != '' 
+      run: |
+        echo "📢 Delete Lastest Release"
+        gh release delete "${{ steps.latest-release-tag-name.outputs.latest_tag_name }}" --cleanup-tag -y
     - name: '🔖 Expired Daily Build Tag'
       id: 'expired-daily-autobuild-tag'
       run: |
@@ -105,17 +119,6 @@ jobs:
       run: |
         echo "📢 Delete Expired Build"
         gh release delete "${{ steps.expired-daily-autobuild-tag.outputs.removal_date }}" --cleanup-tag -y
-    - name: '🔍 Check Latest Tag Exists'
-      if: ${{ contains(inputs.release_tag, 'daily-autobuild') }}
-      id: 'check-latest-tag'
-      uses: insightsengineering/release-existence-action@v1.0.0
-      with:
-        release-tag: "latest"
-    - name: '☠️ Delete Latest Build'
-      if: steps.check-latest-tag.outputs.release-exists == 'true' 
-      run: |
-        echo "📢 Delete Lastest Release"
-        gh release delete "latest" --cleanup-tag -y
     - name: '🔨 Create Latest Release'
       if: ${{ contains(inputs.release_tag, 'daily-autobuild') }}
       working-directory: ./latest
@@ -126,7 +129,7 @@ jobs:
           notes=$recently_updated
         fi
         echo "📢 Create Lastest Release"
-        gh release create "latest" \
+        gh release create "latest-autobuild-${{ inputs.build_date }}" \
           '*.7z' \
           '*.sha256' \
           --title 'Latest Autobuild - ${{ inputs.build_date }}' \
