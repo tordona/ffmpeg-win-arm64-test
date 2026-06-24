@@ -290,7 +290,6 @@ jobs:
       release_tag: "${{ needs.defaults.outputs.release_tag }}"
       github_tag: "${{ needs.defaults.outputs.github_tag }}"
       source_repo: "${{ needs.defaults.outputs.source_repo }}"
-      version_name: "${{ needs.msys2.outputs.version_name }}"
       checkout_commit: "${{ needs.msys2.outputs.checkout_commit }}"
       checkout_short: "${{ needs.msys2.outputs.checkout_short }}"
   release-distro:

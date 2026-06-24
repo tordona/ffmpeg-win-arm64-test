@@ -12,9 +12,6 @@ on:
       source_repo:
         type: string
         required: true 
-      version_name:
-        type: string
-        required: true
       checkout_commit:
         type: string
         required: true
