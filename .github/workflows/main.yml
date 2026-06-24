@@ -86,6 +86,9 @@ jobs:
       version_name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
       checkout_commit: ${{ steps.parse-commit.outputs.checkout_commit }}
       checkout_short: ${{ steps.parse-commit.outputs.checkout_short }}
+    permissions:
+      actions: read
+      security-events: write
     steps:
     - name: '🛒 Checkout'
       uses: actions/checkout@v6
@@ -269,6 +272,17 @@ jobs:
       run: |
         echo "📢 Update resource properties on executables"
         bash .github/scripts/resource_edit.sh
+    - name: '💂 Run Microsoft Security DevOps'
+      uses: microsoft/security-devops-action@latest
+      id: msdo
+      with:
+        categories: 'artifacts'
+        tools: 'antimalware'
+    - name: '📂 Upload scan results to Security tab'
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: ${{ steps.msdo.outputs.sarifFile }}
     - name: '📤 Upload Artifact'
       uses: actions/upload-artifact@v6
       with:
@@ -276,16 +290,16 @@ jobs:
         name: temp-${{ steps.ffmpeg-config-setup.outputs.version_name }}
         path: |
           ./builds/**/**/*
-  security-scan:
-    name: '👮 Security Scan'
-    uses: ./.github/workflows/scan.yml
-    needs: ['msys2']
-    with:
-      version_name: "${{ needs.msys2.outputs.version_name }}"
+  # security-scan:
+  #   name: '👮 Security Scan'
+  #   uses: ./.github/workflows/scan.yml
+  #   needs: ['msys2']
+  #   with:
+  #     version_name: "${{ needs.msys2.outputs.version_name }}"
   prep-distro:
     name: '🎞️ Prepare Distribution'
     uses: ./.github/workflows/distro.yml
-    needs: ['defaults', 'msys2', 'security-scan']
+    needs: ['defaults', 'msys2']
     with:
       release_tag: "${{ needs.defaults.outputs.release_tag }}"
       github_tag: "${{ needs.defaults.outputs.github_tag }}"
