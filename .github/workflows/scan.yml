@@ -6,15 +6,20 @@ on:
       version_name:
         type: string
         required: true
+
+permissions:
+  contents: read
+
 jobs:
   scan:
     name: '☣️ Anti-malware Security Scan'
     runs-on: windows-latest
     permissions:
-      actions: read
       security-events: write
     steps:
-    - name: '⬇️ Download Binaries for Scanning'
+    - name: '🛒 Checkout'
+      uses: actions/checkout@v6
+    - name: '⬇️ Download Artifacts for Scanning'
       uses: actions/download-artifact@v7
       with:
         name: temp-${{ inputs.version_name }}
