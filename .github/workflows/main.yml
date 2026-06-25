@@ -306,7 +306,7 @@ jobs:
   prep-distro:
     name: '🎞️ Prepare Distribution'
     uses: ./.github/workflows/distro.yml
-    needs: ['defaults', 'msys2']
+    needs: ['defaults', 'msys2', 'security-scan']
     with:
       release_tag: "${{ needs.defaults.outputs.release_tag }}"
       github_tag: "${{ needs.defaults.outputs.github_tag }}"
