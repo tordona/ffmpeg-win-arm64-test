@@ -25,6 +25,10 @@ on:
         value: ${{ jobs.prep-distro.outputs.release_tag }}
       github_tag:
         value: ${{ jobs.prep-distro.outputs.github_tag }}
+
+permissions:
+  contents: read
+
 jobs:
   prep-distro:
     name: '💻 Prepare Distribution Package'

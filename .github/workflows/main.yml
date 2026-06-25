@@ -54,6 +54,10 @@ on:
 #   group: ${{ github.workflow }}-${{ github.ref }}
 #   cancel-in-progress: true
 
+permissions:
+  contents: read
+  packages: read
+
 env:
   msys_toolchain: "clang"
 
