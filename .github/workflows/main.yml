@@ -1,8 +1,8 @@
 name: Autobuild FFmpeg Win-ARM64
 
 on:
-#  schedule:
-#    - cron: '0 16 * * *' 
+  # schedule:
+  #   - cron: '0 16 * * *' 
   workflow_dispatch:
     inputs:
       release_tag:
@@ -92,6 +92,7 @@ jobs:
       checkout_short: ${{ steps.parse-commit.outputs.checkout_short }}
     permissions:
       actions: read
+      contents: read
       security-events: write
     steps:
     - name: '🛒 Checkout'
@@ -276,17 +277,6 @@ jobs:
       run: |
         echo "📢 Update resource properties on executables"
         bash .github/scripts/resource_edit.sh
-    # - name: '💂 Run Microsoft Security DevOps'
-    #   uses: microsoft/security-devops-action@latest
-    #   id: msdo
-    #   with:
-    #     categories: 'artifacts'
-    #     tools: 'antimalware'
-    # - name: '📂 Upload scan results to Security tab'
-    #   uses: github/codeql-action/upload-sarif@v3
-    #   if: always()
-    #   with:
-    #     sarif_file: ${{ steps.msdo.outputs.sarifFile }}
     - name: '📤 Upload Artifact'
       uses: actions/upload-artifact@v6
       with:
