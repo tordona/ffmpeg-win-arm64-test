@@ -291,7 +291,6 @@ jobs:
     - name: '🙈 Resource Versioning'
       env:
         github_tag: ${{ needs.defaults.outputs.github_tag }}
-        target_version: ${{ needs.defaults.outputs.target_version }}
       run: |
         echo "📢 Update resource properties on executables"
         bash .github/scripts/resource_edit.sh
