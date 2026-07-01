@@ -189,23 +189,23 @@
         }, {
           "option": "nvenc",
           "package": "ffnvcodec-headers",
-          "version": "8"
+          "version": "9"
         }, {
           "option": "nvdec",
           "package": "ffnvcodec-headers",
-          "version": "8"
+          "version": "9"
         }, {
           "option": "cuda-llvm",
           "package": "ffnvcodec-headers",
-          "version": "8"
+          "version": "9"
         }, {
           "option": "cuvid",
           "package": "ffnvcodec-headers",
-          "version": "8"
+          "version": "9"
         }, {
           "option": "ffnvcodec",
           "package": "ffnvcodec-headers",
-          "version": "8"
+          "version": "9"
         }
       ],
       "external": [
