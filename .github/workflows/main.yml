@@ -193,7 +193,7 @@ jobs:
         echo "📢 Grab latest nvcodec headers."
         git -c advice.detachedHead=false clone https://code.ffmpeg.org/FFmpeg/nv-codec-headers nv-codec-headers
         cd nv-codec-headers
-        make install PREFIX="/${{ needs.defaults.outputs.msystem }}"
+        make install PREFIX="/clangarm64"
     - name: '🔨 Configure FFmpeg Build'
       id: 'configure-ffmpeg'
       env:
