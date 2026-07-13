@@ -1,4 +1,4 @@
-is_daily_build=$([[ "${{ inputs.d }}" == *"daily-autobuild"* ]] && echo "true" || echo "false")
+is_daily_build=$([[ "$release_tag" == *"daily-autobuild"* ]] && echo "true" || echo "false")
 
 generic_options=$(jq -r '.options.generic | map("--\(.status)-\(.option)") | join(" ")' ../config/options.json)
 ffmpeg_lib_options="$(jq -r \
