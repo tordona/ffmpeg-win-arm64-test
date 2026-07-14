@@ -10,7 +10,7 @@ ffmpeg_lib_options="$(jq -r \
     | select(
         .version.min <= $version and 
         (if (.version | has("max")) then $version <= .version.max else true end) and
-        (if $is_daily_build and has("daily") then .daily else true end)
+        (if $is_daily_build and has("daily") then (.daily | ascii_downcase) == "true" else true end)
       ) 
     | "--enable-" + .option
   ] 
@@ -27,7 +27,7 @@ if [[ "${build_type}" == "full" ]]; then
       | select(
           .version.min <= $version and 
           (if (.version | has("max")) then $version <= .version.max else true end) and
-          (if $is_daily_build and has("daily") then .daily else true end)
+          (if $is_daily_build and has("daily") then (.daily | ascii_downcase) == "true" else true end)
         ) 
       | "--enable-" + .option
     ] 

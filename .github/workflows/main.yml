@@ -178,7 +178,7 @@ jobs:
             | select(
                 .version.min <= $version and 
                 (if (.version | has("max")) then $version <= .version.max else true end) and
-                (if $is_daily_build and has("daily") then .daily else true end) and
+                (if $is_daily_build and has("daily") then (.daily | ascii_downcase) == "true" else true end) and
                 .custom != "true"
               ) 
             | $prefix + "-" + .package
@@ -209,7 +209,7 @@ jobs:
             | select(
                 .version.min <= $version and 
                 (if (.version | has("max")) then $version <= .version.max else true end) and
-                (if $is_daily_build and has("daily") then .daily else true end) and
+                (if $is_daily_build and has("daily") then (.daily | ascii_downcase) == "true" else true end) and
                 .custom != "true"
               ) 
             | $prefix + "-" + .package
