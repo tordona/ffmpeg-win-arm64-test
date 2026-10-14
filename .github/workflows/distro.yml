@@ -128,9 +128,7 @@ jobs:
     - name: '🧹 Cleanup Files for Distribution'
       working-directory: ./builds
       run: |
-        # find . -type d -iname "dump" -exec rm -r {} +
         find . -type d -iname "examples" -exec rm -r {} +
-        # find . -type f -iname '*.lib' -delete
         find . -type f -iname '*.xsd' -delete
         find . -type f -iname '*.ico' -delete
         find . -type f -iname '*.md' -delete
