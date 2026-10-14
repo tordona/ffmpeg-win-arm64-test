@@ -1,8 +1,8 @@
 name: Autobuild FFmpeg Win-ARM64
 
 on:
-  # schedule:
-  #   - cron: '0 16 * * *' 
+  schedule:
+    - cron: '0 16 * * *' 
   workflow_dispatch:
     inputs:
       release_tag:
@@ -186,6 +186,7 @@ jobs:
           | sort_by(ascii_downcase) 
           | join(" ")
         ' options.json)
+        echo "📢 $packages"
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
     - name: '📦 Install Packages - Full Build'
@@ -217,6 +218,7 @@ jobs:
           | sort_by(ascii_downcase) 
           | join(" ")
         ' options.json)
+        echo "📢 $packages"
         pacman -S --disable-download-timeout --noconfirm --overwrite '*' $packages
         echo "packages=$packages" >> "$GITHUB_OUTPUT"
     - name: '⬇️ Download External Packages'
@@ -300,6 +302,21 @@ jobs:
       working-directory: ./source
       run: |
         make install -j$(nproc)
+    - name: '🏃 Run Executable and Verify Help Output'
+      shell: pwsh
+      env:
+        output_path: ${{ steps.ffmpeg-config-setup.outputs.output_path }}
+        version_name: ${{ steps.ffmpeg-config-setup.outputs.version_name }}
+      run: |
+        $bash_path = "$env:output_path/$env:version_name/bin"
+        $win_path = $bash_path -replace '^/([a-zA-Z])/', '$1:/'
+        Set-Location $win_path
+
+        & .\ffmpeg.exe -hide_banner -help
+        if ($LASTEXITCODE -ne 0) {
+          Write-Error "ffmpeg.exe failed with exit code $LASTEXITCODE"
+          exit $LASTEXITCODE
+        }
     - name: '🔦 Parse Library Versions'
       env:
         output_path: "${{ steps.ffmpeg-config-setup.outputs.output_path }}"
